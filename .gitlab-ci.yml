@@ -47,7 +47,7 @@ pages:
         # make public dir + any child dir
         - mkdir -p ./public/coverage
         # place code coverage artifacts under /coverage
-        - cp -R code_coverage/* ./public/coverage
+        - cp -R coverage_html/* ./public/coverage
         # etc...
     artifacts:
         paths:
