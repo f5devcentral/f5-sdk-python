@@ -2,7 +2,7 @@ image: python:3.7
 
 stages:
     - test
-
+    - publish
 
 # unit tests: python 3.x (preferred)
 test_unit:
@@ -11,9 +11,16 @@ test_unit:
         # install packages
         - pip3 install -r requirements.txt
         - pip3 install .
+        # run unit tests
         - make unit_test
+        # run linter
+        - make lint
     tags:
         - cm-official-docker-executor
+    artifacts:
+        name: ${CI_COMMIT_REF_NAME}_unit_test
+        paths:
+            - code_coverage
 
 # unit tests: python 2.x
 test_unit_python_2_x:
@@ -23,6 +30,7 @@ test_unit_python_2_x:
         # install packages
         - pip install -r requirements.txt
         - pip install .
+        # run unit tests
         - make unit_test
     tags:
         - cm-official-docker-executor

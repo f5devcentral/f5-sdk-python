@@ -10,10 +10,5 @@ __pycache__/
 .coverage
 coverage_html/
 
-# build
-build/
-dist/
-*egg-info/
-
 # misc
 .DS_Store

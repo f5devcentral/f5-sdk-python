@@ -1,0 +1,13 @@
+README.md
+setup.py
+f5_cloud_sdk.egg-info/PKG-INFO
+f5_cloud_sdk.egg-info/SOURCES.txt
+f5_cloud_sdk.egg-info/dependency_links.txt
+f5_cloud_sdk.egg-info/not-zip-safe
+f5_cloud_sdk.egg-info/top_level.txt
+f5cloudsdk/__init__.py
+f5cloudsdk/commands/__init__.py
+f5cloudsdk/commands/bigip/__init__.py
+f5cloudsdk/commands/cloud/__init__.py
+f5cloudsdk/shared/__init__.py
+f5cloudsdk/shared/util.py
