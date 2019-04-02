@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# Pytest coverage
+.coverage
+coverage_html/
+
+# build
+build/
+dist/
+*egg-info/
+
+# misc
+.DS_Store

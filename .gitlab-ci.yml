@@ -1,0 +1,28 @@
+image: python:3.7
+
+stages:
+    - test
+
+
+# unit tests: python 3.x (preferred)
+test_unit:
+    stage: test
+    script:
+        # install packages
+        - pip3 install -r requirements.txt
+        - pip3 install .
+        - make unit_test
+    tags:
+        - cm-official-docker-executor
+
+# unit tests: python 2.x
+test_unit_python_2_x:
+    image: python:2.7
+    stage: test
+    script:
+        # install packages
+        - pip install -r requirements.txt
+        - pip install .
+        - make unit_test
+    tags:
+        - cm-official-docker-executor
