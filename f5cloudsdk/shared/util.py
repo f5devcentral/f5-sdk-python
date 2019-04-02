@@ -1,4 +1,5 @@
-# Helper utility functions
+""" Helper utility functions """
 
-def multiply(n1, n2):
-    return n1 * n2
+def multiply(n_1, n_2):
+    """ Multiply two numbers """
+    return n_1 * n_2
