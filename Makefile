@@ -1,6 +1,6 @@
 PACKAGE_DIR := f5cloudsdk
 TEST_DIR := tests
-COVERAGE_DIR := ./coverage_html
+COVERAGE_DIR := coverage_html
 COVERAGE_FILE := .coverage
 
 unit_test:
