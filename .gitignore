@@ -8,7 +8,7 @@ __pycache__/
 
 # Pytest coverage
 .coverage
-coverage_html/
+code_coverage/
 
 # misc
 .DS_Store
