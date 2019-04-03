@@ -36,24 +36,24 @@ test_unit_python_2_x:
         - cm-official-docker-executor
 
 # Publish to internal artifactory
-# Note: Will push when new tags are pushed and use the current build in dist directory
+# Note: Will push eggs when new tags are pushed and use the current build in dist directory
 # with the assumption being the package has been updated. However even if it hasn't the upload
 # will simply update the existing rpm version/release in artifactory
-# push:
-#     stage: push
-#     only:
-#         - tags
-#     tags:
-#         - docker-executor
-#     script:
-#         - EGG_FILE=$(ls dist/*.gz)
-#         - EGG_NAME=$(basename $EGG_FILE)
-#         - URL=${ARTIFACTORY_BASE_URL}/f5-pypi-internal/${EGG_NAME}
-#         - echo ${URL}
-#         - >-
-#           UPLOAD_RESULT=$(curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -X PUT --data-binary @${EGG_FILE} ${URL})
-#         - if [[ $? -eq 0 ]] && [[ "$UPLOAD_RESULT" == *created* ]]; then echo "Upload complete"; else echo "Upload failed"; exit 1; fi
-#         - echo $UPLOAD_RESULT
+publish_egg_to_artifactory:
+    stage: publish
+    only:
+        - tags
+    tags:
+        - docker-executor
+    script:
+        - EGG_FILE=$(ls dist/*.gz)
+        - EGG_NAME=$(basename $EGG_FILE)
+        - URL=${ARTIFACTORY_BASE_URL}/f5-cloud-solutions-pypi/f5-cloud-sdk/${EGG_NAME}
+        - echo ${URL}
+        - >-
+          UPLOAD_RESULT=$(curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -X PUT --data-binary @${EGG_FILE} ${URL})
+        - if [[ $? -eq 0 ]] && [[ "$UPLOAD_RESULT" == *created* ]]; then echo "Upload complete"; else echo "Upload failed"; exit 1; fi
+        - echo $UPLOAD_RESULT
 
 # publish docs to internal pages: - this job MUST be named 'pages'
 pages:

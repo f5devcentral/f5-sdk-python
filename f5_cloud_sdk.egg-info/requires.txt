@@ -1,0 +1,3 @@
+awscli==1.16.136
+azure-mgmt-compute==4.5.1
+google-cloud==0.34.0
