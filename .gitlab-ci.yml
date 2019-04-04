@@ -56,6 +56,9 @@ docs_code:
         # install packages
         - pip3 install -r requirements.txt
         - pip3 install .
+        # install apt packages: doxygen
+        - apt-get update
+        - apt-get install -y doxygen
         # generate docs
         - make code_docs
     tags:
