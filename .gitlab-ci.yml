@@ -57,7 +57,7 @@ docs_code:
         - pip3 install -r requirements.txt
         - pip3 install .
         # generate docs
-        - make docs
+        - make code_docs
     tags:
         - cm-official-docker-executor
     artifacts:

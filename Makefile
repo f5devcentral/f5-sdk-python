@@ -20,7 +20,7 @@ lint:
 coverage: unit_test
 	echo "Generating code coverage documentation"
 	coverage html
-docs:
+code_docs:
 	echo "Generating code documentation"
 	doxygen doxygen.conf
 clean:
