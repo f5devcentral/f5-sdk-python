@@ -74,8 +74,11 @@ docs_code:
 # version has been updated. However even if it hasn't it will simply update the existing version
 publish_egg_to_artifactory:
     stage: publish
+    # for now publish on develop and master as well (instead of just tags)
     only:
         - tags
+        - master
+        - develop
     tags:
         - docker-executor
     script:
