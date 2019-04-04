@@ -107,7 +107,7 @@ pages:
         - cp -R code_coverage/* ${PUBLIC_DIR}/coverage
         # place code docs artifacts under /code-docs
         - mkdir -p ${PUBLIC_DIR}/code-docs
-        - cp -R code_docs/* ./public/code-docs
+        - cp -R code_docs/html/* ./public/code-docs
         # etc...
     artifacts:
         paths:
