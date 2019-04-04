@@ -12,7 +12,7 @@ build:
 	echo "Creating package artifacts"
 	python3 setup.py sdist bdist_wheel
 unit_test:
-	echo "Running unit tests (incl code coverage)";
+	echo "Running unit tests";
 	pytest --cov=${PACKAGE_DIR} ${TEST_DIR}/;
 lint:
 	echo "Running linter (any error will result in non-zero exit code)";
