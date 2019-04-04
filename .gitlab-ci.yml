@@ -2,7 +2,9 @@ image: python:3.7
 
 stages:
     - test
+    - build
     - publish
+    - clean
 
 # unit tests: python 3.x (preferred)
 test_unit:
@@ -35,6 +37,16 @@ test_unit_python_2_x:
     tags:
         - cm-official-docker-executor
 
+# create package artifacts
+build:
+    stage: build
+    only:
+        - tags
+    tags:
+        - docker-executor
+    script:
+        - make build
+
 # Publish to internal artifactory
 # Note: Will push eggs when new tags are pushed and use the current build in dist directory
 # with the assumption being the package has been updated. However even if it hasn't the upload
@@ -46,6 +58,7 @@ publish_egg_to_artifactory:
     tags:
         - docker-executor
     script:
+        - make build
         - EGG_FILE=$(ls dist/*.gz)
         - EGG_NAME=$(basename $EGG_FILE)
         - URL=${ARTIFACTORY_BASE_URL}/f5-cloud-solutions-pypi/f5-cloud-sdk/${EGG_NAME}
@@ -72,3 +85,11 @@ pages:
     artifacts:
         paths:
             - public
+
+# clean up
+clean:
+    stage: clean
+    tags:
+        - docker-executor
+    script:
+        - make clean
