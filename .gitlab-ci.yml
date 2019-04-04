@@ -17,6 +17,7 @@ test_unit:
         # run linter
         - make lint
     tags:
+        - cm-official-docker-executor
 
 # unit tests: python 2.x
 test_unit_python_2_x:
