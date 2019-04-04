@@ -10,5 +10,10 @@ __pycache__/
 .coverage
 code_coverage/
 
+# build
+build/
+dist/
+*egg-info/
+
 # misc
 .DS_Store
