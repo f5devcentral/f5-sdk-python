@@ -1,7 +1,8 @@
 # required production packages
-azure-mgmt-compute==4.5.1
 awscli==1.16.136
+azure-mgmt-compute==4.5.1
 google-cloud==0.34.0
+requests==2.21.0
 # required dev packages
 pytest==4.3.1
 pytest-cov==2.6.1
