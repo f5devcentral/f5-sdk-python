@@ -1,5 +1,8 @@
 """ Test bigip """
-from unittest import mock
+try:
+    from unittest import mock
+except ImportError:
+    import mock # python 2.x support
 
 from f5cloudsdk.bigip import ManagementClient
 
