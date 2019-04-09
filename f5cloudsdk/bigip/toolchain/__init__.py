@@ -21,15 +21,15 @@ from .service import Operation as serviceClient
 class ToolChainClient():
     """ Toolchain client class for BIG-IP """
     def __init__(self, client, component):
-        self.client = client
+        self._client = client
         self.component = component
 
     @property
     def package(self):
         """ Package """
-        return packageClient(self.client, self.component)
+        return packageClient(self._client, self.component)
 
     @property
     def service(self):
         """ Service """
-        return serviceClient(self.client, self.component)
+        return serviceClient(self._client, self.component)

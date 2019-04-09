@@ -3,7 +3,7 @@
 class Operation():
     """ Toolchain service operation client """
     def __init__(self, client, component):
-        self.client = client
+        self._client = client
         self.component = component
 
     def create(self, **kwargs):

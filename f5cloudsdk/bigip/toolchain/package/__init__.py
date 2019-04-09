@@ -27,7 +27,7 @@ PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 class Operation():
     """ Toolchain package operation client """
     def __init__(self, client, component):
-        self.client = client
+        self._client = client
         self.component = component
         self.t_metadata = self._load_metadata()
 
@@ -90,7 +90,7 @@ class Operation():
                 'Content-Type': 'application/octet-stream'
             }
             # send chunk
-            self.client.make_request(
+            self._client.make_request(
                 uri,
                 method='POST',
                 headers=headers,
@@ -109,7 +109,7 @@ class Operation():
         count = 0
         max_count = 120 # max_count + sleep_secs = 2 mins
         while True:
-            status_response = self.client.make_request(status_link_uri)
+            status_response = self._client.make_request(status_link_uri)
             if status_response['status'] == 'FINISHED':
                 break
             elif status_response['status'] == 'FAILED':
@@ -127,7 +127,7 @@ class Operation():
             'operation': 'INSTALL',
             'packageFilePath': package_path
         }
-        response = self.client.make_request(uri, method='POST', body=body)
+        response = self._client.make_request(uri, method='POST', body=body)
 
         # now check for task status completion
         self._check_rpm_task_status(response['id'])
@@ -158,7 +158,7 @@ class Operation():
             'operation': 'UNINSTALL',
             'packageName': package_name
         }
-        response = self.client.make_request(uri, method='POST', body=body)
+        response = self._client.make_request(uri, method='POST', body=body)
         # now check for task status completion
         self._check_rpm_task_status(response['id'])
 
