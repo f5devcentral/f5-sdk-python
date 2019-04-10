@@ -123,8 +123,8 @@ publish_test_internal_install:
     script:
         ## DISABLED: response in container returns {"errors" : [ {"status" : 404, "message" : "Not Found"} ]}
         # install packages - verbose for debug
-        - #curl ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-cloud-sdk/ -vv
-        - #pip3 install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple -vv
+        #- curl ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-cloud-sdk/ -vv
+        #- pip3 install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple -vv
         - echo 'DISABLED (for now)'
     tags:
         - cm-official-docker-executor
