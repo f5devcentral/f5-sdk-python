@@ -13,7 +13,7 @@ setup(
     name='f5-cloud-sdk',
     version='0.9.0',
     description='F5 Cloud SDK',
-    url='http://github.com/F5Networks/f5-cloud-sdk',
+    url='http://github.com/f5networks/f5-cloud-sdk',
     author='F5 Ecosystems Group',
     author_email='solutionsfeedback@f5.com',
     license='MIT',
