@@ -117,13 +117,13 @@ pages:
         paths:
             - public
 
-# publish test: internal (artifactory) install
+# publish test: test internal (artifactory) install
 publish_test_internal_install:
+    image: python:latest
     stage: publish_test
     script:
+        ## DISABLED: response in container returns {"errors" : [ {"status" : 404, "message" : "Not Found"} ]}
         # install packages - verbose for debug
-        - pip3 --version
-        - echo ${ARTIFACTORY_BASE_URL}
         - curl ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-cloud-sdk/ -vv
         - pip3 install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple -vv
     tags:
