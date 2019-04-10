@@ -22,6 +22,7 @@ import time
 import f5cloudsdk.constants as constants
 import f5cloudsdk.utils as utils
 
+TOOLCHAIN_METADATA = 'toolchain_metadata.json'
 PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 
 class Operation():
@@ -34,7 +35,7 @@ class Operation():
     @staticmethod
     def _load_metadata():
         """ Load toolchain metadata """
-        with open(os.path.join(os.path.dirname(__file__), 't_metadata.json')) as m_file:
+        with open(os.path.join(os.path.dirname(__file__), TOOLCHAIN_METADATA)) as m_file:
             metadata = json.loads(m_file.read())
         return metadata
 
@@ -42,15 +43,10 @@ class Operation():
         """ Get latest version from toolchain metadata """
         c_v_metadata = self.t_metadata['components'][self.component]['versions']
         latest = {k: v for (k, v) in c_v_metadata.items() if v['latest']}
-
         return list(latest.keys())[0] # we should only have one
 
     def _get_version_metadata(self, version):
         """ Get specific version metadata from toolchain metadata """
-        # account for special 'latest'
-        if version == 'latest':
-            version = self._get_latest_version()
-
         return self.t_metadata['components'][self.component]['versions'][version]
 
     def _get_download_url(self, version):
@@ -109,16 +105,16 @@ class Operation():
         count = 0
         max_count = 120 # max_count + sleep_secs = 2 mins
         while True:
-            status_response = self._client.make_request(status_link_uri)
-            if status_response['status'] == 'FINISHED':
+            response = self._client.make_request(status_link_uri)
+            if response['status'] == 'FINISHED':
                 break
-            elif status_response['status'] == 'FAILED':
-                raise Exception(status_response['errorMessage'])
+            elif response['status'] == 'FAILED':
+                raise Exception(response['errorMessage'])
             elif count > max_count:
                 raise Exception('Max count exceeded')
             time.sleep(sleep_secs)
             count += 1
-        return status_response['status']
+        return response
 
     def _install_rpm(self, package_path):
         """ Install RPM on remote BIG-IP """
@@ -148,7 +144,6 @@ class Operation():
         # install
         tmp_file_bigip_path = '/var/config/rest/downloads/%s' % (download_pkg)
         self._install_rpm(tmp_file_bigip_path)
-
         return {'component': component, 'version': version} # temp
 
     def _uninstall_rpm(self, package_name):
@@ -170,5 +165,29 @@ class Operation():
         # uninstall from BIG-IP
         package_name = self._get_package_name(version)
         self._uninstall_rpm(package_name)
-
         return {'component': component, 'version': version} # temp
+
+    def _list_rpm(self, package_name):
+        """ List RPM on remote BIG-IP """
+        uri = PKG_MGMT_URI
+        body = {
+            'operation': 'QUERY'
+        }
+        response = self._client.make_request(uri, method='POST', body=body)
+
+        # now check for task status completion
+        response = self._check_rpm_task_status(response['id'])
+        # check queryResponse for matching package_name
+        query_response = response['queryResponse']
+        matching_packages = [i for i in query_response if i['packageName'] == package_name]
+        return len(matching_packages) == 1
+
+    def is_installed(self, **kwargs):
+        """ Check if toolchain package is installed """
+        version = kwargs.pop('version', self._get_latest_version())
+
+        # list installed packages, check if this version's package name is installed
+        package_name = self._get_package_name(version)
+        # list
+        response = self._list_rpm(package_name)
+        return response
