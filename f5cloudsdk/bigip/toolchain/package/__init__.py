@@ -25,7 +25,7 @@ import f5cloudsdk.utils as utils
 TOOLCHAIN_METADATA = 'toolchain_metadata.json'
 PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 
-class Operation():
+class Operation(object):
     """ Toolchain package operation client """
     def __init__(self, client, component):
         self._client = client

@@ -1,6 +1,6 @@
 """ Module for BIG-IP toolchain service configuration """
 
-class Operation():
+class Operation(object):
     """ Toolchain service operation client """
     def __init__(self, client, component):
         self._client = client

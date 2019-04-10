@@ -22,7 +22,7 @@ from requests.auth import HTTPBasicAuth
 import f5cloudsdk.constants as constants
 from .decorators import check_auth
 
-class ManagementClient():
+class ManagementClient(object):
     """ Management client class for BIG-IP """
     def __init__(self, host, **kwargs):
         self.host = host

@@ -121,7 +121,7 @@ pages:
 publish_test_internal_install:
     stage: publish_test
     script:
-        # install packages
-        - pip3 install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple
+        # install packages - verbose for debug
+        - pip3 install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple -vv
     tags:
         - cm-official-docker-executor

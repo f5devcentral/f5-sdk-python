@@ -140,6 +140,7 @@ disable=print-statement,
         exception-escape,
         comprehension-escape,
         inconsistent-return-statements,
+        useless-object-inheritance,
         fixme
 
 # Enable the message, report, category or checker with the given id(s). You can
