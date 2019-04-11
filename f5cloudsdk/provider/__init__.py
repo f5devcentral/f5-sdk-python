@@ -1,9 +1,9 @@
-""" Module for provider configuration """
+"""Module for provider configuration """
 
 class ManagementClient(object):
-    """ Management client class for provider """
+    """Management client class for provider """
     def __init__(self):
         pass
 
     def login(self):
-        """ Login """
+        """Login """

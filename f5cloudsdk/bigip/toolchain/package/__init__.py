@@ -1,8 +1,9 @@
-""" Module for BIG-IP toolchain package configuration
+"""Module for BIG-IP toolchain component package configuration
 
-    Example(s):
-
-    ## Example: Basic
+    Examples
+    --------
+    Example: Basic
+    --------------
     from f5cloudsdk.bigip import ManagementClient
     from f5cloudsdk.bigip.toolchain import ToolChainClient
 
@@ -10,9 +11,14 @@
     as3 = ToolChainClient(device, 'as3')
     # install AS3 package
     as3.package.install()
-    # uninstall AS3 package
+
+    Example: Uninstall
+    --------------
     as3.package.uninstall()
 
+    Example: Check if toolchain component is installed
+    --------------
+    as3.package.is_installed()
 """
 
 import os
@@ -22,45 +28,122 @@ import time
 import f5cloudsdk.constants as constants
 import f5cloudsdk.utils as utils
 
-TOOLCHAIN_METADATA = 'toolchain_metadata.json'
 PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 
 class Operation(object):
-    """ Toolchain package operation client """
-    def __init__(self, client, component):
+    """A class used as a toolchain package operation client for BIG-IP
+
+    Attributes
+    ----------
+    component : str
+        the component in the toolchain
+    version : str
+        the component version in the toolchain
+    toolchain_metadata : dict
+        the toolchain metadata
+
+    Methods
+    -------
+    is_installed()
+        Refer to method documentation
+    install()
+        Refer to method documentation
+    uninstall()
+        Refer to method documentation
+    """
+
+    def __init__(self, client, component, version, toolchain_metadata):
+        """Class initialization
+
+        Parameters
+        ----------
+        client : object
+            the management client object
+        component : str
+            the component in the toolchain
+        version : str
+            the component version in the toolchain
+        toolchain_metadata : dict
+            the toolchain metadata
+
+        Returns
+        -------
+        None
+        """
+
+        # init properties
         self._client = client
         self.component = component
-        self.t_metadata = self._load_metadata()
+        self.version = version
+        self.toolchain_metadata = toolchain_metadata
 
-    @staticmethod
-    def _load_metadata():
-        """ Load toolchain metadata """
-        with open(os.path.join(os.path.dirname(__file__), TOOLCHAIN_METADATA)) as m_file:
-            metadata = json.loads(m_file.read())
-        return metadata
+    def _get_version_metadata(self):
+        """Gets the metadata for a specific component version from the toolchain metadata
 
-    def _get_latest_version(self):
-        """ Get latest version from toolchain metadata """
-        c_v_metadata = self.t_metadata['components'][self.component]['versions']
-        latest = {k: v for (k, v) in c_v_metadata.items() if v['latest']}
-        return list(latest.keys())[0] # we should only have one
+        Parameters
+        ----------
+        None
 
-    def _get_version_metadata(self, version):
-        """ Get specific version metadata from toolchain metadata """
-        return self.t_metadata['components'][self.component]['versions'][version]
+        Returns
+        -------
+        dict
+            a dictionary containing the metadata
+        """
 
-    def _get_download_url(self, version):
-        """ Get download url from toolchain metadata for a specific version """
-        v_metadata = self._get_version_metadata(version)
+        return self.toolchain_metadata['components'][self.component]['versions'][self.version]
+
+    def _get_download_url(self):
+        """Gets the component versions download url from toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            a string containing the download url
+        """
+
+        v_metadata = self._get_version_metadata()
         return v_metadata['downloadUrl']
 
-    def _get_package_name(self, version):
-        """ Get package name from toolchain metadata for a specific version """
-        v_metadata = self._get_version_metadata(version)
+    def _get_package_name(self):
+        """Gets the component versions package name from toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            a string containing the package name
+        """
+
+        v_metadata = self._get_version_metadata()
         return v_metadata['packageName']
 
     def _upload_rpm(self, file_name, **kwargs):
-        """ Upload local rpm file to remote BIG-IP """
+        """Uploads a local RPM file to a remote device
+
+        Parameters
+        ----------
+        file_name : str
+            the name of the local file to upload
+        **kwargs:
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        delete_file : bool
+            flag to delete local file when upload is complete
+
+        Returns
+        -------
+        None
+        """
+
         delete_file = kwargs.pop('delete_file', True)
         uri = '/mgmt/shared/file-transfer/uploads/%s' % (file_name.split('/')[-1])
 
@@ -99,7 +182,19 @@ class Operation(object):
             os.remove(file_name)
 
     def _check_rpm_task_status(self, task_id):
-        """ Check RPM task status on remote BIG-IP """
+        """Checks RPM task status on a remote device
+
+        Parameters
+        ----------
+        task_id : str
+            the task id to query
+
+        Returns
+        -------
+        dict
+            a dictionary containing the JSON response
+        """
+
         status_link_uri = '%s/%s' % (PKG_MGMT_URI, task_id)
         sleep_secs = 1
         count = 0
@@ -117,7 +212,18 @@ class Operation(object):
         return response
 
     def _install_rpm(self, package_path):
-        """ Install RPM on remote BIG-IP """
+        """Installs RPM on a remote device
+
+        Parameters
+        ----------
+        package_path : str
+            the path to the package on the remote device to install
+
+        Returns
+        -------
+        None
+        """
+
         uri = PKG_MGMT_URI
         body = {
             'operation': 'INSTALL',
@@ -128,13 +234,24 @@ class Operation(object):
         # now check for task status completion
         self._check_rpm_task_status(response['id'])
 
-    def install(self, **kwargs):
-        """ Install toolchain package """
+    def install(self):
+        """Installs toolchain package component on a remote device
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            a dictionary containing component and version: {'component': 'as3', 'version': 'x.x.x'}
+        """
+
         component = self.component
-        version = kwargs.pop('version', self._get_latest_version())
+        version = self.version
 
         # download package (rpm) locally, upload to BIG-IP, install on BIG-IP
-        download_url = self._get_download_url(version)
+        download_url = self._get_download_url()
         download_pkg = download_url.split('/')[-1]
         tmp_file = '%s/%s' % (constants.TMP_DIR, download_pkg)
         # download
@@ -147,7 +264,18 @@ class Operation(object):
         return {'component': component, 'version': version} # temp
 
     def _uninstall_rpm(self, package_name):
-        """ Uninstall RPM on remote BIG-IP """
+        """Uninstalls RPM (LX extension) on a remote device
+
+        Parameters
+        ----------
+        package_name : str
+            the name of the installed package
+
+        Returns
+        -------
+        None
+        """
+
         uri = PKG_MGMT_URI
         body = {
             'operation': 'UNINSTALL',
@@ -157,18 +285,41 @@ class Operation(object):
         # now check for task status completion
         self._check_rpm_task_status(response['id'])
 
-    def uninstall(self, **kwargs):
-        """ Uninstall toolchain package """
+    def uninstall(self):
+        """Uninstalls toolchain package component on a remote device
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            a dictionary containing component and version: {'component': 'as3', 'version': 'x.x.x'}
+        """
+
         component = self.component
-        version = kwargs.pop('version', self._get_latest_version())
+        version = self.version
 
         # uninstall from BIG-IP
-        package_name = self._get_package_name(version)
+        package_name = self._get_package_name()
         self._uninstall_rpm(package_name)
         return {'component': component, 'version': version} # temp
 
-    def _list_rpm(self, package_name):
-        """ List RPM on remote BIG-IP """
+    def _check_rpm_exists(self, package_name):
+        """Checks RPM (LX extension) exists on a remote device
+
+        Parameters
+        ----------
+        package_name : str
+            the name of the installed package
+
+        Returns
+        -------
+        bool
+            a boolean based on RPM existence
+        """
+
         uri = PKG_MGMT_URI
         body = {
             'operation': 'QUERY'
@@ -182,12 +333,20 @@ class Operation(object):
         matching_packages = [i for i in query_response if i['packageName'] == package_name]
         return len(matching_packages) == 1
 
-    def is_installed(self, **kwargs):
-        """ Check if toolchain package is installed """
-        version = kwargs.pop('version', self._get_latest_version())
+    def is_installed(self):
+        """Checks if the toolchain component package is installed on a remote device
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            a boolean based on toolchain component package existence
+        """
 
         # list installed packages, check if this version's package name is installed
-        package_name = self._get_package_name(version)
-        # list
-        response = self._list_rpm(package_name)
+        package_name = self._get_package_name()
+        response = self._check_rpm_exists(package_name)
         return response

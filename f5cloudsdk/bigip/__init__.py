@@ -1,18 +1,18 @@
-""" Module for BIG-IP configuration
+"""Module for BIG-IP configuration
 
-    Example(s):
-
-
-    ## Example: Basic
+    Examples
+    --------
+    Example: Basic
+    --------------
     from f5cloudsdk.bigip import ManagementClient
 
     device = ManagementClient('192.0.2.10', user='admin', password='admin')
     # get BIG-IP info (version, etc.)
     device.get_info()
 
-    ## Example: Token Authentication
+    Example: Token Authentication
+    -----------------------------
     device = ManagementClient('192.0.2.10', token='my_token')
-
 """
 
 import json
@@ -23,8 +23,56 @@ import f5cloudsdk.constants as constants
 from .decorators import check_auth
 
 class ManagementClient(object):
-    """ Management client class for BIG-IP """
+    """A class used as a management client for BIG-IP
+
+    Attributes
+    ----------
+    host : str
+        the hostname of the device
+    user : str, optional
+        the username of the device
+    password : str, optional
+        the password of the device
+    private_key : str, optional
+        the private key of the device
+    token : str, optional
+        the token of the device
+
+    Methods
+    -------
+    get_info()
+        Refer to method documentation
+    make_request()
+        Refer to method documentation
+    make_request_ssh()
+        Refer to method documentation
+    """
+
     def __init__(self, host, **kwargs):
+        """Class initialization
+
+        Parameters
+        ----------
+        host : str
+            the hostname of the device
+        **kwargs:
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        user : str
+            the username to assign to the user attribute
+        password : str
+            the password to assign to the password attribute
+        private_key : str
+            the private_key to assign to the private_key attribute
+        token : str
+            the token to assign to the token attribute
+
+        Returns
+        -------
+        None
+        """
         self.host = host
         self.user = kwargs.pop('user', '')
         self.password = kwargs.pop('password', '')
@@ -44,7 +92,18 @@ class ManagementClient(object):
             raise Exception('user/password credentials, private key or token required')
 
     def _get_token(self):
-        """ Login (using user/password credentials) """
+        """Gets authentication token
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            a valid authentication token
+        """
+
         url = 'https://%s/mgmt/shared/authn/login' % (self.host)
         body = {
             'username': self.user,
@@ -60,15 +119,42 @@ class ManagementClient(object):
         return response['token']['token']
 
     def _login_using_credentials(self):
-        """ Login (using user/password credentials) """
+        """Logs in to device using user/password
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.token = self._get_token()
-        return True
 
     def _login_using_key(self):
-        """ Login (using private key) """
+        """Logs in to device using private key
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
 
     def get_info(self):
-        """ BIG-IP info (version) """
+        """Gets device info
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            a dictionary containg version: {'version': 'x.x.x'}
+        """
         uri = '/mgmt/tm/sys/version'
         response = self.make_request(uri)
 
@@ -78,7 +164,32 @@ class ManagementClient(object):
 
     @check_auth
     def make_request(self, uri, **kwargs):
-        """ Make request (HTTP) """
+        """Makes request to device (HTTP/S)
+
+        Parameters
+        ----------
+        uri : str
+            the URI where the request should be made
+        **kwargs:
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        method : str
+            the HTTP method to use
+        headers : str
+            the HTTP headers to use
+        body : str
+            the HTTP body to use
+        body_content_type : str
+            the HTTP body content type to use
+
+        Returns
+        -------
+        dict
+            a dictionary containg the JSON response
+        """
+
         host = self.host
         uri = uri
         method = kwargs.pop('method', 'GET').lower()
@@ -109,4 +220,13 @@ class ManagementClient(object):
 
     @check_auth
     def make_request_ssh(self):
-        """ Make request (SSH) """
+        """Makes request to device (SSH)
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
