@@ -122,7 +122,6 @@ publish_test_internal_install:
     stage: publish_test
     script:
         # install packages - verbose for debug
-        - curl ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-cloud-sdk/ -vv
-        - pip3 install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple -vv
+        - pip3 install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple
     tags:
         - cm-official-docker-executor
