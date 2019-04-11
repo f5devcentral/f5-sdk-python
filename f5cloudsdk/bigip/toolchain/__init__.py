@@ -15,7 +15,7 @@
     as3.service.create('./my_local_decl')
 
     Example: Specify Component Version
-    --------------
+    ----------------------------------
     as3 = ToolChainClient(device, 'as3', version='3.9.0')
 """
 
