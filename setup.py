@@ -19,6 +19,5 @@ setup(
     license='MIT',
     packages=find_packages(exclude=["test*", "test_*", "test.*", "*.test"]),
     install_requires=DEPENDENCIES,
-    package_data={'': ['*.json', '*.yaml', '*.md', '*.rst']},
-    include_package_data=True
+    package_data={'': ['*.json', '*.yaml', '*.md', '*.rst']}
 )
