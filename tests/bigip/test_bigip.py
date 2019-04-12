@@ -31,21 +31,24 @@ def get_mgmt_client(**kwargs):
         return ManagementClient('192.0.2.1', token=TOKEN)
     return ManagementClient('192.0.2.1', user=USER, password=USER_PWD)
 
+@patch('requests.patch')
 @patch('requests.post')
-def test_bigip_mgmt_client_basic(mock_requests):
+def test_bigip_mgmt_client_basic(mock_post, mock_patch):
     """ Test BIG-IP mgmt client (basic) """
-    def mock_requests_response(*args, **kwargs):
-        """ Mock requests (post) response """
+    def mock_post_response(*args, **kwargs):
+        """ Mock post response """
         response = {
             'token': {
-                'token': TOKEN
+                'token': TOKEN,
+                'selfLink': 'https://localhost/mgmt/shared/authz/tokens/mytoken'
             }
         }
         return MockRequestsResponse(response)
-    mock_requests.side_effect = mock_requests_response
+    mock_post.side_effect = mock_post_response
 
     device = get_mgmt_client()
-    assert mock_requests.called
+    assert mock_post.called
+    assert mock_patch.called
     assert device.user == USER
     assert device.password == USER_PWD
     assert device.token == TOKEN
