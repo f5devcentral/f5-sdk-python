@@ -110,13 +110,24 @@ class ManagementClient(object):
             'password': self.password,
             'loginProviderName': 'tmos' # need to support other providers
         }
+        # get token
         response = requests.post(
             url,
             json=body,
             auth=HTTPBasicAuth(self.user, self.password),
             verify=False
         ).json()
-        return response['token']['token']
+        token = response['token']['token']
+        # now extend token lifetime - 1 hour
+        token_self_link = response['token']['selfLink'].replace('localhost', self.host)
+        token_response = requests.patch(
+            token_self_link,
+            json={'timeout': 3600},
+            headers={'X-F5-Auth-Token': token},
+            verify=False
+        )
+        token_response.raise_for_status()
+        return token
 
     def _login_using_credentials(self):
         """Logs in to device using user/password
