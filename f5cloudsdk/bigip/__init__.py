@@ -78,6 +78,7 @@ class ManagementClient(object):
         self.password = kwargs.pop('password', '')
         self.private_key = kwargs.pop('private_key', '')
         self.token = kwargs.pop('token', None)
+        self.token_timeout = ''
 
         if self.user and self.password:
             # run _login_using_credentials() to get token
@@ -86,7 +87,7 @@ class ManagementClient(object):
             # create temporary user and run _login_using_credentials() to get token
             self._login_using_key()
         elif self.token:
-            # token provided directly - TODO: how to refresh?
+            # token provided directly
             pass
         else:
             raise Exception('user/password credentials, private key or token required')
@@ -100,10 +101,12 @@ class ManagementClient(object):
 
         Returns
         -------
-        str
-            a valid authentication token
+        dict
+            a dictionary containing valid authentication token and timeout:
+            {'token': 'mytoken', 'timeout': 3600}
         """
 
+        timeout = 3600
         url = 'https://%s/mgmt/shared/authn/login' % (self.host)
         body = {
             'username': self.user,
@@ -122,12 +125,12 @@ class ManagementClient(object):
         token_self_link = response['token']['selfLink'].replace('localhost', self.host)
         token_response = requests.patch(
             token_self_link,
-            json={'timeout': 3600},
+            json={'timeout': timeout},
             headers={'X-F5-Auth-Token': token},
             verify=False
         )
         token_response.raise_for_status()
-        return token
+        return {'token': token, 'timeout': timeout}
 
     def _login_using_credentials(self):
         """Logs in to device using user/password
@@ -140,7 +143,10 @@ class ManagementClient(object):
         -------
         None
         """
-        self.token = self._get_token()
+
+        token = self._get_token()
+        self.token = token['token']
+        self.token_timeout = token['timeout']
 
     def _login_using_key(self):
         """Logs in to device using private key
