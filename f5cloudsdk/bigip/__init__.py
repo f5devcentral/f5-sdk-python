@@ -16,6 +16,7 @@
 """
 
 import json
+from datetime import datetime, timedelta
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -78,7 +79,7 @@ class ManagementClient(object):
         self.password = kwargs.pop('password', '')
         self.private_key = kwargs.pop('private_key', '')
         self.token = kwargs.pop('token', None)
-        self.token_timeout = ''
+        self.token_details = {}
 
         if self.user and self.password:
             # run _login_using_credentials() to get token
@@ -102,11 +103,12 @@ class ManagementClient(object):
         Returns
         -------
         dict
-            a dictionary containing valid authentication token and timeout:
-            {'token': 'mytoken', 'timeout': 3600}
+            a dictionary containing authentication token, expiration date and expiration in seconds:
+            {'token': 'token', 'expirationDate': '2019-01-01T01:01:01.00', 'expirationIn': 3600}
         """
 
         timeout = 3600
+        expiration_date = (datetime.now() + timedelta(hours=1)).isoformat()
         url = 'https://%s/mgmt/shared/authn/login' % (self.host)
         body = {
             'username': self.user,
@@ -130,7 +132,7 @@ class ManagementClient(object):
             verify=False
         )
         token_response.raise_for_status()
-        return {'token': token, 'timeout': timeout}
+        return {'token': token, 'expirationDate': expiration_date, 'expirationIn': timeout}
 
     def _login_using_credentials(self):
         """Logs in to device using user/password
@@ -146,7 +148,7 @@ class ManagementClient(object):
 
         token = self._get_token()
         self.token = token['token']
-        self.token_timeout = token['timeout']
+        self.token_details = token
 
     def _login_using_key(self):
         """Logs in to device using private key
@@ -204,7 +206,7 @@ class ManagementClient(object):
         Returns
         -------
         dict
-            a dictionary containg the JSON response
+            a dictionary containing the JSON response
         """
 
         host = self.host
