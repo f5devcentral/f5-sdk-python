@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Pre-commit hook (example)
+#
+# Run linter, unit tests, etc.
+#
+
+make lint
+make unit_test

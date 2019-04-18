@@ -120,7 +120,7 @@ class ToolChainClient():
 
         Parameters
         ----------
-        component: str
+        component : str
             a toolchain component to check
 
         Returns
@@ -144,9 +144,9 @@ class ToolChainClient():
 
         Parameters
         ----------
-        component: str
+        component : str
             a toolchain component to check
-        version: str
+        version : str
             a toolchain component version to check
 
         Returns

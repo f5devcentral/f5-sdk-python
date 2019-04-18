@@ -1,4 +1,5 @@
-""" Test bigip """
+""" Test BIG-IP module """
+import unittest
 try:
     from unittest.mock import Mock, MagicMock, patch
 except ImportError:
@@ -24,58 +25,61 @@ class MockRequestsResponse:
         """ Mock json function """
         return self.body
 
-def get_mgmt_client(**kwargs):
-    """ Helper function to create mgmt client """
-    use_token = kwargs.pop('use_token', False)
-    if use_token:
-        return ManagementClient('192.0.2.1', token=TOKEN)
-    return ManagementClient('192.0.2.1', user=USER, password=USER_PWD)
+class TestBigIp(unittest.TestCase):
+    """ Test case """
 
-@patch('requests.patch')
-@patch('requests.post')
-def test_bigip_mgmt_client_basic(mock_post, mock_patch):
-    """ Test BIG-IP mgmt client (basic) """
-    def mock_post_response(*args, **kwargs):
-        """ Mock post response """
-        response = {
-            'token': {
-                'token': TOKEN,
-                'selfLink': 'https://localhost/mgmt/shared/authz/tokens/mytoken'
+    def get_mgmt_client(self, **kwargs):
+        """ Helper function to create mgmt client """
+        use_token = kwargs.pop('use_token', False)
+        if use_token:
+            return ManagementClient('192.0.2.1', token=TOKEN)
+        return ManagementClient('192.0.2.1', user=USER, password=USER_PWD)
+
+    @patch('requests.patch')
+    @patch('requests.post')
+    def test_bigip_mgmt_client_basic(self, mock_post, mock_patch):
+        """ Test BIG-IP mgmt client (basic) """
+        def mock_post_response(*args, **kwargs):
+            """ Mock post response """
+            response = {
+                'token': {
+                    'token': TOKEN,
+                    'selfLink': 'https://localhost/mgmt/shared/authz/tokens/mytoken'
+                }
             }
-        }
-        return MockRequestsResponse(response)
-    mock_post.side_effect = mock_post_response
+            return MockRequestsResponse(response)
+        mock_post.side_effect = mock_post_response
 
-    device = get_mgmt_client()
-    assert mock_post.called
-    assert mock_patch.called
-    assert device.user == USER
-    assert device.password == USER_PWD
-    assert device.token == TOKEN
+        device = self.get_mgmt_client()
+        assert mock_post.called
+        assert mock_patch.called
+        assert device.user == USER
+        assert device.password == USER_PWD
+        assert device.token == TOKEN
 
-@patch('requests.request')
-def test_bigip_mgmt_client_get_info(mock_requests):
-    """ Test BIG-IP mgmt client (get_info) """
-    version = '14.1.0.0'
-    def mock_requests_response(*args, **kwargs):
-        """ Mock requests response """
-        response = {
-            'entries': {
-                'https://localhost/mgmt/tm/sys/version/0': {
-                    'nestedStats': {
-                        'entries': {
-                            'Version': {
-                                'description': version
+    @patch('requests.request')
+    def test_bigip_mgmt_client_get_info(self, mock_requests):
+        """ Test BIG-IP mgmt client (get_info) """
+        version = '14.1.0.0'
+        def mock_requests_response(*args, **kwargs):
+            """ Mock requests response """
+            response = {
+                'entries': {
+                    'https://localhost/mgmt/tm/sys/version/0': {
+                        'nestedStats': {
+                            'entries': {
+                                'Version': {
+                                    'description': version
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        return MockRequestsResponse(response)
-    mock_requests.side_effect = mock_requests_response
+            return MockRequestsResponse(response)
+        mock_requests.side_effect = mock_requests_response
 
-    device = get_mgmt_client(use_token=True)
-    device_info = device.get_info()
-    assert mock_requests.called
-    assert device_info['version'] == version
+        device = self.get_mgmt_client(use_token=True)
+        device_info = device.get_info()
+        assert mock_requests.called
+        assert device_info['version'] == version

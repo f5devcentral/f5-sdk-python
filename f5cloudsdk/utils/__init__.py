@@ -11,9 +11,9 @@ def download_to_file(url, file_name):
 
     Parameters
     ----------
-    url: str
+    url : str
         the URL where the artifact should be downloaded from
-    file_name: str
+    file_name : str
         the local file name where the artifact should be downloaded
 
     Returns

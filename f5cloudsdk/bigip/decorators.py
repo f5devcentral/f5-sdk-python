@@ -5,12 +5,12 @@ def check_auth(function):
 
     Parameters
     ----------
-    function: func
+    function : function
         a function to decorate with authentication check
 
     Returns
     -------
-    func
+    function
         a decorated function
     """
 

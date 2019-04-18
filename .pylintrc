@@ -141,6 +141,7 @@ disable=print-statement,
         comprehension-escape,
         inconsistent-return-statements,
         useless-object-inheritance,
+        logging-not-lazy,
         fixme
 
 # Enable the message, report, category or checker with the given id(s). You can

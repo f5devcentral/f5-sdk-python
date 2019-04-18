@@ -131,7 +131,7 @@ class Operation(object):
         ----------
         file_name : str
             the name of the local file to upload
-        **kwargs:
+        **kwargs :
             optional keyword arguments
 
         Keyword Arguments
