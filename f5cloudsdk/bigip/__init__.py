@@ -21,6 +21,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 import f5cloudsdk.constants as constants
+from f5cloudsdk.logger import Logger
 from .decorators import check_auth
 
 class ManagementClient(object):
@@ -38,6 +39,8 @@ class ManagementClient(object):
         the private key of the device
     token : str, optional
         the token of the device
+    logger : object
+        instantiated logger object
 
     Methods
     -------
@@ -56,7 +59,7 @@ class ManagementClient(object):
         ----------
         host : str
             the hostname of the device
-        **kwargs:
+        **kwargs :
             optional keyword arguments
 
         Keyword Arguments
@@ -80,6 +83,8 @@ class ManagementClient(object):
         self.private_key = kwargs.pop('private_key', '')
         self.token = kwargs.pop('token', None)
         self.token_details = {}
+
+        self.logger = Logger(__name__).get_logger()
 
         if self.user and self.password:
             # run _login_using_credentials() to get token
@@ -107,6 +112,8 @@ class ManagementClient(object):
             {'token': 'token', 'expirationDate': '2019-01-01T01:01:01.00', 'expirationIn': 3600}
         """
 
+        self.logger.debug('Getting authentication token')
+
         timeout = 3600
         expiration_date = (datetime.now() + timedelta(hours=1)).isoformat()
         url = 'https://%s/mgmt/shared/authn/login' % (self.host)
@@ -132,6 +139,7 @@ class ManagementClient(object):
             verify=False
         )
         token_response.raise_for_status()
+        self.logger.debug('Token response: %s' % token_response.json())
         return {'token': token, 'expirationDate': expiration_date, 'expirationIn': timeout}
 
     def _login_using_credentials(self):
@@ -146,6 +154,7 @@ class ManagementClient(object):
         None
         """
 
+        self.logger.info('Logging in using user/password')
         token = self._get_token()
         self.token = token['token']
         self.token_details = token
@@ -161,6 +170,8 @@ class ManagementClient(object):
         -------
         None
         """
+
+        self.logger.info('Logging in using private key')
 
     def get_info(self):
         """Gets device info
@@ -189,7 +200,7 @@ class ManagementClient(object):
         ----------
         uri : str
             the URI where the request should be made
-        **kwargs:
+        **kwargs :
             optional keyword arguments
 
         Keyword Arguments
@@ -221,6 +232,9 @@ class ManagementClient(object):
         if body and body_content_type == 'json':
             headers.update({'Content-Type': 'application/json'})
             body = json.dumps(body)
+
+        # note: certain requests contain very large payloads, do *not* log body
+        self.logger.debug('Making HTTP request: %s %s' % (method.upper(), uri))
 
         # construct url
         url = 'https://%s%s' % (host, uri)
