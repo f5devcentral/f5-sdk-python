@@ -14,8 +14,8 @@ def check_auth(function):
         a decorated function
     """
 
-    def wrapper(self, *args, **kwargs):
+    def _wrapper(self, *args, **kwargs):
         if self.token is None:
             raise Exception('Device authentication required')
         return function(self, *args, **kwargs)
-    return wrapper
+    return _wrapper

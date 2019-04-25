@@ -1,24 +1,22 @@
 """Module for BIG-IP toolchain component package configuration
 
-    Examples
-    --------
-    Example: Basic
-    --------------
-    from f5cloudsdk.bigip import ManagementClient
-    from f5cloudsdk.bigip.toolchain import ToolChainClient
+    Example - Basic::
 
-    device = ManagementClient('192.0.2.10', user='admin', password='admin')
-    as3 = ToolChainClient(device, 'as3')
-    # install AS3 package
-    as3.package.install()
+        from f5cloudsdk.bigip import ManagementClient
+        from f5cloudsdk.bigip.toolchain import ToolChainClient
 
-    Example: Uninstall
-    --------------
-    as3.package.uninstall()
+        device = ManagementClient('192.0.2.10', user='admin', password='admin')
+        as3 = ToolChainClient(device, 'as3')
+        # install AS3 package
+        as3.package.install()
 
-    Example: Check if toolchain component is installed
-    --------------
-    as3.package.is_installed()
+    Example - Uninstall::
+
+        as3.package.uninstall()
+
+    Example - Check if toolchain component is installed::
+
+        as3.package.is_installed()
 """
 
 import os
@@ -30,7 +28,7 @@ import f5cloudsdk.utils as utils
 
 PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 
-class Operation(object):
+class OperationClient(object):
     """A class used as a toolchain package operation client for BIG-IP
 
     Attributes

@@ -1,9 +1,29 @@
-"""Module for provider configuration """
+"""Module for provider(s)
 
-class ManagementClient(object):
-    """Management client class for provider """
-    def __init__(self):
-        pass
+    Example -- Basic (Azure)::
 
-    def login(self):
-        """Login """
+        from f5cloudsdk.provider.azure import ProviderClient
+
+        provider_client = ProviderClient(
+            client_id='id',
+            tenant_id='id',
+            secret='secret',
+            subscription_id='')
+        # list virtual machines - filter by tag
+        virtual_machines = provider_client.virtual_machines.list(filter_tag='f5devicetype')
+
+    Example -- Basic (AWS)::
+
+        from f5cloudsdk.provider.aws import ProviderClient
+
+        provider_client = ProviderClient(
+            access_key='id',
+            secret_key='secret',
+            region_name='us-west-1')
+        # list virtual machines - filter by tag
+        virtual_machines = provider_client.virtual_machines.list(filter_tag='f5devicetype')
+"""
+
+from . import azure, aws
+
+__all__ = ['azure', 'aws']

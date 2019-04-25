@@ -1,18 +1,16 @@
-"""Module for BIG-IP configuration
+"""Module for BIG-IP
 
-    Examples
-    --------
-    Example: Basic
-    --------------
-    from f5cloudsdk.bigip import ManagementClient
+    Example - Basic::
 
-    device = ManagementClient('192.0.2.10', user='admin', password='admin')
-    # get BIG-IP info (version, etc.)
-    device.get_info()
+        from f5cloudsdk.bigip import ManagementClient
 
-    Example: Token Authentication
-    -----------------------------
-    device = ManagementClient('192.0.2.10', token='my_token')
+        device = ManagementClient('192.0.2.10', user='admin', password='admin')
+        # get BIG-IP info (version, etc.)
+        device.get_info()
+
+    Example - Token Authentication::
+
+        device = ManagementClient('192.0.2.10', token='my_token')
 """
 
 import json

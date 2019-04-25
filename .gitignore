@@ -17,6 +17,7 @@ dist/
 
 # Docs
 code_docs/
+_build/
 
 # Misc
 .DS_Store
