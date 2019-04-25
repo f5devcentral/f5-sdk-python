@@ -1,29 +1,27 @@
 """ Module for BIG-IP toolchain configuration
 
-    Examples
-    --------
-    Example: Basic
-    --------------
-    from f5cloudsdk.bigip import ManagementClient
-    from f5cloudsdk.bigip.toolchain import ToolChainClient
-    device = ManagementClient('192.0.2.10', user='admin', password='admin')
+    Example - Basic::
 
-    as3 = ToolChainClient(device, 'as3')
-    # install AS3 package
-    as3.package.install()
-    # create AS3 service
-    as3.service.create('./my_local_decl')
+        from f5cloudsdk.bigip import ManagementClient
+        from f5cloudsdk.bigip.toolchain import ToolChainClient
+        device = ManagementClient('192.0.2.10', user='admin', password='admin')
 
-    Example: Specify Component Version
-    ----------------------------------
-    as3 = ToolChainClient(device, 'as3', version='3.9.0')
+        as3 = ToolChainClient(device, 'as3')
+        # install AS3 package
+        as3.package.install()
+        # create AS3 service
+        as3.service.create('./my_local_decl')
+
+    Example - Specify Component Version::
+
+        as3 = ToolChainClient(device, 'as3', version='3.9.0')
 """
 
 import os
 import json
 
-from .package import Operation as packageClient
-from .service import Operation as serviceClient
+from .package import OperationClient as PackageClient
+from .service import OperationClient as ServiceClient
 
 TOOLCHAIN_METADATA = 'toolchain_metadata.json'
 
@@ -72,13 +70,13 @@ class ToolChainClient():
 
     @property
     def package(self):
-        """ Package (see packageClient for more details) """
-        return packageClient(self._client, self.component, self.version, self.toolchain_metadata)
+        """ Package (see PackageClient for more details) """
+        return PackageClient(self._client, self.component, self.version, self.toolchain_metadata)
 
     @property
     def service(self):
-        """ Service (see serviceClient for more details)  """
-        return serviceClient(self._client, self.component, self.version, self.toolchain_metadata)
+        """ Service (see ServiceClient for more details)  """
+        return ServiceClient(self._client, self.component, self.version, self.toolchain_metadata)
 
     @staticmethod
     def _load_metadata():

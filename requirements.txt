@@ -1,6 +1,7 @@
 ## required production packages
-awscli==1.16.136
 azure-mgmt-compute==4.5.1
+azure-mgmt-network==2.6.0
+boto3==1.9.134
 google-cloud==0.34.0
 requests==2.21.0
 ## required dev packages
@@ -9,3 +10,6 @@ pytest-cov==2.6.1
 pylint==2.3.1 ; python_version > '3.0'
 # unittest.mock built in to python 3.3+
 mock==2.0.0 ; python_version < '3.3'
+## required doc packages
+sphinx==2.0.1 ; python_version > '3.0'
+f5-sphinx-theme==1.0.9 ; python_version > '3.0'

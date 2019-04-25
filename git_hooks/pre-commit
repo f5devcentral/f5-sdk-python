@@ -5,5 +5,8 @@
 # Run linter, unit tests, etc.
 #
 
+# exit when any command fails
+set -e
+
 make lint
 make unit_test

@@ -21,7 +21,11 @@ coverage: unit_test
 	echo "Generating code coverage documentation"
 	coverage html
 code_docs:
-	echo "Generating code documentation"
+	echo "Generating code documentation (via sphinx)"
+	cd docs && make html && cd ..
+	cp -R docs/_build ${CODE_DOCS_DIR}
+code_docs_doxygen:
+	echo "Generating code documentation (via doxygen)"
 	doxygen doxygen.conf
 clean:
 	echo "Removing artifacts"

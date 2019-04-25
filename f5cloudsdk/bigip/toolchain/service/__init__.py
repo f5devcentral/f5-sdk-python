@@ -1,6 +1,6 @@
 """Module for BIG-IP toolchain component service configuration """
 
-class Operation(object):
+class OperationClient(object):
     """A class used as a toolchain service operation client for BIG-IP
 
     Attributes
