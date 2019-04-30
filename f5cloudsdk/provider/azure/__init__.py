@@ -9,12 +9,6 @@ class ProviderClient(object):
 
     Attributes
     ----------
-    client_id : str, optional
-        the service principal client id
-    tenant_id : str, optional
-        the service principal tenant id
-    secret : str, optional
-        the service principal secret
     credentials : object
         the credentials for the provider
     """
@@ -43,16 +37,16 @@ class ProviderClient(object):
         None
         """
 
-        self.subscription_id = kwargs.pop('subscription_id', None)
-        self.client_id = kwargs.pop('client_id', None)
-        self.tenant_id = kwargs.pop('tenant_id', None)
-        self.secret = kwargs.pop('secret', None)
+        self._subscription_id = kwargs.pop('subscription_id', None)
+        self._client_id = kwargs.pop('client_id', None)
+        self._tenant_id = kwargs.pop('tenant_id', None)
+        self._secret = kwargs.pop('secret', None)
 
         # optional, since this might be available via metadata
-        if not self.subscription_id:
+        if not self._subscription_id:
             raise Exception('Valid subscription id must be provided')
 
-        if self.client_id and self.tenant_id and self.secret:
+        if self._client_id and self._tenant_id and self._secret:
             self.credentials = self._get_credentials()
         else:
             raise Exception('Valid credentials must be provided')
@@ -70,13 +64,28 @@ class ProviderClient(object):
             instantiated credentials object
         """
         credentials = ServicePrincipalCredentials(
-            client_id=self.client_id,
-            tenant=self.tenant_id,
-            secret=self.secret
+            client_id=self._client_id,
+            tenant=self._tenant_id,
+            secret=self._secret
         )
         return credentials
+
+    def is_logged_in(self):
+        """Checks if is logged in
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            True if there is an instantiated credentials object
+        """
+
+        return bool(self.credentials)
 
     @property
     def virtual_machines(self):
         """Virtual machines client """
-        return VirtualMachinesClient(self.credentials, self.subscription_id)
+        return VirtualMachinesClient(self.credentials, self._subscription_id)

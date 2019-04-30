@@ -153,20 +153,22 @@ class OperationClient(object):
         Keyword Arguments
         -----------------
         filter_tag : str
-            filter list by tag
+            filter list by tag (key:value)
 
         Returns
         -------
         list
-            contains zero or more virtual machines:
-            [{
-                'name': '',
-                'id': '',
-                'location': '',
-                'tags': {},
-                'privateIPAddress': '',
-                'publicIPAddress': ''
-            }]
+            contains zero or more virtual machines::
+
+                [{
+                    'name': '',
+                    'id': '',
+                    'location': '',
+                    'tags': {},
+                    'privateIPAddress': '',
+                    'publicIPAddress': ''
+                }]
+
         """
         filter_tag = kwargs.pop('filter_tag', None)
 
@@ -175,6 +177,10 @@ class OperationClient(object):
 
         # filter by tag, if required
         if filter_tag:
-            vms = [i for i in vms if 'tags' in i and i['tags'] and filter_tag in i['tags'].keys()]
+            tag_key, tag_value = filter_tag.split(':')
+            vms = [i for i in vms
+                   if 'tags' in i
+                   and tag_key in i['tags'].keys()
+                   and i['tags'][tag_key] == tag_value]
         # normalize output into standard format
         return [self._normalize_list_response(i) for i in vms]

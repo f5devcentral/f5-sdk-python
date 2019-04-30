@@ -10,7 +10,7 @@
             secret='secret',
             subscription_id='')
         # list virtual machines - filter by tag
-        virtual_machines = provider_client.virtual_machines.list(filter_tag='f5devicetype')
+        virtual_machines = provider_client.virtual_machines.list(filter_tag='f5devicetype:bigip')
 
     Example -- Basic (AWS)::
 
@@ -21,7 +21,14 @@
             secret_key='secret',
             region_name='us-west-1')
         # list virtual machines - filter by tag
-        virtual_machines = provider_client.virtual_machines.list(filter_tag='f5devicetype')
+        virtual_machines = provider_client.virtual_machines.list(filter_tag='f5devicetype:bigip')
+
+    Example -- Check provider is logged in::
+
+        from f5cloudsdk.provider.aws import ProviderClient
+
+        provider_client = ProviderClient()
+        provider_client.is_logged_in()
 """
 
 from . import azure, aws

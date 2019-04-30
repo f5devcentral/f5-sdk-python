@@ -42,14 +42,16 @@ class OperationClient(object):
         """
 
         tags = {i['Key']:i['Value'] for i in output['Tags']} if 'Tags' in output else None
+        private_ip = output['PrivateIpAddress'] if 'PrivateIpAddress' in output else ''
+        public_ip = output['PublicIpAddress'] if 'PublicIpAddress' in output else ''
 
         return {
             'name': tags['Name'] if tags and 'Name' in tags else '',
             'id': output['InstanceId'],
             'location': output['Placement']['AvailabilityZone'],
             'tags': tags,
-            'privateIPAddress': output['PrivateIpAddress'],
-            'publicIPAddress': output['PublicIpAddress']
+            'privateIPAddress': private_ip,
+            'publicIPAddress': public_ip
         }
 
     def list(self, **kwargs):
@@ -63,20 +65,22 @@ class OperationClient(object):
         Keyword Arguments
         -----------------
         filter_tag : str
-            filter list by tag
+            filter list by tag (key:value)
 
         Returns
         -------
         list
-            contains zero or more virtual machines:
-            [{
-                'name': '',
-                'id': '',
-                'location': '',
-                'tags': {},
-                'privateIPAddress': '',
-                'publicIPAddress': ''
-            }]
+            contains zero or more virtual machines::
+
+                [{
+                    'name': '',
+                    'id': '',
+                    'location': '',
+                    'tags': {},
+                    'privateIPAddress': '',
+                    'publicIPAddress': ''
+                }]
+
         """
         filter_tag = kwargs.pop('filter_tag', None)
 
@@ -92,7 +96,11 @@ class OperationClient(object):
 
         # filter by tag, if required
         if filter_tag:
-            t = 'Tags' #pylint: disable=invalid-name
-            vms = [i for i in vms if t in i and i[t] for tag in i[t] if tag['Key'] == filter_tag]
+            tag_key, tag_value = filter_tag.split(':')
+            vms = [i for i in vms
+                   if 'Tags' in i and i['Tags']
+                   for tag in i['Tags']
+                   if tag['Key'] == tag_key and tag['Value'] == tag_value]
+
         # normalize output into standard format
         return [self._normalize_list_response(i) for i in vms]

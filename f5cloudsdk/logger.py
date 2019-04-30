@@ -1,15 +1,13 @@
 """Module for logging
 
-    Examples
-    --------
-    Example: Basic
-    --------------
-    from f5cloudsdk.logger import Logger
-    logger = Logger(__name__).get_logger()
+    Example - Basic::
 
-    Example: Log level set using environment variable
-    -------------------------------------------------
-    # export F5_SDK_LOG_LEVEL='INFO'
+        from f5cloudsdk.logger import Logger
+        logger = Logger(__name__).get_logger()
+
+    Example - Log level set using environment variable::
+
+        # export F5_SDK_LOG_LEVEL='INFO'
 """
 
 import os
