@@ -22,6 +22,9 @@ coverage: unit_test
 	coverage html
 code_docs:
 	echo "Generating code documentation (via sphinx)"
+	# auto generate sphinx developer guide docs from package
+	sphinx-apidoc --force --separate --module-first -o docs/developerguide/source ${PACKAGE_DIR}
+	# make docs (html)
 	cd docs && make html && cd ..
 	cp -R docs/_build ${CODE_DOCS_DIR}
 code_docs_doxygen:

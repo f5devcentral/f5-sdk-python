@@ -9,12 +9,6 @@ class ProviderClient(object):
 
     Attributes
     ----------
-    access_key : str, optional
-        the access key
-    secret_key : str, optional
-        the secret key
-    region_name : str
-        the region name
     session : object
         the session for the provider
     """
@@ -41,11 +35,11 @@ class ProviderClient(object):
         None
         """
 
-        self.access_key = kwargs.pop('access_key', None)
-        self.secret_key = kwargs.pop('secret_key', None)
-        self.region_name = kwargs.pop('region_name', 'us-west-1')
+        self._access_key = kwargs.pop('access_key', None)
+        self._secret_key = kwargs.pop('secret_key', None)
+        self._region_name = kwargs.pop('region_name', 'us-west-1')
 
-        if self.access_key and self.secret_key:
+        if self._access_key and self._secret_key:
             self.session = self._get_session()
         else:
             raise Exception('Valid credentials must be provided')
@@ -63,12 +57,28 @@ class ProviderClient(object):
             instantiated session object
         """
         session = Session(
-            aws_access_key_id=self.access_key,
-            aws_secret_access_key=self.secret_key
+            aws_access_key_id=self._access_key,
+            aws_secret_access_key=self._secret_key
         )
         return session
+
+    def is_logged_in(self):
+        """Checks if is logged in
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            True if there is an instantiated session object
+        """
+
+        return bool(self.session)
+
 
     @property
     def virtual_machines(self):
         """Virtual machines client """
-        return VirtualMachinesClient(self.session, self.region_name)
+        return VirtualMachinesClient(self.session, self._region_name)

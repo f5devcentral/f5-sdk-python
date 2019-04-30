@@ -1,5 +1,7 @@
 """Helpful decorators """
 
+from functools import wraps
+
 def check_auth(function):
     """Checks authentication
 
@@ -14,6 +16,8 @@ def check_auth(function):
         a decorated function
     """
 
+    # wraps includes docstring for documentation engine retrieval
+    @wraps(function)
     def _wrapper(self, *args, **kwargs):
         if self.token is None:
             raise Exception('Device authentication required')

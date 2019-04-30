@@ -6,9 +6,10 @@ Welcome to F5 CLoud SDK's documentation!
    :caption: Contents:
 
    userguide/index
+   developerguide/index
 
-Indices and tables
-==================
+Index and Search
+================
 
 * :ref:`genindex`
 * :ref:`modindex`
