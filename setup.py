@@ -5,6 +5,7 @@ from setuptools import setup, find_packages
 DEPENDENCIES = [
     'awscli==1.16.136',
     'azure-mgmt-compute==4.5.1',
+    'azure-mgmt-network==2.6.0',
     'google-cloud==0.34.0',
     'requests==2.21.0'
 ]
