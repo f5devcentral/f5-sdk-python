@@ -22,4 +22,4 @@ docs/developerguide/source/
 
 # Misc
 .DS_Store
-temp_client*
+temp_*

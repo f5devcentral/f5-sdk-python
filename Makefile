@@ -6,6 +6,7 @@ DIST_DIR := dist
 EGG_DIR := f5_cloud_sdk.egg-info
 PACKAGE_DIR := f5cloudsdk
 TEST_DIR := tests
+UNIT_TEST_DIR := ${TEST_DIR}/unittests
 TEST_CACHE_DIR := .pytest_cache
 
 build:
@@ -13,7 +14,7 @@ build:
 	python3 setup.py sdist bdist_wheel
 unit_test:
 	echo "Running unit tests";
-	pytest --cov=${PACKAGE_DIR} ${TEST_DIR} -v;
+	pytest --cov=${PACKAGE_DIR} ${UNIT_TEST_DIR} -v;
 lint:
 	echo "Running linter (any error will result in non-zero exit code)";
 	pylint ${PACKAGE_DIR}/;

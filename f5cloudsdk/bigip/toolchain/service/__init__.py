@@ -1,4 +1,26 @@
-"""Module for BIG-IP toolchain component service configuration """
+"""Module for BIG-IP toolchain component service configuration
+
+    Example - Basic::
+
+        from f5cloudsdk.bigip import ManagementClient
+        from f5cloudsdk.bigip.toolchain import ToolChainClient
+
+        device = ManagementClient('192.0.2.10', user='admin', password='admin')
+        as3 = ToolChainClient(device, 'as3')
+        # configure AS3 service
+        as3.service.create(config_file=decl.json)
+
+    Example - Show::
+
+        as3.service.show()
+
+    Example - Delete::
+
+        as3.service.delete()
+"""
+
+import os
+import json
 
 class OperationClient(object):
     """A class used as a toolchain service operation client for BIG-IP
@@ -9,16 +31,18 @@ class OperationClient(object):
         the component in the toolchain
     version : str
         the component version in the toolchain
-    toolchain_metadata : dict
-        the toolchain metadata
 
     Methods
     -------
     create()
         Refer to method documentation
+    show()
+        Refer to method documentation
+    delete()
+        Refer to method documentation
     """
 
-    def __init__(self, client, component, version, toolchain_metadata):
+    def __init__(self, client, component, version, metadata_client):
         """Class initialization
 
         Parameters
@@ -29,8 +53,8 @@ class OperationClient(object):
             the component in the toolchain
         version : str
             the component version in the toolchain
-        toolchain_metadata : dict
-            the toolchain metadata
+        metadata_client : object
+            the toolchain metadata client
 
         Returns
         -------
@@ -38,12 +62,35 @@ class OperationClient(object):
         """
 
         self._client = client
+        self._metadata_client = metadata_client
         self.component = component
         self.version = version
-        self.toolchain_metadata = toolchain_metadata
 
-    def create(self, **kwargs):
-        """Creates toolchain component service
+    @staticmethod
+    def _load_config_file(file):
+        """Load configuration file
+
+        Notes
+        -----
+        Assumes the file is valid JSON
+
+        Parameters
+        ----------
+        file : str
+            location to configuration file
+
+        Returns
+        -------
+        dict
+            the loaded file
+        """
+
+        with open(file) as m_file:
+            data = json.loads(m_file.read())
+        return data
+
+    def _get_configure_endpoint(self):
+        """Get configuration endpoint
 
         Parameters
         ----------
@@ -51,5 +98,79 @@ class OperationClient(object):
 
         Returns
         -------
-        None
+        dict
+            the configuration endpoint details
         """
+
+        return self._metadata_client.get_endpoints()['configure']
+
+    def create(self, **kwargs):
+        """Creates toolchain component service
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        config : dict
+            a dictionary containing configuration
+        config_file : str
+            a local file containing configuration to load
+
+        Returns
+        -------
+        dict
+            the response to a service create
+        """
+
+        config = kwargs.pop('config', '')
+        config_file = kwargs.pop('config_file', '')
+
+        if config and config_file:
+            raise Exception('Only one of config|config_file must be provided')
+
+        if config_file:
+            config = self._load_config_file(config_file)
+
+        uri = self._get_configure_endpoint()['uri']
+        return self._client.make_request(uri, method='POST', body=config)
+
+    def show(self):
+        """Gets (shows) the toolchain component service
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the response to a service get
+        """
+
+        uri = self._get_configure_endpoint()['uri']
+        return self._client.make_request(uri)
+
+    def delete(self):
+        """Deletes toolchain component service
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the response to a service deletion
+        """
+
+        methods = self._get_configure_endpoint()['methods']
+
+        if 'DELETE' not in methods:
+            raise Exception('Delete is not supported for this toolchain component')
+
+        uri = self._get_configure_endpoint()['uri']
+        return self._client.make_request(uri, method='DELETE')
+        

@@ -25,8 +25,8 @@ from .service import OperationClient as ServiceClient
 
 TOOLCHAIN_METADATA = 'toolchain_metadata.json'
 
-class ToolChainClient():
-    """A class used as a toolchain client for BIG-IP
+class MetadataClient(object):
+    """A class used as a metadata client
 
     Attributes
     ----------
@@ -36,47 +36,38 @@ class ToolChainClient():
         the component version in the toolchain
     toolchain_metadata : dict
         the toolchain metadata
+
+    Methods
+    -------
+    get_download_url()
+        Refer to method documentation
+    get_package_name()
+        Refer to method documentation
+    get_endpoints()
+        Refer to method documentation
     """
 
-    def __init__(self, client, component, **kwargs):
+    def __init__(self, component, version):
         """Class initialization
 
         Parameters
         ----------
-        client : object
-            the management client object
         component : str
             the component in the toolchain
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
         version : str
-            a string specifying the component version to use
+            the component version in the toolchain
 
         Returns
         -------
         None
         """
 
-        self._client = client
         self.toolchain_metadata = self._load_metadata()
         self.component = self._validate_component(component)
         self.version = self._validate_component_version(
             self.component,
-            kwargs.pop('version', self._get_latest_version())
-        )
-
-    @property
-    def package(self):
-        """ Package (see PackageClient for more details) """
-        return PackageClient(self._client, self.component, self.version, self.toolchain_metadata)
-
-    @property
-    def service(self):
-        """ Service (see ServiceClient for more details)  """
-        return ServiceClient(self._client, self.component, self.version, self.toolchain_metadata)
+            version or self._get_latest_version()
+            )
 
     @staticmethod
     def _load_metadata():
@@ -162,3 +153,126 @@ class ToolChainClient():
         if not [i for i in versions if i == version]:
             raise Exception('Valid component version must be provided: %s' % (versions))
         return version
+
+    def _get_component_metadata(self):
+        """Gets the metadata for a specific component from the toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            a dictionary containing the metadata
+        """
+
+        return self.toolchain_metadata['components'][self.component]
+
+    def _get_version_metadata(self):
+        """Gets the metadata for a specific component version from the toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            a dictionary containing the metadata
+        """
+
+        return self.toolchain_metadata['components'][self.component]['versions'][self.version]
+
+    def get_download_url(self):
+        """Gets the component versions download url from toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            a string containing the download url
+        """
+
+        return self._get_version_metadata()['downloadUrl']
+
+    def get_package_name(self):
+        """Gets the component versions package name from toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            a string containing the package name
+        """
+
+        return self._get_version_metadata()['packageName']
+
+    def get_endpoints(self):
+        """Gets the component endpoints from toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            a dictionary containing the endpoints
+        """
+
+        return self._get_component_metadata()['endpoints']
+
+class ToolChainClient(object):
+    """A class used as a toolchain client for BIG-IP
+
+    Attributes
+    ----------
+    component : str
+        the component in the toolchain
+    version : str
+        the component version in the toolchain
+    """
+
+    def __init__(self, client, component, **kwargs):
+        """Class initialization
+
+        Parameters
+        ----------
+        client : object
+            the management client object
+        component : str
+            the component in the toolchain
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        version : str
+            a string specifying the component version to use
+
+        Returns
+        -------
+        None
+        """
+
+        self._client = client
+        self._metadata_client = MetadataClient(component, kwargs.pop('version', None))
+        self.component = self._metadata_client.component
+        self.version = self._metadata_client.version
+
+    @property
+    def package(self):
+        """ Package (see PackageClient for more details) """
+        return PackageClient(self._client, self.component, self.version, self._metadata_client)
+
+    @property
+    def service(self):
+        """ Service (see ServiceClient for more details)  """
+        return ServiceClient(self._client, self.component, self.version, self._metadata_client)

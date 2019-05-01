@@ -37,8 +37,6 @@ class OperationClient(object):
         the component in the toolchain
     version : str
         the component version in the toolchain
-    toolchain_metadata : dict
-        the toolchain metadata
 
     Methods
     -------
@@ -50,7 +48,7 @@ class OperationClient(object):
         Refer to method documentation
     """
 
-    def __init__(self, client, component, version, toolchain_metadata):
+    def __init__(self, client, component, version, metadata_client):
         """Class initialization
 
         Parameters
@@ -61,8 +59,8 @@ class OperationClient(object):
             the component in the toolchain
         version : str
             the component version in the toolchain
-        toolchain_metadata : dict
-            the toolchain metadata
+        metadata_client : object
+            the toolchain metadata client
 
         Returns
         -------
@@ -71,56 +69,9 @@ class OperationClient(object):
 
         # init properties
         self._client = client
+        self._metadata_client = metadata_client
         self.component = component
         self.version = version
-        self.toolchain_metadata = toolchain_metadata
-
-    def _get_version_metadata(self):
-        """Gets the metadata for a specific component version from the toolchain metadata
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        dict
-            a dictionary containing the metadata
-        """
-
-        return self.toolchain_metadata['components'][self.component]['versions'][self.version]
-
-    def _get_download_url(self):
-        """Gets the component versions download url from toolchain metadata
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        str
-            a string containing the download url
-        """
-
-        v_metadata = self._get_version_metadata()
-        return v_metadata['downloadUrl']
-
-    def _get_package_name(self):
-        """Gets the component versions package name from toolchain metadata
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        str
-            a string containing the package name
-        """
-
-        v_metadata = self._get_version_metadata()
-        return v_metadata['packageName']
 
     def _upload_rpm(self, file_name, **kwargs):
         """Uploads a local RPM file to a remote device
@@ -245,11 +196,8 @@ class OperationClient(object):
             a dictionary containing component and version: {'component': 'as3', 'version': 'x.x.x'}
         """
 
-        component = self.component
-        version = self.version
-
         # download package (rpm) locally, upload to BIG-IP, install on BIG-IP
-        download_url = self._get_download_url()
+        download_url = self._metadata_client.get_download_url()
         download_pkg = download_url.split('/')[-1]
         tmp_file = '%s/%s' % (constants.TMP_DIR, download_pkg)
         # download
@@ -259,7 +207,7 @@ class OperationClient(object):
         # install
         tmp_file_bigip_path = '/var/config/rest/downloads/%s' % (download_pkg)
         self._install_rpm(tmp_file_bigip_path)
-        return {'component': component, 'version': version} # temp
+        return {'component': self.component, 'version': self.version} # temp
 
     def _uninstall_rpm(self, package_name):
         """Uninstalls RPM (LX extension) on a remote device
@@ -296,13 +244,10 @@ class OperationClient(object):
             a dictionary containing component and version: {'component': 'as3', 'version': 'x.x.x'}
         """
 
-        component = self.component
-        version = self.version
-
         # uninstall from BIG-IP
-        package_name = self._get_package_name()
+        package_name = self._metadata_client.get_package_name()
         self._uninstall_rpm(package_name)
-        return {'component': component, 'version': version} # temp
+        return {'component': self.component, 'version': self.version} # temp
 
     def _check_rpm_exists(self, package_name):
         """Checks RPM (LX extension) exists on a remote device
@@ -345,6 +290,5 @@ class OperationClient(object):
         """
 
         # list installed packages, check if this version's package name is installed
-        package_name = self._get_package_name()
-        response = self._check_rpm_exists(package_name)
-        return response
+        package_name = self._metadata_client.get_package_name()
+        return self._check_rpm_exists(package_name)
