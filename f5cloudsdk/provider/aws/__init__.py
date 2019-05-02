@@ -1,4 +1,4 @@
-"""Specific provider module """
+"""Python module for a specific provider """
 
 from boto3.session import Session
 

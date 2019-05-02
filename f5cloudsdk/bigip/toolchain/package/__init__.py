@@ -1,4 +1,4 @@
-"""Module for BIG-IP toolchain component package configuration
+"""Python module for BIG-IP toolchain component package configuration
 
     Example - Basic::
 

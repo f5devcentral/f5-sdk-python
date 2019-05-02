@@ -1,4 +1,4 @@
-"""Helpful decorators """
+"""Python module containing helpful decorators """
 
 from functools import wraps
 

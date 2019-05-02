@@ -1,4 +1,4 @@
-"""Helper utility functions """
+"""Python module containing helper utility functions """
 
 import requests
 
