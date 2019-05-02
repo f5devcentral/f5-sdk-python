@@ -1,4 +1,4 @@
-"""F5 Cloud SDK package
+"""F5 Cloud SDK (Python)
 
     Example -- Basic::
 
@@ -9,4 +9,6 @@
         as3 = ToolChainClient(device, 'as3')
         # install AS3 package
         as3.package.install()
+        # create AS3 service
+        as3.service.create(config_file='./decl.json')
 """

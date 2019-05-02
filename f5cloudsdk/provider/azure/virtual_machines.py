@@ -1,4 +1,4 @@
-"""Module for provider virtual machines configuration """
+"""Python module for provider virtual machines configuration """
 
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.network import NetworkManagementClient

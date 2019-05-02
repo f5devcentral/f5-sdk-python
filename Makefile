@@ -1,3 +1,4 @@
+API_DOCS_SOURCE := ./docs/apidocs/source
 BUILD_DIR := build
 CODE_DOCS_DIR := ./code_docs
 COVERAGE_DIR := ./code_coverage
@@ -23,8 +24,8 @@ coverage: unit_test
 	coverage html
 code_docs:
 	echo "Generating code documentation (via sphinx)"
-	# auto generate sphinx developer guide docs from package
-	sphinx-apidoc --force --separate --module-first -o docs/developerguide/source ${PACKAGE_DIR}
+	# auto generate sphinx API docs from package
+	sphinx-apidoc --force --separate --module-first -o ${API_DOCS_SOURCE} ${PACKAGE_DIR}
 	# make docs (html)
 	cd docs && make html && cd ..
 	cp -R docs/_build ${CODE_DOCS_DIR}
@@ -33,6 +34,7 @@ code_docs_doxygen:
 	doxygen doxygen.conf
 clean:
 	echo "Removing artifacts"
+	rm -rf ${API_DOCS_SOURCE}
 	rm -rf ${BUILD_DIR}
 	rm -rf ${CODE_DOCS_DIR}
 	rm -rf ${COVERAGE_DIR}

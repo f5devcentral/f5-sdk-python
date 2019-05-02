@@ -51,6 +51,8 @@ html_sidebars = {'**': ['searchbox.html', 'localtoc.html', 'globaltoc.html']}
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# explicitly set pygments style - for syntax highlighting
+pygments_style='sphinx'
 
 # -- Extension configuration -------------------------------------------------
 # Autodoc extension settings

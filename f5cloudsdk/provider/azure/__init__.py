@@ -1,4 +1,4 @@
-"""Specific provider module """
+"""Python module for a specific provider """
 
 from azure.common.credentials import ServicePrincipalCredentials
 

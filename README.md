@@ -8,7 +8,7 @@
 
 ## Introduction
 
-...
+This project provides a use case focused python SDK for interacting with F5 products, specifically around cloud and automation.  The UX will closely mirror established, successful SDK's such as Azure, AWS and Google python SDK's.
 
 ## Quick Start
 

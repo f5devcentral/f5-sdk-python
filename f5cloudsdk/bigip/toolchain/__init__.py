@@ -1,4 +1,4 @@
-""" Module for BIG-IP toolchain configuration
+"""Python module for BIG-IP toolchain configuration
 
     Example - Basic::
 
@@ -10,7 +10,7 @@
         # install AS3 package
         as3.package.install()
         # create AS3 service
-        as3.service.create('./my_local_decl')
+        as3.service.create(config_file='./decl.json')
 
     Example - Specify Component Version::
 

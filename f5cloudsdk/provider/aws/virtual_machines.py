@@ -1,4 +1,4 @@
-"""Module for provider virtual machines configuration """
+"""Python module for provider virtual machines configuration """
 
 class OperationClient(object):
     """Operation client class for provider virtual machines

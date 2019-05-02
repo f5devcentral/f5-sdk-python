@@ -1,4 +1,4 @@
-"""Module for provider(s)
+"""Python module for provider environments
 
     Example -- Basic (Azure)::
 

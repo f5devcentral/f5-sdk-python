@@ -1,9 +1,15 @@
 Developer Guide
 ===============
 
-.. toctree::
-   :maxdepth: 4
-   :includehidden:
-   :glob:
+Releasing a new version
+-----------------------
 
-   source/modules
+Versioning
+----------
+
+This section describes how to rev the project version, using semver.
+
+Release
+-------
+
+This section describes how to release the project.

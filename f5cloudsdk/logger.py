@@ -1,4 +1,4 @@
-"""Module for logging
+"""Python module for logging
 
     Example - Basic::
 

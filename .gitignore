@@ -18,7 +18,7 @@ dist/
 # Docs
 code_docs/
 _build/
-docs/developerguide/source/
+docs/apidocs/source/
 
 # Misc
 .DS_Store

@@ -1,4 +1,4 @@
-"""Module for BIG-IP toolchain component service configuration
+"""Python module for BIG-IP toolchain component service configuration
 
     Example - Basic::
 
@@ -8,7 +8,7 @@
         device = ManagementClient('192.0.2.10', user='admin', password='admin')
         as3 = ToolChainClient(device, 'as3')
         # configure AS3 service
-        as3.service.create(config_file=decl.json)
+        as3.service.create(config_file='./decl.json')
 
     Example - Show::
 
