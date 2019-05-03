@@ -10,5 +10,5 @@ def get_mgmt_client(**kwargs):
     pwd = kwargs.pop('pwd', '')
     token = kwargs.pop('token', '')
     if token:
-        return ManagementClient('192.0.2.1', token=token)
-    return ManagementClient('192.0.2.1', user=user, password=pwd)
+        return ManagementClient('192.0.2.1', port=443, token=token)
+    return ManagementClient('192.0.2.1', port=443, user=user, password=pwd)

@@ -14,7 +14,9 @@
 """
 
 import json
+import socket
 from datetime import datetime, timedelta
+from retry import retry
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -29,14 +31,12 @@ class ManagementClient(object):
     ----------
     host : str
         the hostname of the device
-    user : str, optional
-        the username of the device
-    password : str, optional
-        the password of the device
-    private_key : str, optional
-        the private key of the device
-    token : str, optional
+    port : str
+        the port of the device
+    token : str
         the token of the device
+    token_details : dict
+        the token details of the device
     logger : object
         instantiated logger object
 
@@ -62,6 +62,8 @@ class ManagementClient(object):
 
         Keyword Arguments
         -----------------
+        port : int
+            the port to assign to the port attribute
         user : str
             the username to assign to the user attribute
         password : str
@@ -75,19 +77,21 @@ class ManagementClient(object):
         -------
         None
         """
-        self.host = host
-        self.user = kwargs.pop('user', '')
-        self.password = kwargs.pop('password', '')
-        self.private_key = kwargs.pop('private_key', '')
+
+        self.host = host.split(':')[0] # disallow providing port here
+        self.port = kwargs.pop('port', None) or self._discover_port()
+        self._user = kwargs.pop('user', '')
+        self._password = kwargs.pop('password', '')
+        self._private_key = kwargs.pop('private_key', '')
         self.token = kwargs.pop('token', None)
         self.token_details = {}
 
         self.logger = Logger(__name__).get_logger()
 
-        if self.user and self.password:
+        if self._user and self._password:
             # run _login_using_credentials() to get token
             self._login_using_credentials()
-        elif self.private_key:
+        elif self._private_key:
             # create temporary user and run _login_using_credentials() to get token
             self._login_using_key()
         elif self.token:
@@ -96,8 +100,115 @@ class ManagementClient(object):
         else:
             raise Exception('user/password credentials, private key or token required')
 
+    def _discover_port(self):
+        """Discover management port (best effort)
+
+        Try 443 -> 8443, set port to 443 if neither responds.
+
+        Timeout set to 1 second, if connect or connect refused assume it is the right port.
+
+        Parameters
+        ----------
+        None
+
+        Keyword Arguments
+        -----------------
+        None
+
+        Returns
+        -------
+        int
+            the discovered management port
+        """
+        # local helper function
+        def _test_socket(port):
+            _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            _socket.settimeout(1) # 1 second - avoid increasing this
+            try:
+                _socket.connect((self.host, port))
+                return True
+            except ConnectionRefusedError:
+                return True
+            except socket.timeout:
+                return False
+
+        dfl_port = 443
+        dfl_port_2 = 8443
+        if _test_socket(dfl_port):
+            return dfl_port
+        if _test_socket(dfl_port_2):
+            return dfl_port_2
+        return dfl_port
+
+    def _make_request(self, uri, **kwargs):
+        """Makes request to device (HTTP/S)
+
+        Parameters
+        ----------
+        uri : str
+            the URI where the request should be made
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        method : str
+            the HTTP method to use
+        headers : str
+            the HTTP headers to use
+        body : str
+            the HTTP body to use
+        body_content_type : str
+            the HTTP body content type to use
+        override_auth : object
+            requests authentication object to use (instead of token)
+
+        Returns
+        -------
+        dict
+            a dictionary containing the JSON response
+        """
+
+        uri = uri
+        method = kwargs.pop('method', 'GET').lower()
+        headers = {constants.F5_AUTH_TOKEN_HEADER: self.token, 'User-Agent': constants.USER_AGENT}
+        # add any user-supplied headers, allow the user to override default headers
+        headers.update(kwargs.pop('headers', {}))
+        # check for body, normalize
+        body = kwargs.pop('body', None)
+        body_content_type = kwargs.pop('body_content_type', 'json') # json (default), raw
+        if body and body_content_type == 'json':
+            headers.update({'Content-Type': 'application/json'})
+            body = json.dumps(body)
+
+        auth = kwargs.pop('override_auth', None)
+        if auth:
+            headers.pop(constants.F5_AUTH_TOKEN_HEADER)
+
+        # note: certain requests contain very large payloads, do *not* log body
+        self.logger.debug('Making HTTP request: %s %s' % (method.upper(), uri))
+
+        # construct url
+        url = 'https://%s:%s%s' % (self.host, self.port, uri)
+        # make request
+        response = requests.request(
+            method,
+            url,
+            headers=headers,
+            data=body,
+            auth=auth,
+            timeout=60,
+            verify=False
+        )
+        response.raise_for_status()
+
+        return response.json()
+
+    @retry(tries=120, delay=1)
     def _get_token(self):
         """Gets authentication token
+
+        Retries if unsuccessful, up to maximum allotment
 
         Parameters
         ----------
@@ -112,32 +223,33 @@ class ManagementClient(object):
 
         self.logger.debug('Getting authentication token')
 
-        timeout = 3600
         expiration_date = (datetime.now() + timedelta(hours=1)).isoformat()
-        url = 'https://%s/mgmt/shared/authn/login' % (self.host)
+        timeout = 3600 # set timeout to 1 hour
+
+        uri = '/mgmt/shared/authn/login'
         body = {
-            'username': self.user,
-            'password': self.password,
+            'username': self._user,
+            'password': self._password,
             'loginProviderName': 'tmos' # need to support other providers
         }
         # get token
-        response = requests.post(
-            url,
-            json=body,
-            auth=HTTPBasicAuth(self.user, self.password),
-            verify=False
-        ).json()
-        token = response['token']['token']
-        # now extend token lifetime - 1 hour
-        token_self_link = response['token']['selfLink'].replace('localhost', self.host)
-        token_response = requests.patch(
-            token_self_link,
-            json={'timeout': timeout},
-            headers={'X-F5-Auth-Token': token},
-            verify=False
+        response = self._make_request(
+            uri,
+            method='POST',
+            body=body,
+            override_auth=HTTPBasicAuth(self._user, self._password)
         )
-        token_response.raise_for_status()
-        self.logger.debug('Token response: %s' % token_response.json())
+        token = response['token']['token']
+
+        # now extend token lifetime
+        token_uri = '/mgmt/shared/authz/tokens/%s' % (token)
+        self._make_request(
+            token_uri,
+            method='PATCH',
+            body={'timeout': timeout},
+            override_auth=HTTPBasicAuth(self._user, self._password)
+        )
+
         return {'token': token, 'expirationDate': expiration_date, 'expirationIn': timeout}
 
     def _login_using_credentials(self):
@@ -218,36 +330,7 @@ class ManagementClient(object):
             a dictionary containing the JSON response
         """
 
-        host = self.host
-        uri = uri
-        method = kwargs.pop('method', 'GET').lower()
-        headers = {'X-F5-Auth-Token': self.token, 'User-Agent': constants.USER_AGENT}
-        # add any user-supplied headers, allow the user to override default headers
-        headers.update(kwargs.pop('headers', {}))
-        # check for body, normalize
-        body = kwargs.pop('body', None)
-        body_content_type = kwargs.pop('body_content_type', 'json') # json (default), raw
-        if body and body_content_type == 'json':
-            headers.update({'Content-Type': 'application/json'})
-            body = json.dumps(body)
-
-        # note: certain requests contain very large payloads, do *not* log body
-        self.logger.debug('Making HTTP request: %s %s' % (method.upper(), uri))
-
-        # construct url
-        url = 'https://%s%s' % (host, uri)
-        # make request
-        response = requests.request(
-            method,
-            url,
-            headers=headers,
-            data=body,
-            verify=False
-        )
-        # check response code
-        response.raise_for_status()
-
-        return response.json()
+        return self._make_request(uri, **kwargs)
 
     @check_auth
     def make_request_ssh(self):
