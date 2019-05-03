@@ -12,3 +12,9 @@
 =========================================
 
 .. automodule:: f5cloudsdk.bigip.toolchain.package
+
+:mod:`f5cloudsdk.bigip.toolchain.service`
+=========================================
+
+.. automodule:: f5cloudsdk.bigip.toolchain.service
+

@@ -24,7 +24,7 @@
         "do": {
             "endpoints": {
                 "configure": {
-                    "uri": "/mgmt/shared/declarative-onboarding/declare",
+                    "uri": "/mgmt/shared/declarative-onboarding",
                     "methods": ["GET", "POST"]
                 }
             },

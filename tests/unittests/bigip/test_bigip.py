@@ -19,9 +19,8 @@ TOKEN = 'mytoken'
 class TestBigIp(unittest.TestCase):
     """ Test case """
 
-    @patch('requests.patch')
-    @patch('requests.post')
-    def test_bigip_mgmt_client_basic(self, mock_post, mock_patch):
+    @patch('requests.request')
+    def test_bigip_mgmt_client_basic(self, mock_request):
         """ Test BIG-IP mgmt client (basic) """
         response = {
             'token': {
@@ -29,13 +28,10 @@ class TestBigIp(unittest.TestCase):
                 'selfLink': 'https://localhost/mgmt/shared/authz/tokens/mytoken'
             }
         }
-        mock_post.side_effect = utils.create_mock_response(response)
+        mock_request.side_effect = utils.create_mock_response(response)
 
         device = BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
-        assert mock_post.called
-        assert mock_patch.called
-        assert device.user == USER
-        assert device.password == USER_PWD
+        assert mock_request.called
         assert device.token == TOKEN
 
     @patch('requests.request')
