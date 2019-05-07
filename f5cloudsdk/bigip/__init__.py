@@ -162,6 +162,8 @@ class ManagementClient(object):
             the HTTP body content type to use
         override_auth : object
             requests authentication object to use (instead of token)
+        bool_response : bool
+            return boolean based on HTTP success/failure
 
         Returns
         -------
@@ -185,6 +187,8 @@ class ManagementClient(object):
         if auth:
             headers.pop(constants.F5_AUTH_TOKEN_HEADER)
 
+        bool_response = kwargs.pop('bool_response', False)
+
         # note: certain requests contain very large payloads, do *not* log body
         self.logger.debug('Making HTTP request: %s %s' % (method.upper(), uri))
 
@@ -200,8 +204,13 @@ class ManagementClient(object):
             timeout=60,
             verify=False
         )
-        response.raise_for_status()
 
+        # boolean response, if requested
+        if bool_response:
+            return response.ok
+
+        # raise exception on non-success status code
+        response.raise_for_status()
         return response.json()
 
     @retry(tries=120, delay=1)
@@ -323,6 +332,8 @@ class ManagementClient(object):
             the HTTP body to use
         body_content_type : str
             the HTTP body content type to use
+        bool_response : bool
+            return boolean based on HTTP success/failure
 
         Returns
         -------

@@ -17,10 +17,15 @@
     Example - Delete::
 
         as3.service.delete()
+
+    Example - Is Available::
+
+        as3.service.is_available()
 """
 
 import os
 import json
+import time
 
 class OperationClient(object):
     """A class used as a toolchain service operation client for BIG-IP
@@ -39,6 +44,8 @@ class OperationClient(object):
     show()
         Refer to method documentation
     delete()
+        Refer to method documentation
+    is_available()
         Refer to method documentation
     """
 
@@ -103,6 +110,36 @@ class OperationClient(object):
         """
 
         return self._metadata_client.get_endpoints()['configure']
+
+    def is_available(self):
+        """Checks toolchain component service is available
+
+        Notes
+        -----
+        Retries up to 120 seconds
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            a boolean based on service availability
+        """
+
+        uri = self._get_configure_endpoint()['uri']
+
+        ret = False
+        i = 0
+        while i < 120:
+            if self._client.make_request(uri, bool_response=True):
+                ret = True
+                break
+            i += 1
+            time.sleep(1)
+
+        return ret
 
     def create(self, **kwargs):
         """Creates toolchain component service
