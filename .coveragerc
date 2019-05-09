@@ -24,5 +24,10 @@ exclude_lines =
 
 ignore_errors = True
 
+# precision percentage
+precision = 2
+# fail coverage under this percentage
+fail_under = 75
+
 [html]
 directory = code_coverage

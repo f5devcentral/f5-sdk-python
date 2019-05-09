@@ -27,6 +27,8 @@ import os
 import json
 import time
 
+from f5cloudsdk.exceptions import InputRequiredError
+
 class OperationClient(object):
     """A class used as a toolchain service operation client for BIG-IP
 
@@ -165,8 +167,8 @@ class OperationClient(object):
         config = kwargs.pop('config', '')
         config_file = kwargs.pop('config_file', '')
 
-        if config and config_file:
-            raise Exception('Only one of config|config_file must be provided')
+        if not config and not config_file:
+            raise InputRequiredError('One of config|config_file must be provided')
 
         if config_file:
             config = self._load_config_file(config_file)

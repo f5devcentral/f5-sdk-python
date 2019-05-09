@@ -2,6 +2,8 @@
 
 from functools import wraps
 
+from f5cloudsdk.exceptions import AuthRequiredError
+
 def check_auth(function):
     """Checks authentication
 
@@ -20,6 +22,6 @@ def check_auth(function):
     @wraps(function)
     def _wrapper(self, *args, **kwargs):
         if self.token is None:
-            raise Exception('Device authentication required')
+            raise AuthRequiredError('Device authentication required')
         return function(self, *args, **kwargs)
     return _wrapper

@@ -24,6 +24,9 @@ import f5cloudsdk.constants as constants
 from f5cloudsdk.logger import Logger
 from .decorators import check_auth
 
+DFL_PORT = 443
+DFL_PORT_1NIC = 8443
+
 class ManagementClient(object):
     """A class used as a management client for BIG-IP
 
@@ -127,18 +130,18 @@ class ManagementClient(object):
             try:
                 _socket.connect((self.host, port))
                 return True
-            except ConnectionRefusedError:
-                return True
             except socket.timeout:
                 return False
+            except OSError:
+                # this exception is used primarily to catch connection refused error
+                # ConnectionRefusedError in python 3.x however to support 2.x use generic OSError
+                return True
 
-        dfl_port = 443
-        dfl_port_2 = 8443
-        if _test_socket(dfl_port):
-            return dfl_port
-        if _test_socket(dfl_port_2):
-            return dfl_port_2
-        return dfl_port
+        if _test_socket(DFL_PORT):
+            return DFL_PORT
+        if _test_socket(DFL_PORT_1NIC):
+            return DFL_PORT_1NIC
+        return DFL_PORT
 
     def _make_request(self, uri, **kwargs):
         """Makes request to device (HTTP/S)
@@ -342,16 +345,3 @@ class ManagementClient(object):
         """
 
         return self._make_request(uri, **kwargs)
-
-    @check_auth
-    def make_request_ssh(self):
-        """Makes request to device (SSH)
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """

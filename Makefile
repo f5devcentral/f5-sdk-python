@@ -7,7 +7,7 @@ DIST_DIR := dist
 EGG_DIR := f5_cloud_sdk.egg-info
 PACKAGE_DIR := f5cloudsdk
 TEST_DIR := tests
-UNIT_TEST_DIR := ${TEST_DIR}/unittests
+UNIT_TEST_DIR := ${TEST_DIR}/unit
 TEST_CACHE_DIR := .pytest_cache
 
 build:

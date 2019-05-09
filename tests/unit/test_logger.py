@@ -2,15 +2,13 @@
 import unittest
 try:
     from unittest.mock import Mock, MagicMock, patch
-except ImportError:
-    # python 2.x support
+except ImportError: # python 2.x support
     from mock import Mock, MagicMock, patch
 
+## project imports ##
 from f5cloudsdk.logger import Logger
 
 LOGGER_NAME = 'testlogger'
-
-# pylint: disable=protected-access
 
 class TestBigIp(unittest.TestCase):
     """ Test case """
