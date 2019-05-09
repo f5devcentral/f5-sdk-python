@@ -20,6 +20,8 @@
 import os
 import json
 
+from f5cloudsdk.exceptions import InvalidComponentError, InvalidComponentVersionError
+
 from .package import OperationClient as PackageClient
 from .service import OperationClient as ServiceClient
 
@@ -125,7 +127,7 @@ class MetadataClient(object):
 
         components = list(self.toolchain_metadata['components'].keys())
         if not [i for i in components if i == component]:
-            raise Exception('Valid component must be provided: %s' % (components))
+            raise InvalidComponentError('Valid component must be provided: %s' % (components))
         return component
 
     def _validate_component_version(self, component, version):
@@ -151,7 +153,9 @@ class MetadataClient(object):
 
         versions = list(self.toolchain_metadata['components'][component]['versions'].keys())
         if not [i for i in versions if i == version]:
-            raise Exception('Valid component version must be provided: %s' % (versions))
+            raise InvalidComponentVersionError(
+                'Valid component version must be provided: %s' % (versions)
+            )
         return version
 
     def _get_component_metadata(self):

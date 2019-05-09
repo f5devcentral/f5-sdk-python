@@ -21,7 +21,11 @@ def download_to_file(url, file_name):
     None
     """
 
-    response = requests.get(url, stream=True)
+    response = requests.request(
+        'GET',
+        url,
+        stream=True
+    )
     with open(file_name, 'wb+') as file_object:
         for chunk in response.iter_content(chunk_size=1024):
             # filter out keep-alive new lines
