@@ -8,7 +8,8 @@ DEPENDENCIES = [
     'boto3',
     'google-cloud',
     'requests',
-    'retry'
+    'retry',
+    'paramiko'
 ]
 
 setup(

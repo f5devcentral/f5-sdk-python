@@ -14,7 +14,7 @@ from f5cloudsdk import provider
 class TestProvider(unittest.TestCase):
     """Test Class: provider module """
 
-    @patch('f5cloudsdk.provider.azure.ProviderClient._get_credentials', return_value='credentials')
+    @patch('f5cloudsdk.provider.azure.ServicePrincipalCredentials', return_value='credentials')
     def test_azure_provider_client(self, mock_get_creds):
         """Test: azure provider client init
 
@@ -34,7 +34,7 @@ class TestProvider(unittest.TestCase):
         assert mock_get_creds.called
         assert provider_client.credentials == 'credentials'
 
-    @patch('f5cloudsdk.provider.aws.ProviderClient._get_session', return_value='session')
+    @patch('f5cloudsdk.provider.aws.Session', return_value='session')
     def test_aws_provider_client(self, mock_get_session):
         """Test: aws provider client init
 
