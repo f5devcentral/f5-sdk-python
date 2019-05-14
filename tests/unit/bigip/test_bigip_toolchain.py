@@ -18,10 +18,11 @@ from f5cloudsdk import exceptions
 from f5cloudsdk.bigip.toolchain import ToolChainClient
 
 ## local test imports ##
-from ...shared import utils
+from ...shared import constants
+from ...shared import mock_utils
 from . import utils as BigIpUtils
 
-TOKEN = 'mytoken'
+TOKEN = constants.TOKEN
 
 class TestToolChain(unittest.TestCase):
     """Test Class: bigip.toolchain module """
@@ -105,7 +106,7 @@ class TestToolChainPackage(unittest.TestCase):
                 'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
             }
         ]
-        mock_request.side_effect = utils.create_mock_response({}, conditional=mock_conditions)
+        mock_request.side_effect = mock_utils.create_mock_response({}, conditional=mock_conditions)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
@@ -143,7 +144,7 @@ class TestToolChainPackage(unittest.TestCase):
                 'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
             }
         ]
-        mock_request.side_effect = utils.create_mock_response({}, conditional=mock_conditions)
+        mock_request.side_effect = mock_utils.create_mock_response({}, conditional=mock_conditions)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
@@ -175,7 +176,7 @@ class TestToolChainPackage(unittest.TestCase):
                 }
             ]
         }
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
@@ -202,7 +203,7 @@ class TestToolChainPackage(unittest.TestCase):
                 }
             ]
         }
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
@@ -228,7 +229,7 @@ class TestToolChainService(unittest.TestCase):
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
@@ -248,7 +249,7 @@ class TestToolChainService(unittest.TestCase):
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
@@ -268,7 +269,7 @@ class TestToolChainService(unittest.TestCase):
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
@@ -291,7 +292,7 @@ class TestToolChainService(unittest.TestCase):
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
@@ -309,7 +310,7 @@ class TestToolChainService(unittest.TestCase):
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
@@ -328,7 +329,7 @@ class TestToolChainService(unittest.TestCase):
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'do')
@@ -346,7 +347,7 @@ class TestToolChainService(unittest.TestCase):
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = utils.create_mock_response(mock_resp)
+        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')

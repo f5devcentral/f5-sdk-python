@@ -9,3 +9,18 @@ TMP_DIR = tempfile.gettempdir()
 DFL_LOG_LEVEL = logging.ERROR
 LOG_LEVEL_ENV_VAR = 'F5_SDK_LOG_LEVEL'
 F5_AUTH_TOKEN_HEADER = 'X-F5-Auth-Token'
+
+HTTP_TIMEOUT = {
+    'DFL': 60
+}
+HTTP_VERIFY = False
+
+RETRIES = {
+    'DFL': 120,
+    'DFL_DELAY': 1
+}
+
+BIGIP_CMDS = {
+    'AUTH_LIST': '%s list auth user %s',
+    'AUTH_MODIFY': '%s modify auth user %s password %s'
+}

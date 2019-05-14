@@ -3,6 +3,11 @@
 ## project imports ##
 from f5cloudsdk.bigip import ManagementClient
 
+## local test imports ##
+from ...shared import constants
+
+HOST = constants.HOST
+
 def get_mgmt_client(**kwargs):
     """Create mgmt client instance
 
@@ -14,13 +19,15 @@ def get_mgmt_client(**kwargs):
     Keyword Arguments
     -----------------
     user : str
-        the user to pass to client
+        the user to pass to the client
     pwd : str
-        the pwd to pass to client
+        the pwd to pass to the client
     token : str
-        the token to pass to client
+        the token to pass to the client
+    private_key_file : str
+        the private_key_file to pass to the client
     port : int
-        the port to pass to client
+        the port to pass to the client
 
     Returns
     -------
@@ -30,9 +37,16 @@ def get_mgmt_client(**kwargs):
 
     user = kwargs.pop('user', '')
     pwd = kwargs.pop('pwd', '')
+    private_key_file = kwargs.pop('private_key_file', '')
     token = kwargs.pop('token', '')
     port = kwargs.pop('port', 443)
 
     if token:
-        return ManagementClient('192.0.2.1', port=port, token=token)
-    return ManagementClient('192.0.2.1', port=port, user=user, password=pwd)
+        return ManagementClient(HOST, port=port, token=token)
+    if private_key_file:
+        return ManagementClient(HOST,
+                                port=port,
+                                user=user,
+                                private_key_file=private_key_file,
+                                set_user_password=pwd)
+    return ManagementClient(HOST, port=port, user=user, password=pwd)

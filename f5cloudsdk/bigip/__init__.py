@@ -11,21 +11,39 @@
     Example - Token Authentication::
 
         device = ManagementClient('192.0.2.10', token='my_token')
+
+    Example - Key-Based Authentication::
+
+        device = ManagementClient('192.0.2.10',
+                                user='admin',
+                                private_key_file='~/my_key',
+                                set_user_password='admin')
+
 """
 
+import os
 import json
 import socket
+import warnings
 from datetime import datetime, timedelta
 from retry import retry
+import paramiko
 import requests
 from requests.auth import HTTPBasicAuth
 
 import f5cloudsdk.constants as constants
 from f5cloudsdk.logger import Logger
+from f5cloudsdk.exceptions import SSHCommandStdError
 from .decorators import check_auth
 
 DFL_PORT = 443
 DFL_PORT_1NIC = 8443
+
+SSH_EXCEPTIONS = (
+    paramiko.ssh_exception.SSHException,
+    paramiko.ssh_exception.AuthenticationException,
+    paramiko.ssh_exception.BadHostKeyException
+)
 
 class ManagementClient(object):
     """A class used as a management client for BIG-IP
@@ -49,7 +67,7 @@ class ManagementClient(object):
         Refer to method documentation
     make_request()
         Refer to method documentation
-    make_request_ssh()
+    make_ssh_request()
         Refer to method documentation
     """
 
@@ -68,11 +86,13 @@ class ManagementClient(object):
         port : int
             the port to assign to the port attribute
         user : str
-            the username to assign to the user attribute
+            the username for device authentication
         password : str
-            the password to assign to the password attribute
-        private_key : str
-            the private_key to assign to the private_key attribute
+            the password for device authentication
+        private_key_file : str
+            the file containing the private key for device authentication
+        set_user_password : str
+            sets the user password to this value - used along with private_key_file
         token : str
             the token to assign to the token attribute
 
@@ -83,25 +103,29 @@ class ManagementClient(object):
 
         self.host = host.split(':')[0] # disallow providing port here
         self.port = kwargs.pop('port', None) or self._discover_port()
-        self._user = kwargs.pop('user', '')
-        self._password = kwargs.pop('password', '')
-        self._private_key = kwargs.pop('private_key', '')
+        self._user = kwargs.pop('user', None)
+        self._password = kwargs.pop('password', None)
+        self._private_key_file = kwargs.pop('private_key_file', None)
+        self._set_user_password = kwargs.pop('set_user_password', None)
         self.token = kwargs.pop('token', None)
+
         self.token_details = {}
 
         self.logger = Logger(__name__).get_logger()
 
         if self._user and self._password:
-            # run _login_using_credentials() to get token
+            # run _login_using_credentials()
             self._login_using_credentials()
-        elif self._private_key:
-            # create temporary user and run _login_using_credentials() to get token
-            self._login_using_key()
+        elif self._user and self._private_key_file:
+            # set password
+            self._set_password_using_key()
+            # ok, now run login_using_credentials()
+            self._login_using_credentials()
         elif self.token:
             # token provided directly
             pass
         else:
-            raise Exception('user/password credentials, private key or token required')
+            raise Exception('user|password, user|private_key_file or token required')
 
     def _discover_port(self):
         """Discover management port (best effort)
@@ -144,35 +168,7 @@ class ManagementClient(object):
         return DFL_PORT
 
     def _make_request(self, uri, **kwargs):
-        """Makes request to device (HTTP/S)
-
-        Parameters
-        ----------
-        uri : str
-            the URI where the request should be made
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
-        method : str
-            the HTTP method to use
-        headers : str
-            the HTTP headers to use
-        body : str
-            the HTTP body to use
-        body_content_type : str
-            the HTTP body content type to use
-        override_auth : object
-            requests authentication object to use (instead of token)
-        bool_response : bool
-            return boolean based on HTTP success/failure
-
-        Returns
-        -------
-        dict
-            a dictionary containing the JSON response
-        """
+        """See public method for documentation: make_request """
 
         uri = uri
         method = kwargs.pop('method', 'GET').lower()
@@ -204,8 +200,8 @@ class ManagementClient(object):
             headers=headers,
             data=body,
             auth=auth,
-            timeout=60,
-            verify=False
+            timeout=constants.HTTP_TIMEOUT['DFL'],
+            verify=constants.HTTP_VERIFY
         )
 
         # boolean response, if requested
@@ -216,7 +212,90 @@ class ManagementClient(object):
         response.raise_for_status()
         return response.json()
 
-    @retry(tries=120, delay=1)
+    def _make_ssh_request(self, command):
+        """See public method for documentation: make_ssh_request """
+
+        # note: command *might* contain sensitive information
+        # logger should scrub those: i.e. secret foo -> secret ***
+        self.logger.debug('Making SSH request: %s' % (command))
+
+        # create client kwargs
+        client_kwargs = {
+            'username': self._user
+        }
+        if self._password:
+            client_kwargs['password'] = self._password
+        elif self._private_key_file:
+            private_key_file = os.path.expanduser(self._private_key_file)
+            client_kwargs['pkey'] = paramiko.RSAKey.from_private_key_file(private_key_file)
+        else:
+            raise Exception('password or private key file required')
+
+        # workaround for deprecation warning described here, until fixed
+        # https://github.com/paramiko/paramiko/issues/1369
+        # workaround: temporarily catch warnings on client.connect
+        with warnings.catch_warnings(record=True) as _w:
+            # create client
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy)
+            try:
+                client.connect(self.host, **client_kwargs)
+            except SSH_EXCEPTIONS as _e:
+                self.logger.error(_e)
+                raise _e
+
+        # collect result
+        result = client.exec_command(command)
+
+        # command output (tuple): stdin, stdout, stder
+        stdout = result[1].read().decode('utf-8')
+        stderr = result[2].read().decode('utf-8')
+        client.close()
+
+        if stderr:
+            raise SSHCommandStdError('Error: %s' % stderr)
+
+        return stdout.rstrip('\n\r')
+
+    @retry(tries=constants.RETRIES['DFL'], delay=constants.RETRIES['DFL_DELAY'])
+    def _set_password_using_key(self):
+        """Sets password on device using user + private key
+
+        Updates user's password using set_user_password
+
+        Retries if unsuccessful, up to maximum allotment
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        # get password to set
+        password = self._set_user_password
+        if not password:
+            raise Exception('set_user_password required')
+
+        # get user shell - tmsh or bash
+        tmsh = ''
+        # note: if the shell is in fact bash the first command will fail, so catch
+        # the exception and try with 'tmsh' explicitly added to the command
+        auth_list_cmd = constants.BIGIP_CMDS['AUTH_LIST']
+        try:
+            user_info = self._make_ssh_request(auth_list_cmd % (tmsh, self._user))
+        except SSHCommandStdError:
+            user_info = self._make_ssh_request(auth_list_cmd % ('tmsh', self._user))
+        if 'shell bash' in user_info:
+            tmsh = 'tmsh' # add tmsh to command
+
+        # set password
+        self._make_ssh_request(constants.BIGIP_CMDS['AUTH_MODIFY'] % (tmsh, self._user, password))
+        self._password = password
+
+    @retry(tries=constants.RETRIES['DFL'], delay=constants.RETRIES['DFL_DELAY'])
     def _get_token(self):
         """Gets authentication token
 
@@ -265,7 +344,7 @@ class ManagementClient(object):
         return {'token': token, 'expirationDate': expiration_date, 'expirationIn': timeout}
 
     def _login_using_credentials(self):
-        """Logs in to device using user/password
+        """Logs in to device using user + password
 
         Parameters
         ----------
@@ -276,24 +355,10 @@ class ManagementClient(object):
         None
         """
 
-        self.logger.info('Logging in using user/password')
+        self.logger.info('Logging in using user + password')
         token = self._get_token()
         self.token = token['token']
         self.token_details = token
-
-    def _login_using_key(self):
-        """Logs in to device using private key
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        self.logger.info('Logging in using private key')
 
     def get_info(self):
         """Gets device info
@@ -345,3 +410,20 @@ class ManagementClient(object):
         """
 
         return self._make_request(uri, **kwargs)
+
+    @check_auth
+    def make_ssh_request(self, command):
+        """Makes request to device (SSH)
+
+        Parameters
+        ----------
+        command : str
+            the command to execute on the device
+
+        Returns
+        -------
+        str
+            the command response
+        """
+
+        return self._make_ssh_request(command)
