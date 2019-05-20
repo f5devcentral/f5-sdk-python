@@ -1,21 +1,18 @@
 """ Test logger module """
-import unittest
-try:
-    from unittest.mock import Mock, MagicMock, patch
-except ImportError: # python 2.x support
-    from mock import Mock, MagicMock, patch
 
 ## project imports ##
 from f5cloudsdk.logger import Logger
+## unittest imports ##
+from ..global_test_imports import Mock
 
 LOGGER_NAME = 'testlogger'
 
-class TestBigIp(unittest.TestCase):
+class TestBigIp(object):
     """ Test case """
 
     def test_logger_can_log(self):
         """ Test logger can log """
         logger = Logger(LOGGER_NAME).get_logger()
-        logger._log = MagicMock(return_value='foo')
+        logger._log = Mock(return_value='foo')
         logger.error('foo')
         logger._log.assert_called_with(40, 'foo', ())

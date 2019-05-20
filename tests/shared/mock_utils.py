@@ -1,15 +1,15 @@
 """Mock utility module for test framework """
 
-try:
-    from unittest.mock import Mock, MagicMock, patch
-except ImportError: # python 2.x support
-    from mock import Mock, MagicMock, patch
+## unittest imports ##
+from ..global_test_imports import Mock
 
 class MockRequestsResponse:
     """ Mock requests response instance """
     def __init__(self, body):
         """ Init """
         self.body = body
+        self.status_code = None
+        self.reason = None
 
     def raise_for_status(self):
         """ Mock function """
@@ -27,7 +27,18 @@ class MockRequestsResponse:
         """ Mock function """
         return [self.body]
 
-def create_mock_response(response_body, **kwargs):
+class ExecCommand(object):
+    """ Mock exec_command response instance """
+
+    def __init__(self, response):
+        """ Init """
+        self.response = response
+
+    def read(self):
+        """ Mock function """
+        return self.response.encode('ascii')
+
+def create_response(response_body, **kwargs):
     """Create mock requests.request response instance
 
     Parameters
@@ -75,7 +86,7 @@ def create_mock_response(response_body, **kwargs):
         return MockRequestsResponse(response_body)
     return _func
 
-def create_mock_socket(mock, **kwargs):
+def create_socket(mock, **kwargs):
     """Create mock socket.socket instance
 
     Parameters
@@ -102,7 +113,7 @@ def create_mock_socket(mock, **kwargs):
 
     return instance
 
-def create_mock_ssh_client(mock, command_response, **kwargs):
+def create_ssh_client(mock, command_response, **kwargs):
     """Create mock paramiko SSHClient instance
 
     Parameters
@@ -126,17 +137,6 @@ def create_mock_ssh_client(mock, command_response, **kwargs):
     obj
         mocked ssh client instance
     """
-
-    class ExecCommand(object):
-        """ Mock exec_command object """
-
-        def __init__(self, response):
-            """ Init """
-            self.response = response
-
-        def read(self):
-            """ Mock function """
-            return self.response.encode('ascii')
 
     connect_raise = kwargs.pop('connect_raise', None)
     stderr = kwargs.pop('stderr', '') # default should be empty string

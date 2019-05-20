@@ -1,21 +1,15 @@
 """ Test BIG-IP module """
 
-## unittest imports ##
-import unittest
-try:
-    from unittest.mock import Mock, MagicMock, patch
-except ImportError: # python 2.x support
-    from mock import Mock, MagicMock, patch
-
 ## standard imports ##
 from os import path
 import json
 import tempfile
 import shutil
-
 ## project imports ##
 from f5cloudsdk import exceptions
 from f5cloudsdk.bigip.toolchain import ToolChainClient
+## unittest imports ##
+from ...global_test_imports import pytest
 
 ## local test imports ##
 from ...shared import constants
@@ -24,7 +18,10 @@ from . import utils as BigIpUtils
 
 TOKEN = constants.TOKEN
 
-class TestToolChain(unittest.TestCase):
+## packages to mock ##
+REQ = constants.MOCK['requests']
+
+class TestToolChain(object):
     """Test Class: bigip.toolchain module """
 
     def test_init(self):
@@ -52,7 +49,7 @@ class TestToolChain(unittest.TestCase):
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
 
-        self.assertRaises(exceptions.InvalidComponentError, ToolChainClient, device, 'foo')
+        pytest.raises(exceptions.InvalidComponentError, ToolChainClient, device, 'foo')
 
     def test_component_version_invalid(self):
         """Test: Invalid component version
@@ -64,7 +61,7 @@ class TestToolChain(unittest.TestCase):
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
 
-        self.assertRaises(
+        pytest.raises(
             exceptions.InvalidComponentVersionError,
             ToolChainClient,
             device,
@@ -72,16 +69,14 @@ class TestToolChain(unittest.TestCase):
             version='0.0.0'
         )
 
-class TestToolChainPackage(unittest.TestCase):
+class TestToolChainPackage(object):
     """Test Class: bigip.toolchain.package module """
 
-    @patch('requests.request')
-    def test_install(self, mock_request):
+    def test_install(self, mocker):
         """Test: install
 
         Assertions
         ----------
-        - Mocked request should be called
         - install() response should equal:
             {
                 'component': 'as3',
@@ -106,25 +101,23 @@ class TestToolChainPackage(unittest.TestCase):
                 'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
             }
         ]
-        mock_request.side_effect = mock_utils.create_mock_response({}, conditional=mock_conditions)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(
+            {}, conditional=mock_conditions)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
 
         response = toolchain.package.install()
-        assert mock_request.called
         assert response == {
             'component': 'as3',
             'version': '3.9.0'
         }
 
-    @patch('requests.request')
-    def test_uninstall(self, mock_request):
+    def test_uninstall(self, mocker):
         """Test: uninstall
 
         Assertions
         ----------
-        - Mocked request should be called
         - uninstall() response should equal:
             {
                 'component': 'as3',
@@ -144,26 +137,23 @@ class TestToolChainPackage(unittest.TestCase):
                 'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
             }
         ]
-        mock_request.side_effect = mock_utils.create_mock_response({}, conditional=mock_conditions)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(
+            {}, conditional=mock_conditions)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
 
         response = toolchain.package.uninstall()
-        assert mock_request.called
         assert response == {
             'component': 'as3',
             'version': '3.9.0'
         }
 
-
-    @patch('requests.request')
-    def test_is_installed(self, mock_request):
+    def test_is_installed(self, mocker):
         """Test: is_installed
 
         Assertions
         ----------
-        - Mocked request should be called
         - is_installed() response should be boolean (True)
         """
 
@@ -176,17 +166,16 @@ class TestToolChainPackage(unittest.TestCase):
                 }
             ]
         }
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(
+            mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
 
         response = toolchain.package.is_installed()
-        assert mock_request.called
         assert response
 
-    @patch('requests.request')
-    def test_failed_task_status(self, mock_request):
+    def test_failed_task_status(self, mocker):
         """Test: is_installed with failed RPM task status
 
         Assertions
@@ -196,80 +185,72 @@ class TestToolChainPackage(unittest.TestCase):
 
         mock_resp = {
             'id': 'xxxx',
-            'status': 'FAILED',
-            'queryResponse': [
-                {
-                    'packageName': 'f5-appsvcs-3.9.0-3.noarch'
-                }
-            ]
+            'status': 'FAILED'
         }
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(
+            mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
 
-        self.assertRaises(Exception, toolchain.package.is_installed)
+        pytest.raises(Exception, toolchain.package.is_installed)
 
-class TestToolChainService(unittest.TestCase):
+class TestToolChainService(object):
     """Test Class: bigip.toolchain.service module """
-    def setUp(self):
-        self.test_tmp_dir = tempfile.mkdtemp()
 
-    def tearDown(self):
-        shutil.rmtree(self.test_tmp_dir)
+    @classmethod
+    def setup_class(cls):
+        """" Setup func """
+        cls.test_tmp_dir = tempfile.mkdtemp()
+    @classmethod
+    def teardown_class(cls):
+        """" Teardown func """
+        shutil.rmtree(cls.test_tmp_dir)
 
-    @patch('requests.request')
-    def test_show(self, mock_request):
+    def test_show(self, mocker):
         """Test: show
 
         Assertions
         ----------
-        - Mocked request should be called
         - show() response should equal requests response
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
 
         response = toolchain.service.show()
-        assert mock_request.called
         assert mock_resp == response
 
-    @patch('requests.request')
-    def test_create(self, mock_request):
+    def test_create(self, mocker):
         """Test: create
 
         Assertions
         ----------
-        - Mocked request should be called
         - create() response should equal requests response
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
 
         response = toolchain.service.create(config={'config': 'foo'})
-        assert mock_request.called
         assert mock_resp == response
 
-    @patch('requests.request')
-    def test_create_config_file(self, mock_request):
+    def test_create_config_file(self, mocker):
         """Test: create with config file
 
         Assertions
         ----------
-        - Mocked request should be called
         - create() response should equal requests response
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
@@ -279,11 +260,9 @@ class TestToolChainService(unittest.TestCase):
             _f.write(json.dumps({'config': 'foo'}))
 
         response = toolchain.service.create(config_file=config_file)
-        assert mock_request.called
         assert mock_resp == response
 
-    @patch('requests.request')
-    def test_create_no_config(self, mock_request):
+    def test_create_no_config(self, mocker):
         """Test: create with no config provided
 
         Assertions
@@ -292,66 +271,61 @@ class TestToolChainService(unittest.TestCase):
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
 
-        self.assertRaises(exceptions.InputRequiredError, toolchain.service.create)
+        pytest.raises(exceptions.InputRequiredError, toolchain.service.create)
 
-    @patch('requests.request')
-    def test_delete(self, mock_request):
+    def test_delete(self, mocker):
         """Test: delete
 
         Assertions
         ----------
-        - Mocked request should be called
         - delete() response should equal requests response
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
 
         response = toolchain.service.delete()
-        assert mock_request.called
         assert mock_resp == response
 
-    @patch('requests.request')
-    def test_delete_methods_exception(self, mock_request):
-        """Test: delete
+    def test_delete_method_exception(self, mocker):
+        """Test: delete - against invalid toolchain component
+
+        For example, DO does not support the 'DELETE' method
 
         Assertions
         ----------
-        - Exception exception should be raised
+        - Exception should be raised
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'do')
 
-        self.assertRaises(Exception, toolchain.service.delete)
+        pytest.raises(Exception, toolchain.service.delete)
 
-    @patch('requests.request')
-    def test_is_available(self, mock_request):
+    def test_is_available(self, mocker):
         """Test: is_available
 
         Assertions
         ----------
-        - Mocked request should be called
         - is_available() response should be boolean (True)
         """
 
         mock_resp = {'message': 'success'}
-        mock_request.side_effect = mock_utils.create_mock_response(mock_resp)
+        mocker.patch(REQ).side_effect = mock_utils.create_response(mock_resp)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         toolchain = ToolChainClient(device, 'as3')
 
         response = toolchain.service.is_available()
-        assert mock_request.called
         assert response

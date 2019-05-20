@@ -27,7 +27,7 @@ ignore_errors = True
 # precision percentage
 precision = 2
 # fail coverage under this percentage
-fail_under = 75
+fail_under = 90
 
 [html]
 directory = code_coverage

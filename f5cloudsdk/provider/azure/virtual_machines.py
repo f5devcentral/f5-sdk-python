@@ -3,7 +3,12 @@
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.network import NetworkManagementClient
 
-class OperationClient(object):
+from ..abstract.virtual_machines import AbstractOperationClient
+
+PRIVATE_IP_KEY = 'private_ip_address'
+PUBLIC_IP_KEY = 'public_ip_address'
+
+class OperationClient(AbstractOperationClient):
     """Operation client class for provider virtual machines
 
     Attributes
@@ -92,8 +97,6 @@ class OperationClient(object):
             a dict containing information about the primary network interface
         """
 
-        key = 'public_ip_address'
-
         primary_interface = [i for i in interfaces if 'primary' in i and i['primary']]
 
         # account for scenario where there is no 'primary' key - such as azurecli basher vm
@@ -102,9 +105,9 @@ class OperationClient(object):
 
         # resolve public IP, if it exists
         for ip_config in primary_interface['ip_configurations']:
-            public_ip_id = ip_config[key]['id'] if key in ip_config else None
+            public_ip_id = ip_config[PUBLIC_IP_KEY]['id'] if PUBLIC_IP_KEY in ip_config else None
             if public_ip_id:
-                ip_config[key] = self._get_public_ip_details(public_ip_id)
+                ip_config[PUBLIC_IP_KEY] = self._get_public_ip_details(public_ip_id)
 
         return primary_interface
 
@@ -128,11 +131,11 @@ class OperationClient(object):
 
         # get primary IP
         primary_ip = [i for i in primary_interface['ip_configurations'] if i['primary']][0]
-        primary_private_ip = primary_ip['private_ip_address']
+        primary_private_ip = primary_ip[PRIVATE_IP_KEY]
         # get primary public IP, if it exists
         primary_public_ip = None
-        if 'public_ip_address' in primary_ip and 'ip_address' in primary_ip['public_ip_address']:
-            primary_public_ip = primary_ip['public_ip_address']['ip_address']
+        if PUBLIC_IP_KEY in primary_ip and 'ip_address' in primary_ip[PUBLIC_IP_KEY]:
+            primary_public_ip = primary_ip[PUBLIC_IP_KEY]['ip_address']
         return {
             'name': output['name'],
             'id': output['vm_id'],
