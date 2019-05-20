@@ -208,6 +208,9 @@ class ManagementClient(object):
         if bool_response:
             return response.ok
 
+        # helpful debug
+        self.logger.debug('HTTP response: %s %s' % (response.status_code, response.reason))
+
         # raise exception on non-success status code
         response.raise_for_status()
         return response.json()

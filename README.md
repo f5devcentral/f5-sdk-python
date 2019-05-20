@@ -35,6 +35,8 @@ pip3 install -r requirements.txt
 pip3 install .
 ```
 
+Note: Python 2.7 can be run via a container - `docker run --rm -it -v $(pwd):/usr/dir python:2.7 /bin/bash`
+
 ### Testing
 
 This project uses `Make` as a build automation tool... check out the Makefile for the full set of recipes.

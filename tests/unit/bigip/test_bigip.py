@@ -1,25 +1,21 @@
 """ Test BIG-IP module """
 
-## unittest imports ##
-import unittest
-try:
-    from unittest.mock import Mock, MagicMock, patch, call
-except ImportError: # python 2.x support
-    from mock import Mock, MagicMock, patch, call
-
 ## project imports ##
 import base64
 import socket
-import tempfile
-import shutil
 import os
 from paramiko import ssh_exception
 from f5cloudsdk import exceptions
+## unittest imports ##
+from ...global_test_imports import pytest, Mock, call
 
 ## local test imports ##
 from ...shared import constants
 from ...shared import mock_utils
 from . import utils as BigIpUtils
+
+## packages to mock ##
+REQ = constants.MOCK['requests']
 
 DFL_MGMT_PORT = 443
 
@@ -34,74 +30,64 @@ TOKEN_RESPONSE = {
     }
 }
 
-class TestBigIp(unittest.TestCase):
+class TestBigIp(object):
     """Test Class: bigip module """
-    def setUp(self):
-        self.test_tmp_dir = tempfile.mkdtemp()
-        self.private_key_file = os.path.join(self.test_tmp_dir, 'id_rsa')
+
+    @classmethod
+    def setup_class(cls):
+        """" Setup func """
 
         with open(os.path.join(os.path.dirname(__file__), 'sample_rsa_key')) as _f:
             _file = _f.read()
-        with open(self.private_key_file, 'w') as _f:
-            _f.write(base64.b64decode(_file).decode('utf-8'))
 
-    def tearDown(self):
-        shutil.rmtree(self.test_tmp_dir)
+        cls.private_key = base64.b64decode(_file).decode('utf-8')
 
-    @patch('requests.request')
-    def test_mgmt_client(self, mock_request):
+    @classmethod
+    def teardown_class(cls):
+        """" Teardown func """
+
+    def test_mgmt_client(self, mocker):
         """Test: Initialize mgmt client
 
         Assertions
         ----------
-        - Mocked request should be called
-        - Mock request instance 'json' should be called
         - Device instance token should match 'TOKEN'
         """
 
-        mock_request_instance = mock_request.return_value
-        mock_request_instance.json = Mock(return_value=TOKEN_RESPONSE)
+        mocker.patch(REQ).return_value.json = Mock(return_value=TOKEN_RESPONSE)
 
         device = BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
 
-        mock_request_instance.json.assert_called()
-        assert mock_request.called
         assert device.token == TOKEN
 
-    @patch('paramiko.SSHClient')
-    @patch('requests.request')
-    def test_mgmt_client_key_auth(self, mock_request, mock_ssh_client):
+    def test_mgmt_client_key_auth(self, mocker):
         """Test: Initialize mgmt client using key-based auth
 
         Assertions
         ----------
-        - Mocked ssh client should be called
         - Mock ssh client instance exec_command should start with 'tmsh modify'
-        - Mocked request should be called
         - Device instance token should match 'TOKEN'
         """
 
-        mock_request.side_effect = mock_utils.create_mock_response(TOKEN_RESPONSE)
-        mock_ssh_client_instance = mock_utils.create_mock_ssh_client(
-            mock_ssh_client,
+        mocker.patch(REQ).return_value.json = Mock(return_value=TOKEN_RESPONSE)
+        mock_ssh_client_instance = mock_utils.create_ssh_client(
+            mocker.patch('paramiko.SSHClient'),
             'auth user %s { description user shell bash }' % (USER)
         )
+        mocker.patch('paramiko.rsakey.open', mocker.mock_open(read_data=self.private_key))
+        mocker.patch('paramiko.pkey.open', mocker.mock_open(read_data=self.private_key))
 
         device = BigIpUtils.get_mgmt_client(
-            user=USER, pwd=USER_PWD, private_key_file=self.private_key_file)
+            user=USER, pwd=USER_PWD, private_key_file='foo')
 
-        assert mock_ssh_client.called
         calls = [
             call(' list auth user %s' % (USER)),
             call('tmsh modify auth user %s password %s' % (USER, USER_PWD))
         ]
         mock_ssh_client_instance.exec_command.assert_has_calls(calls)
-        assert mock_request.called
         assert device.token == TOKEN
 
-    @patch('paramiko.SSHClient')
-    @patch('requests.request')
-    def test_mgmt_client_key_auth_bash(self, mock_request, mock_ssh_client):
+    def test_mgmt_client_key_auth_bash(self, mocker):
         """Test: Initialize mgmt client using key-based auth - 'shell bash'
 
         'list auth user <user>' command response containing 'shell tmsh' means
@@ -109,86 +95,78 @@ class TestBigIp(unittest.TestCase):
 
         Assertions
         ----------
-        - Mocked ssh client should be called
         - Mock ssh client instance exec_command should start with ' modify'
-        - Mocked request should be called
         - Device instance token should match 'TOKEN'
         """
 
-        mock_request.side_effect = mock_utils.create_mock_response(TOKEN_RESPONSE)
-        mock_ssh_client_instance = mock_utils.create_mock_ssh_client(
-            mock_ssh_client,
+        mocker.patch(REQ).return_value.json = Mock(return_value=TOKEN_RESPONSE)
+        mock_ssh_client_instance = mock_utils.create_ssh_client(
+            mocker.patch('paramiko.SSHClient'),
             'auth user %s { description user shell tmsh }' % (USER)
         )
+        mocker.patch('paramiko.rsakey.open', mocker.mock_open(read_data=self.private_key))
+        mocker.patch('paramiko.pkey.open', mocker.mock_open(read_data=self.private_key))
 
         device = BigIpUtils.get_mgmt_client(
-            user=USER, pwd=USER_PWD, private_key_file=self.private_key_file)
+            user=USER, pwd=USER_PWD, private_key_file='foo')
 
-        assert mock_ssh_client.called
         calls = [
             call(' list auth user %s' % (USER)),
             call(' modify auth user %s password %s' % (USER, USER_PWD))
         ]
         mock_ssh_client_instance.exec_command.assert_has_calls(calls)
-        assert mock_request.called
         assert device.token == TOKEN
 
-    @patch('socket.socket')
-    def test_port_discovery(self, mock_socket):
+    def test_port_discovery(self, mocker):
         """Test: Port discovery during mgmt client init
 
         Assertions
         ----------
-        - Mocked socket should be called
         - Mock socket instance 'connect' should be called
         - Device port should match 'DFL_MGMT_PORT'
         - Device port should match 'DFL_MGMT_PORT' when OSError is raised
         """
 
-        mock_socket_instance = mock_utils.create_mock_socket(mock_socket)
+        mock_socket = mocker.patch('socket.socket')
+        mock_socket_instance = mock_utils.create_socket(mock_socket)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN, port=None)
 
-        assert mock_socket.called
         mock_socket_instance.connect.assert_called()
         assert device.port == DFL_MGMT_PORT
 
         # raise OSError (connect refused case) - port should be set to default
-        mock_socket_instance = mock_utils.create_mock_socket(mock_socket, connect_raise=OSError)
+        mock_socket_instance = mock_utils.create_socket(mock_socket, connect_raise=OSError)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN, port=None)
 
         assert device.port == DFL_MGMT_PORT
 
-    @patch('socket.socket')
-    def test_port_discovery_timeout(self, mock_socket):
+    def test_port_discovery_timeout(self, mocker):
         """Test: Port discovery during mgmt client init - when timeout occurrs
 
         Verify result when timeout for all DFL_ ports occurs
 
         Assertions
         ----------
-        - Mocked socket should be called
         - Mock socket instance 'connect' should be called
         - DFL_MGMT_PORT should be returned
         """
 
-        mock_socket_instance = mock_utils.create_mock_socket(
+        mock_socket = mocker.patch('socket.socket')
+        mock_socket_instance = mock_utils.create_socket(
             mock_socket, connect_raise=socket.timeout)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN, port=None)
 
-        assert mock_socket.called
         mock_socket_instance.connect.assert_called()
         assert device.port == DFL_MGMT_PORT
 
-    @patch('requests.request')
-    def test_get_info(self, mock_requests):
+    def test_get_info(self, mocker):
         """Test: get_info
 
         Assertions
         ----------
-        - Mocked request should be called
         - Device version should match 'version'
         """
 
@@ -206,15 +184,13 @@ class TestBigIp(unittest.TestCase):
                 }
             }
         }
-        mock_requests.side_effect = mock_utils.create_mock_response(response)
+        mocker.patch(REQ).return_value.json = Mock(return_value=response)
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         device_info = device.get_info()
-        assert mock_requests.called
         assert device_info['version'] == version
 
-    @patch('requests.request')
-    def test_make_request_no_token(self, mock_requests):
+    def test_make_request_no_token(self, mocker):
         """Test: make_request with no device token
 
         Assertions
@@ -222,32 +198,28 @@ class TestBigIp(unittest.TestCase):
         - AuthRequiredError exception should be raised
         """
 
-        mock_requests.side_effect = mock_utils.create_mock_response({})
+        mocker.patch(REQ).return_value.json = Mock(return_value={})
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         device.token = None
-        self.assertRaises(exceptions.AuthRequiredError, device.make_request, '/')
 
-    @patch('requests.request')
-    def test_make_request_bool(self, mock_requests):
+        pytest.raises(exceptions.AuthRequiredError, device.make_request, '/')
+
+    def test_make_request_bool(self, mocker):
         """Test: make_request with bool_response=True
 
         Assertions
         ----------
-        - Mocked request should be called
         - make_request should return boolean (True)
         """
 
-        mock_requests.side_effect = mock_utils.create_mock_response({})
+        mocker.patch(REQ).return_value.json = Mock(return_value={})
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN)
         response = device.make_request('/', bool_response=True)
-        assert mock_requests.called
         assert response
 
-    @patch('paramiko.SSHClient')
-    @patch('requests.request')
-    def test_make_ssh_request_stderr(self, mock_request, mock_ssh_client):
+    def test_make_ssh_request_stderr(self, mocker):
         """Test: make_ssh_request - stderr response should raise exception
 
         Assertions
@@ -255,18 +227,15 @@ class TestBigIp(unittest.TestCase):
         - SSHCommandStdError exception should be raised
         """
 
-        mock_request.side_effect = mock_utils.create_mock_response(TOKEN_RESPONSE)
-        mock_ssh_client_instance = mock_utils.create_mock_ssh_client(
-            mock_ssh_client, '', stderr='error')
+        mocker.patch(REQ).return_value.json = Mock(return_value=TOKEN_RESPONSE)
+        mock_utils.create_ssh_client(
+            mocker.patch('paramiko.SSHClient'), '', stderr='error')
 
         device = BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
 
-        self.assertRaises(exceptions.SSHCommandStdError, device.make_ssh_request, 'command')
-        mock_ssh_client_instance.connect.assert_called()
+        pytest.raises(exceptions.SSHCommandStdError, device.make_ssh_request, 'command')
 
-    @patch('paramiko.SSHClient')
-    @patch('requests.request')
-    def test_make_ssh_request_connect_error(self, mock_request, mock_ssh_client):
+    def test_make_ssh_request_connect_error(self, mocker):
         """Test: make_ssh_request - connect exception should raise exception
 
         Assertions
@@ -274,11 +243,10 @@ class TestBigIp(unittest.TestCase):
         - SSHException should be raised
         """
 
-        mock_request.side_effect = mock_utils.create_mock_response(TOKEN_RESPONSE)
-        mock_ssh_client_instance = mock_utils.create_mock_ssh_client(
-            mock_ssh_client, 'foo', connect_raise=ssh_exception.SSHException)
+        mocker.patch(REQ).return_value.json = Mock(return_value=TOKEN_RESPONSE)
+        mock_utils.create_ssh_client(
+            mocker.patch('paramiko.SSHClient'), '', connect_raise=ssh_exception.SSHException)
 
         device = BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
 
-        self.assertRaises(ssh_exception.SSHException, device.make_ssh_request, 'command')
-        mock_ssh_client_instance.connect.assert_called()
+        pytest.raises(ssh_exception.SSHException, device.make_ssh_request, 'command')

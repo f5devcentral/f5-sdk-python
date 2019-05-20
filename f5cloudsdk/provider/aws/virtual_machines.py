@@ -1,6 +1,8 @@
 """Python module for provider virtual machines configuration """
 
-class OperationClient(object):
+from ..abstract.virtual_machines import AbstractOperationClient
+
+class OperationClient(AbstractOperationClient):
     """Operation client class for provider virtual machines
 
     Attributes

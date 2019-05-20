@@ -2,9 +2,10 @@
 
 from boto3.session import Session
 
+from ..abstract import AbstractProviderClient
 from .virtual_machines import OperationClient as VirtualMachinesClient
 
-class ProviderClient(object):
+class ProviderClient(AbstractProviderClient):
     """A class used as a provider client for AWS
 
     Attributes
