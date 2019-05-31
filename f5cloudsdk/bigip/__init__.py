@@ -28,11 +28,10 @@ import warnings
 from datetime import datetime, timedelta
 from retry import retry
 import paramiko
-import requests
-from requests.auth import HTTPBasicAuth
 
 import f5cloudsdk.constants as constants
 from f5cloudsdk.logger import Logger
+from f5cloudsdk.utils import http_utils
 from f5cloudsdk.exceptions import SSHCommandStdError
 from .decorators import check_auth
 
@@ -167,54 +166,6 @@ class ManagementClient(object):
             return DFL_PORT_1NIC
         return DFL_PORT
 
-    def _make_request(self, uri, **kwargs):
-        """See public method for documentation: make_request """
-
-        uri = uri
-        method = kwargs.pop('method', 'GET').lower()
-        headers = {constants.F5_AUTH_TOKEN_HEADER: self.token, 'User-Agent': constants.USER_AGENT}
-        # add any user-supplied headers, allow the user to override default headers
-        headers.update(kwargs.pop('headers', {}))
-        # check for body, normalize
-        body = kwargs.pop('body', None)
-        body_content_type = kwargs.pop('body_content_type', 'json') # json (default), raw
-        if body and body_content_type == 'json':
-            headers.update({'Content-Type': 'application/json'})
-            body = json.dumps(body)
-
-        auth = kwargs.pop('override_auth', None)
-        if auth:
-            headers.pop(constants.F5_AUTH_TOKEN_HEADER)
-
-        bool_response = kwargs.pop('bool_response', False)
-
-        # note: certain requests contain very large payloads, do *not* log body
-        self.logger.debug('Making HTTP request: %s %s' % (method.upper(), uri))
-
-        # construct url
-        url = 'https://%s:%s%s' % (self.host, self.port, uri)
-        # make request
-        response = requests.request(
-            method,
-            url,
-            headers=headers,
-            data=body,
-            auth=auth,
-            timeout=constants.HTTP_TIMEOUT['DFL'],
-            verify=constants.HTTP_VERIFY
-        )
-
-        # boolean response, if requested
-        if bool_response:
-            return response.ok
-
-        # helpful debug
-        self.logger.debug('HTTP response: %s %s' % (response.status_code, response.reason))
-
-        # raise exception on non-success status code
-        response.raise_for_status()
-        return response.json()
-
     def _make_ssh_request(self, command):
         """See public method for documentation: make_ssh_request """
 
@@ -327,21 +278,25 @@ class ManagementClient(object):
             'loginProviderName': 'tmos' # need to support other providers
         }
         # get token
-        response = self._make_request(
+        response = http_utils.make_request(
+            self.host,
             uri,
+            port=self.port,
             method='POST',
             body=body,
-            override_auth=HTTPBasicAuth(self._user, self._password)
+            basic_auth={'user': self._user, 'password': self._password}
         )
         token = response['token']['token']
 
         # now extend token lifetime
         token_uri = '/mgmt/shared/authz/tokens/%s' % (token)
-        self._make_request(
+        http_utils.make_request(
+            self.host,
             token_uri,
+            port=self.port,
             method='PATCH',
             body={'timeout': timeout},
-            override_auth=HTTPBasicAuth(self._user, self._password)
+            basic_auth={'user': self._user, 'password': self._password}
         )
 
         return {'token': token, 'expirationDate': expiration_date, 'expirationIn': timeout}
@@ -412,7 +367,10 @@ class ManagementClient(object):
             a dictionary containing the JSON response
         """
 
-        return self._make_request(uri, **kwargs)
+        # need to add authentication token to headers
+        headers = {constants.F5_AUTH_TOKEN_HEADER: self.token}
+        headers.update(kwargs.pop('headers', {}))
+        return http_utils.make_request(self.host, uri, port=self.port, headers=headers, **kwargs)
 
     @check_auth
     def make_ssh_request(self, command):

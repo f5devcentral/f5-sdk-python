@@ -23,8 +23,8 @@ import os
 import json
 import time
 
-import f5cloudsdk.constants as constants
-import f5cloudsdk.utils as utils
+from f5cloudsdk import constants
+from f5cloudsdk.utils import http_utils
 
 PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 
@@ -201,7 +201,7 @@ class OperationClient(object):
         download_pkg = download_url.split('/')[-1]
         tmp_file = '%s/%s' % (constants.TMP_DIR, download_pkg)
         # download
-        utils.download_to_file(download_url, tmp_file)
+        http_utils.download_to_file(download_url, tmp_file)
         # upload
         self._upload_rpm(tmp_file)
         # install

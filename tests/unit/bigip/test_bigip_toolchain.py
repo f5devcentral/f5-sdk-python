@@ -202,6 +202,7 @@ class TestToolChainService(object):
     def setup_class(cls):
         """" Setup func """
         cls.test_tmp_dir = tempfile.mkdtemp()
+
     @classmethod
     def teardown_class(cls):
         """" Teardown func """

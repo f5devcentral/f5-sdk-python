@@ -7,6 +7,7 @@ from f5cloudsdk.bigip import ManagementClient
 from ...shared import constants
 
 HOST = constants.HOST
+PORT = constants.PORT
 
 def get_mgmt_client(**kwargs):
     """Create mgmt client instance
@@ -39,7 +40,7 @@ def get_mgmt_client(**kwargs):
     pwd = kwargs.pop('pwd', '')
     private_key_file = kwargs.pop('private_key_file', '')
     token = kwargs.pop('token', '')
-    port = kwargs.pop('port', 443)
+    port = kwargs.pop('port', PORT)
 
     if token:
         return ManagementClient(HOST, port=port, token=token)

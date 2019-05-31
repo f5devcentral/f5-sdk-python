@@ -27,6 +27,7 @@ import os
 import json
 import time
 
+from f5cloudsdk.utils import utils
 from f5cloudsdk.exceptions import InputRequiredError
 
 class OperationClient(object):
@@ -75,29 +76,6 @@ class OperationClient(object):
         self.component = component
         self.version = version
 
-    @staticmethod
-    def _load_config_file(file):
-        """Load configuration file
-
-        Notes
-        -----
-        Assumes the file is valid JSON
-
-        Parameters
-        ----------
-        file : str
-            location to configuration file
-
-        Returns
-        -------
-        dict
-            the loaded file
-        """
-
-        with open(file) as m_file:
-            data = json.loads(m_file.read())
-        return data
-
     def _get_configure_endpoint(self):
         """Get configuration endpoint
 
@@ -144,7 +122,7 @@ class OperationClient(object):
         return ret
 
     def create(self, **kwargs):
-        """Creates toolchain component service
+        """Creates (or updates) toolchain component service
 
         Parameters
         ----------
@@ -164,14 +142,10 @@ class OperationClient(object):
             the response to a service create
         """
 
-        config = kwargs.pop('config', '')
-        config_file = kwargs.pop('config_file', '')
+        config = kwargs.pop('config', None)
+        config_file = kwargs.pop('config_file', None)
 
-        if not config and not config_file:
-            raise InputRequiredError('One of config|config_file must be provided')
-
-        if config_file:
-            config = self._load_config_file(config_file)
+        config = utils.resolve_config(config, config_file)
 
         uri = self._get_configure_endpoint()['uri']
         return self._client.make_request(uri, method='POST', body=config)

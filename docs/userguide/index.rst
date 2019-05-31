@@ -6,3 +6,4 @@ User Guide
 
    bigip.rst
    provider.rst
+   cloud_services.rst

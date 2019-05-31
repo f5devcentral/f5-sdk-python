@@ -5,6 +5,7 @@ COVERAGE_DIR := ./code_coverage
 COVERAGE_FILE := .coverage
 DIST_DIR := dist
 EGG_DIR := f5_cloud_sdk.egg-info
+EXCLUDE_PATTERN := "*/abstract/*"
 PACKAGE_DIR := f5cloudsdk
 TEST_DIR := tests
 UNIT_TEST_DIR := ${TEST_DIR}/unit
@@ -25,7 +26,7 @@ coverage: unit_test
 code_docs:
 	echo "Generating code documentation (via sphinx)"
 	# auto generate sphinx API docs from package
-	sphinx-apidoc --force --separate --module-first -o ${API_DOCS_SOURCE} ${PACKAGE_DIR}
+	sphinx-apidoc --force --separate --module-first -o ${API_DOCS_SOURCE} ${PACKAGE_DIR} ${EXCLUDE_PATTERN}
 	# make docs (html)
 	cd docs && make html && cd ..
 	cp -R docs/_build ${CODE_DOCS_DIR}
