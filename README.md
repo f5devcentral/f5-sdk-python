@@ -12,23 +12,17 @@ This project provides a use case focused python SDK for interacting with F5 prod
 
 ## Quick Start
 
-Note: Currently pulling from the develop branch
+Pre-Release Note: Currently published in an artifactory repo.
 
 ```bash
 pip3 install f5-cloud-sdk --extra-index-url https://***REMOVED***/artifactory/api/pypi/f5-cloud-solutions-pypi/simple
-```
-
-Note: Alternatively install from local repo (any branch)
-
-```bash
-pip3 install .
 ```
 
 ## Developer Setup
 
 ### Installation
 
-This is still a work in progress (no venv, etc.), however below are the current steps.
+Note: A virtual environment should be created first.  See [python docs](https://docs.python.org/3/library/venv.html) for more details.
 
 ```bash
 pip3 install -r requirements.txt
@@ -44,7 +38,7 @@ This project uses `Make` as a build automation tool... check out the Makefile fo
 - Run unit tests: ```make unit_test```
 - Run linter: ```make lint```
 - Build code coverage documentation: ```make coverage```
-- Build code documentation: ```make docs```
+- Build code documentation: ```make code_docs```
 
 ## Artifacts
 

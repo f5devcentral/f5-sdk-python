@@ -6,6 +6,7 @@ import socket
 import os
 from paramiko import ssh_exception
 from f5cloudsdk import exceptions
+from f5cloudsdk import constants as project_constants
 ## unittest imports ##
 from ...global_test_imports import pytest, Mock, call
 
@@ -204,6 +205,23 @@ class TestBigIp(object):
         device.token = None
 
         pytest.raises(exceptions.AuthRequiredError, device.make_request, '/')
+
+    def test_make_request_auth_header(self, mocker):
+        """Test: make_request should insert auth header
+
+        Assertions
+        ----------
+        - make_request should insert auth header: {'X-F5-Auth-Token': 'token'}
+        """
+
+        mock = mocker.patch(REQ)
+
+        device = BigIpUtils.get_mgmt_client(token=TOKEN)
+
+        device.make_request('/')
+
+        _, kwargs = mock.call_args
+        assert kwargs['headers'][project_constants.F5_AUTH_TOKEN_HEADER] == TOKEN
 
     def test_make_request_bool(self, mocker):
         """Test: make_request with bool_response=True

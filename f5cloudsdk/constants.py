@@ -24,3 +24,8 @@ BIGIP_CMDS = {
     'AUTH_LIST': '%s list auth user %s',
     'AUTH_MODIFY': '%s modify auth user %s password %s'
 }
+
+F5_CLOUD_SERVICES = {
+    'API_ENDPOINT': 'api.cloudservices.f5.com',
+    'AUTH_TOKEN_HEADER': 'Authorization'
+}
