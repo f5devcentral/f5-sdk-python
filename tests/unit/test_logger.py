@@ -1,11 +1,12 @@
 """ Test logger module """
 
-## project imports ##
+# project imports
 from f5cloudsdk.logger import Logger
-## unittest imports ##
+# unittest imports
 from ..global_test_imports import Mock
 
 LOGGER_NAME = 'testlogger'
+
 
 class TestBigIp(object):
     """ Test case """

@@ -1,9 +1,10 @@
 """ Test provider module """
 
-## project imports ##
+# project imports
 from f5cloudsdk import provider
 
 CREDS_RESPONSE = 'foo'
+
 
 class TestProvider(object):
     """Test Class: provider module """

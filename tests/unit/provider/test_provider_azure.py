@@ -1,14 +1,15 @@
 """ Test provider module """
 
-## project imports ##
+# project imports
 from f5cloudsdk import provider
-## unittest imports ##
+# unittest imports
 from ...global_test_imports import Mock
 
 DFL_VAL = 'foo'
 DFL_TAGS = {'foo': 'bar'}
 DFL_IP = '192.0.2.1'
 DFL_PUB_IP = '1.1.1.1'
+
 
 class ResponseItem(object):
     """ mock response item """
@@ -18,6 +19,7 @@ class ResponseItem(object):
     def as_dict(self):
         """ mock function """
         return self.response
+
 
 class TestProviderAzure(object):
     """Test Class: provider module (azure) """

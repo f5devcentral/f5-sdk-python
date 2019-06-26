@@ -1,23 +1,24 @@
 """ Test BIG-IP module """
 
-## standard imports ##
+# standard imports
 import json
-## project imports ##
+# project imports
 from f5cloudsdk.cloud_services import ManagementClient
 from f5cloudsdk.cloud_services.subscription import SubscriptionClient
 from f5cloudsdk.exceptions import InputRequiredError
-## unittest imports ##
+# unittest imports
 from ...global_test_imports import pytest, Mock
 
-## local test imports ##
+# local test imports
 from ...shared import constants
-## packages to mock ##
+# packages to mock
 REQ = constants.MOCK['requests']
 
 USER = constants.USER
 USER_PWD = constants.USER_PWD
 
 LOGIN_RESPONSE = constants.F5_CLOUD_SERVICES['LOGIN_RESPONSE']
+
 
 class TestSubscription(object):
     """Test Class: cloud_services.subscription module """
