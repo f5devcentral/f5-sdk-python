@@ -1,14 +1,14 @@
 """ Test BIG-IP module """
 
-## project imports ##
+# project imports
 from f5cloudsdk.cloud_services import ManagementClient
 from f5cloudsdk import constants as project_constants
-## unittest imports ##
+# unittest imports
 from ...global_test_imports import Mock
 
-## local test imports ##
+# local test imports
 from ...shared import constants
-## packages to mock ##
+# packages to mock
 REQ = constants.MOCK['requests']
 
 USER = constants.USER
@@ -18,6 +18,7 @@ TOKEN = constants.TOKEN
 LOGIN_RESPONSE = constants.F5_CLOUD_SERVICES['LOGIN_RESPONSE']
 
 AUTH_TOKEN_HEADER = project_constants.F5_CLOUD_SERVICES['AUTH_TOKEN_HEADER']
+
 
 class TestCloudServices(object):
     """Test Class: cloud_services module """

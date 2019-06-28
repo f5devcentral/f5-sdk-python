@@ -1,21 +1,21 @@
 """ Test BIG-IP module """
 
-## project imports ##
+# project imports
 import base64
 import socket
 import os
 from paramiko import ssh_exception
 from f5cloudsdk import exceptions
 from f5cloudsdk import constants as project_constants
-## unittest imports ##
+# unittest imports
 from ...global_test_imports import pytest, Mock, call
 
-## local test imports ##
+# local test imports
 from ...shared import constants
 from ...shared import mock_utils
 from . import utils as BigIpUtils
 
-## packages to mock ##
+# packages to mock
 REQ = constants.MOCK['requests']
 
 DFL_MGMT_PORT = 443
@@ -30,6 +30,7 @@ TOKEN_RESPONSE = {
         'selfLink': 'https://localhost/mgmt/shared/authz/tokens/mytoken'
     }
 }
+
 
 class TestBigIp(object):
     """Test Class: bigip module """

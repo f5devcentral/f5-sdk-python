@@ -1,13 +1,14 @@
 """Utility module for bigip test cases """
 
-## project imports ##
+# project imports
 from f5cloudsdk.bigip import ManagementClient
 
-## local test imports ##
+# local test imports
 from ...shared import constants
 
 HOST = constants.HOST
 PORT = constants.PORT
+
 
 def get_mgmt_client(**kwargs):
     """Create mgmt client instance

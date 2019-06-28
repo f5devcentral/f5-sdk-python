@@ -1,25 +1,26 @@
 """ Test BIG-IP module """
 
-## standard imports ##
+# standard imports
 from os import path
 import json
 import tempfile
 import shutil
-## project imports ##
+# project imports
 from f5cloudsdk import exceptions
 from f5cloudsdk.bigip.toolchain import ToolChainClient
-## unittest imports ##
+# unittest imports
 from ...global_test_imports import pytest
 
-## local test imports ##
+# local test imports
 from ...shared import constants
 from ...shared import mock_utils
 from . import utils as BigIpUtils
 
 TOKEN = constants.TOKEN
 
-## packages to mock ##
+# packages to mock
 REQ = constants.MOCK['requests']
+
 
 class TestToolChain(object):
     """Test Class: bigip.toolchain module """
@@ -69,6 +70,7 @@ class TestToolChain(object):
             version='0.0.0'
         )
 
+
 class TestToolChainPackage(object):
     """Test Class: bigip.toolchain.package module """
 
@@ -87,17 +89,17 @@ class TestToolChainPackage(object):
         mock_conditions = [
             {
                 'type': 'url',
-                'value':'github.com',
+                'value': 'github.com',
                 'response': {'body': 'foo'.encode()}
             },
             {
                 'type': 'url',
-                'value':'/mgmt/shared/file-transfer/uploads',
+                'value': '/mgmt/shared/file-transfer/uploads',
                 'response': {'body': {'id': 'xxxx'}}
             },
             {
                 'type': 'url',
-                'value':'/mgmt/shared/iapp/package-management-tasks',
+                'value': '/mgmt/shared/iapp/package-management-tasks',
                 'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
             }
         ]
@@ -128,12 +130,12 @@ class TestToolChainPackage(object):
         mock_conditions = [
             {
                 'type': 'url',
-                'value':'/mgmt/shared/file-transfer/uploads',
+                'value': '/mgmt/shared/file-transfer/uploads',
                 'response': {'body': {'id': 'xxxx'}}
             },
             {
                 'type': 'url',
-                'value':'/mgmt/shared/iapp/package-management-tasks',
+                'value': '/mgmt/shared/iapp/package-management-tasks',
                 'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
             }
         ]
@@ -194,6 +196,7 @@ class TestToolChainPackage(object):
         toolchain = ToolChainClient(device, 'as3', version='3.9.0')
 
         pytest.raises(Exception, toolchain.package.is_installed)
+
 
 class TestToolChainService(object):
     """Test Class: bigip.toolchain.service module """

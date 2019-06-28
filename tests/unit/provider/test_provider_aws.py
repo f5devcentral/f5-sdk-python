@@ -1,14 +1,15 @@
 """ Test provider module """
 
-## project imports ##
+# project imports
 from f5cloudsdk import provider
-## unittest imports ##
+# unittest imports
 from ...global_test_imports import Mock
 
 DFL_VAL = 'foo'
 DFL_TAGS = {'Name': 'foo'}
 DFL_IP = '192.0.2.1'
 DFL_PUB_IP = '1.1.1.1'
+
 
 class TestProviderAws(object):
     """Test Class: provider module (azure) """
