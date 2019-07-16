@@ -11,8 +11,8 @@ test_unit:
     stage: test
     script:
         # install packages
-        - pip3 install -r requirements.txt
-        - pip3 install .
+        - pip install -r requirements.txt
+        - pip install .
         # run unit tests
         - make unit_test
         # run linter
@@ -33,13 +33,25 @@ test_unit_python_2_x:
     tags:
         - cm-official-docker-executor
 
+# depndency security check
+test_security_check:
+    stage: test
+    script:
+        # install packages
+        - pip install -r requirements.txt
+        - pip install .
+        # run dependency check
+        - safety check -r requirements.txt
+    tags:
+        - cm-official-docker-executor
+
 # generate code coverage docs
 docs_code_coverage:
     stage: docs
     script:
         # install packages
-        - pip3 install -r requirements.txt
-        - pip3 install .
+        - pip install -r requirements.txt
+        - pip install .
         # generate coverage
         - make coverage
     tags:
@@ -55,8 +67,8 @@ docs_code:
     stage: docs
     script:
         # install packages
-        - pip3 install -r requirements.txt
-        - pip3 install .
+        - pip install -r requirements.txt
+        - pip install .
         # install apt packages: doxygen
         - apt-get update
         - apt-get install -y doxygen
@@ -123,6 +135,6 @@ publish_test_internal_install:
     script:
         # install packages - first wait until it is available after a recent publish
         - bash scripts/wait_for_resp.sh ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-cloud-sdk/
-        - pip3 install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple
+        - pip install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple
     tags:
         - cm-official-docker-executor

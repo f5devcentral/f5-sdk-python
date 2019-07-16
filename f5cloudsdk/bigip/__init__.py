@@ -360,6 +360,8 @@ class ManagementClient(object):
             the HTTP body content type to use
         bool_response : bool
             return boolean based on HTTP success/failure
+        advanced_return : bool
+            return additional information, like HTTP status code to caller
 
         Returns
         -------

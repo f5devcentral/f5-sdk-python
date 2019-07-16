@@ -65,6 +65,8 @@ def make_request(host, uri, **kwargs):
         return boolean based on HTTP success/failure
     basic_auth : dict
         use basic auth: {'user': 'foo', 'password': 'bar'}
+    advanced_return : bool
+        return additional information, like HTTP status code to caller
 
     Returns
     -------
@@ -110,13 +112,19 @@ def make_request(host, uri, **kwargs):
         verify=constants.HTTP_VERIFY
     )
 
-    # boolean response, if requested
-    if bool_response:
-        return response.ok
-
     # helpful debug
     logger.debug('HTTP response: %s %s' % (response.status_code, response.reason))
 
-    # raise exception on non-success status code
+    # return boolean response, if requested
+    if bool_response:
+        return response.ok
+
+    # raise exception on 4xx and 5xx status code(s)
     response.raise_for_status()
+
+    # optionally return tuple containing status code, response, (future)
+    advanced_return = kwargs.pop('advanced_return', False)
+    if advanced_return:
+        return (response.json(), response.status_code)
+    # finally, simply return response data
     return response.json()
