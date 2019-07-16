@@ -26,7 +26,9 @@
 import os
 import json
 import time
+import requests
 
+from f5cloudsdk import constants
 from f5cloudsdk.utils import utils
 from f5cloudsdk.exceptions import InputRequiredError
 
@@ -91,6 +93,39 @@ class OperationClient(object):
 
         return self._metadata_client.get_endpoints()['configure']
 
+    def _wait_for_task(self, task_url):
+        """Wait for task to complete - async 'accepted' task
+
+        Notes
+        -----
+        Certain toolchain components support async task behavior,
+        where a 202 response on the initial POST is returned along
+        with a self link to query.  The self link will return 202 until
+        the task is complete, at which time it will return 200.
+
+        Parameters
+        ----------
+        task_url : str
+            HTTP url to task ID to query
+
+        Returns
+        -------
+        dict
+            the response to a service create (from task ID endpoint)
+        """
+
+        uri = requests.utils.urlparse(task_url).path
+
+        i = 0
+        while i < 300:
+            response, status_code = self._client.make_request(uri, advanced_return=True)
+            if status_code == constants.HTTP_STATUS_CODE['OK']:
+                break
+            i += 1
+            time.sleep(1)
+
+        return response
+
     def is_available(self):
         """Checks toolchain component service is available
 
@@ -148,7 +183,14 @@ class OperationClient(object):
         config = utils.resolve_config(config, config_file)
 
         uri = self._get_configure_endpoint()['uri']
-        return self._client.make_request(uri, method='POST', body=config)
+        response, status_code = self._client.make_request(
+            uri, method='POST', body=config, advanced_return=True)
+
+        # check for async task pattern response
+        if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
+            return self._wait_for_task(response['selfLink'])
+        # return response data
+        return response
 
     def show(self):
         """Gets (shows) the toolchain component service

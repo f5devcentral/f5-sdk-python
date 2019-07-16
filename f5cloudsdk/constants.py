@@ -14,6 +14,10 @@ HTTP_TIMEOUT = {
     'DFL': 60
 }
 HTTP_VERIFY = False
+HTTP_STATUS_CODE = {
+    'OK': 200,
+    'ACCEPTED': 202
+}
 
 RETRIES = {
     'DFL': 120,
