@@ -14,3 +14,6 @@ class InvalidComponentVersionError(Exception):
 
 class SSHCommandStdError(Exception):
     """ Error raised if ssh client command response contains stderr """
+
+class DeviceReadyError(Exception):
+    """ Error raised if device ready check fails """

@@ -86,33 +86,6 @@ def create_response(response_body, **kwargs):
         return MockRequestsResponse(response_body)
     return _func
 
-def create_socket(mock, **kwargs):
-    """Create mock socket.socket instance
-
-    Parameters
-    ----------
-    **kwargs :
-        optional keyword arguments
-
-    Keyword Arguments
-    -----------------
-    connect_raise : obj
-        exception class to raise when mock.connect is called
-
-    Returns
-    -------
-    obj
-        mocked socket instance
-    """
-
-    connect_raise = kwargs.pop('connect_raise', None)
-
-    instance = mock.return_value
-    if connect_raise:
-        instance.connect.side_effect = connect_raise
-
-    return instance
-
 def create_ssh_client(mock, command_response, **kwargs):
     """Create mock paramiko SSHClient instance
 

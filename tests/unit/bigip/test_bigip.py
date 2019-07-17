@@ -20,6 +20,7 @@ REQ = constants.MOCK['requests']
 
 DFL_MGMT_PORT = 443
 
+HOST = constants.HOST
 USER = constants.USER
 USER_PWD = constants.USER_PWD
 TOKEN = constants.TOKEN
@@ -47,6 +48,17 @@ class TestBigIp(object):
     @classmethod
     def teardown_class(cls):
         """" Teardown func """
+
+    def setup_method(self):
+        """ setup any state tied to the execution of the given method in a
+        class
+        """
+        self.device = BigIpUtils.get_mgmt_client(token=TOKEN)
+
+    def teardown_method(self):
+        """ teardown any state that was previously setup with a setup_method
+        call
+        """
 
     def test_mgmt_client(self, mocker):
         """Test: Initialize mgmt client
@@ -129,16 +141,15 @@ class TestBigIp(object):
         - Device port should match 'DFL_MGMT_PORT' when OSError is raised
         """
 
-        mock_socket = mocker.patch('socket.socket')
-        mock_socket_instance = mock_utils.create_socket(mock_socket)
+        mock_socket = mocker.patch('socket.socket').return_value
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN, port=None)
 
-        mock_socket_instance.connect.assert_called()
+        mock_socket.connect.assert_called()
         assert device.port == DFL_MGMT_PORT
 
         # raise OSError (connect refused case) - port should be set to default
-        mock_socket_instance = mock_utils.create_socket(mock_socket, connect_raise=OSError)
+        mock_socket = mocker.patch('socket.socket').return_value.connect.side_effect = OSError
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN, port=None)
 
@@ -155,14 +166,46 @@ class TestBigIp(object):
         - DFL_MGMT_PORT should be returned
         """
 
-        mock_socket = mocker.patch('socket.socket')
-        mock_socket_instance = mock_utils.create_socket(
-            mock_socket, connect_raise=socket.timeout)
+        mock_socket = mocker.patch('socket.socket').return_value
+        mock_socket.connect.side_effect = socket.timeout
 
         device = BigIpUtils.get_mgmt_client(token=TOKEN, port=None)
 
-        mock_socket_instance.connect.assert_called()
+        mock_socket.connect.assert_called()
         assert device.port == DFL_MGMT_PORT
+
+    def test_is_ready(self, mocker):
+        """Test: Device ready check
+
+        Assertions
+        ----------
+        - Mock socket instance 'connect' should be called with correct host/port
+        """
+
+        mock_socket = mocker.patch('socket.socket').return_value
+
+        device = BigIpUtils.get_mgmt_client(token=TOKEN, skip_ready_check=False)
+
+        mock_socket.connect.assert_called_with((HOST, device.port))
+
+    def test_is_ready_false(self, mocker):
+        """Test: Device ready check should raise exception
+
+        Assertions
+        ----------
+        - Mgmt client should raise DeviceReadyError on socket.timeout error
+        """
+
+        mock_socket = mocker.patch('socket.socket').return_value
+        mock_socket.connect.side_effect = socket.timeout
+
+        mocker.patch('time.sleep')
+
+        pytest.raises(
+            exceptions.DeviceReadyError,
+            BigIpUtils.get_mgmt_client,
+            token=TOKEN,
+            skip_ready_check=False)
 
     def test_get_info(self, mocker):
         """Test: get_info
@@ -188,8 +231,7 @@ class TestBigIp(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=response)
 
-        device = BigIpUtils.get_mgmt_client(token=TOKEN)
-        device_info = device.get_info()
+        device_info = self.device.get_info()
         assert device_info['version'] == version
 
     def test_make_request_no_token(self, mocker):
@@ -202,10 +244,9 @@ class TestBigIp(object):
 
         mocker.patch(REQ).return_value.json = Mock(return_value={})
 
-        device = BigIpUtils.get_mgmt_client(token=TOKEN)
-        device.token = None
+        self.device.token = None
 
-        pytest.raises(exceptions.AuthRequiredError, device.make_request, '/')
+        pytest.raises(exceptions.AuthRequiredError, self.device.make_request, '/')
 
     def test_make_request_auth_header(self, mocker):
         """Test: make_request should insert auth header
@@ -217,9 +258,7 @@ class TestBigIp(object):
 
         mock = mocker.patch(REQ)
 
-        device = BigIpUtils.get_mgmt_client(token=TOKEN)
-
-        device.make_request('/')
+        self.device.make_request('/')
 
         _, kwargs = mock.call_args
         assert kwargs['headers'][project_constants.F5_AUTH_TOKEN_HEADER] == TOKEN
@@ -234,8 +273,7 @@ class TestBigIp(object):
 
         mocker.patch(REQ).return_value.json = Mock(return_value={})
 
-        device = BigIpUtils.get_mgmt_client(token=TOKEN)
-        response = device.make_request('/', bool_response=True)
+        response = self.device.make_request('/', bool_response=True)
         assert response
 
     def test_make_ssh_request_stderr(self, mocker):
