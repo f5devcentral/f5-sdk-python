@@ -78,7 +78,7 @@ class ManagementClient(object):
         else:
             raise InputRequiredError('user|password required')
 
-    @retry(tries=constants.RETRIES['DFL'], delay=constants.RETRIES['DFL_DELAY'])
+    @retry(tries=constants.RETRIES['DEFAULT'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _get_token(self):
         """Gets access token
 

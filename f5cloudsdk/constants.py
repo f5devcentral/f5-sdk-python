@@ -20,8 +20,9 @@ HTTP_STATUS_CODE = {
 }
 
 RETRIES = {
-    'DFL': 120,
-    'DFL_DELAY': 1
+    'DEFAULT': 60,
+    'LONG': 300,
+    'DELAY_IN_SECS': 1
 }
 
 BIGIP_CMDS = {

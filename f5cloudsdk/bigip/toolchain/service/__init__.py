@@ -117,12 +117,12 @@ class OperationClient(object):
         uri = requests.utils.urlparse(task_url).path
 
         i = 0
-        while i < 300:
+        while i < constants.RETRIES['LONG']:
             response, status_code = self._client.make_request(uri, advanced_return=True)
             if status_code == constants.HTTP_STATUS_CODE['OK']:
                 break
             i += 1
-            time.sleep(1)
+            time.sleep(constants.RETRIES['DELAY_IN_SECS'])
 
         return response
 
@@ -131,7 +131,7 @@ class OperationClient(object):
 
         Notes
         -----
-        Retries up to 120 seconds
+        Retries up to 60 seconds
 
         Parameters
         ----------
@@ -147,12 +147,12 @@ class OperationClient(object):
 
         ret = False
         i = 0
-        while i < 120:
+        while i < constants.RETRIES['DEFAULT']:
             if self._client.make_request(uri, bool_response=True):
                 ret = True
                 break
             i += 1
-            time.sleep(1)
+            time.sleep(constants.RETRIES['DELAY_IN_SECS'])
 
         return ret
 

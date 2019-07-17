@@ -30,6 +30,8 @@ def get_mgmt_client(**kwargs):
         the private_key_file to pass to the client
     port : int
         the port to pass to the client
+    skip_ready_check : bool
+        skip device ready check
 
     Returns
     -------
@@ -42,13 +44,22 @@ def get_mgmt_client(**kwargs):
     private_key_file = kwargs.pop('private_key_file', '')
     token = kwargs.pop('token', '')
     port = kwargs.pop('port', PORT)
+    skip_ready_check = kwargs.pop('skip_ready_check', True)
 
+    mgmt_client_kwargs = {
+        'port': port,
+        'skip_ready_check': skip_ready_check
+    }
+
+    # update kwargs based on auth options
     if token:
-        return ManagementClient(HOST, port=port, token=token)
-    if private_key_file:
-        return ManagementClient(HOST,
-                                port=port,
-                                user=user,
-                                private_key_file=private_key_file,
-                                set_user_password=pwd)
-    return ManagementClient(HOST, port=port, user=user, password=pwd)
+        mgmt_client_kwargs['token'] = token
+    elif private_key_file:
+        mgmt_client_kwargs['user'] = user
+        mgmt_client_kwargs['private_key_file'] = private_key_file
+        mgmt_client_kwargs['set_user_password'] = pwd
+    else:
+        mgmt_client_kwargs['user'] = user
+        mgmt_client_kwargs['password'] = pwd
+
+    return ManagementClient(HOST, **mgmt_client_kwargs)

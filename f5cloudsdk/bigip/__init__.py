@@ -23,6 +23,7 @@
 
 import os
 import json
+import time
 import socket
 import warnings
 from datetime import datetime, timedelta
@@ -32,7 +33,7 @@ import paramiko
 import f5cloudsdk.constants as constants
 from f5cloudsdk.logger import Logger
 from f5cloudsdk.utils import http_utils
-from f5cloudsdk.exceptions import SSHCommandStdError
+from f5cloudsdk.exceptions import SSHCommandStdError, DeviceReadyError
 from .decorators import check_auth
 
 DFL_PORT = 443
@@ -94,11 +95,15 @@ class ManagementClient(object):
             sets the user password to this value - used along with private_key_file
         token : str
             the token to assign to the token attribute
+        skip_ready_check : bool
+            skips the device ready check if set to true
 
         Returns
         -------
         None
         """
+
+        self.logger = Logger(__name__).get_logger()
 
         self.host = host.split(':')[0] # disallow providing port here
         self.port = kwargs.pop('port', None) or self._discover_port()
@@ -110,7 +115,9 @@ class ManagementClient(object):
 
         self.token_details = {}
 
-        self.logger = Logger(__name__).get_logger()
+        # check device is ready
+        if not kwargs.pop('skip_ready_check', False):
+            self._is_ready()
 
         if self._user and self._password:
             # run _login_using_credentials()
@@ -125,6 +132,31 @@ class ManagementClient(object):
             pass
         else:
             raise Exception('user|password, user|private_key_file or token required')
+
+    def _test_socket(self, port):
+        """Test socket can connect
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            a boolean true/false
+        """
+        _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        _socket.settimeout(1)
+
+        check = False
+        try:
+            _socket.connect((self.host, port))
+            check = True
+        except (socket.timeout, OSError) as err:
+            self.logger.debug('_test_connection error: %s', err)
+        finally:
+            _socket.close()
+        return check
 
     def _discover_port(self):
         """Discover management port (best effort)
@@ -146,25 +178,45 @@ class ManagementClient(object):
         int
             the discovered management port
         """
-        # local helper function
-        def _test_socket(port):
-            _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            _socket.settimeout(1) # 1 second - avoid increasing this
-            try:
-                _socket.connect((self.host, port))
-                return True
-            except socket.timeout:
-                return False
-            except OSError:
-                # this exception is used primarily to catch connection refused error
-                # ConnectionRefusedError in python 3.x however to support 2.x use generic OSError
-                return True
 
-        if _test_socket(DFL_PORT):
+        if self._test_socket(DFL_PORT):
             return DFL_PORT
-        if _test_socket(DFL_PORT_1NIC):
+        if self._test_socket(DFL_PORT_1NIC):
             return DFL_PORT_1NIC
         return DFL_PORT
+
+    def _is_ready(self):
+        """Checks that the device is ready
+
+        Notes
+        -----
+        Retries up to 5 minutes
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            boolean true if device is ready
+        """
+
+        self.logger.debug('Performing ready check')
+        ready = False
+
+        i = 0
+        while i < constants.RETRIES['LONG']:
+            if self._test_socket(self.port):
+                ready = True
+                break
+            i += 1
+            time.sleep(constants.RETRIES['DELAY_IN_SECS'])
+
+        if not ready:
+            raise DeviceReadyError('Unable to complete device ready check')
+
+        return ready
 
     def _make_ssh_request(self, command):
         """See public method for documentation: make_ssh_request """
@@ -211,7 +263,7 @@ class ManagementClient(object):
 
         return stdout.rstrip('\n\r')
 
-    @retry(tries=constants.RETRIES['DFL'], delay=constants.RETRIES['DFL_DELAY'])
+    @retry(tries=constants.RETRIES['DEFAULT'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _set_password_using_key(self):
         """Sets password on device using user + private key
 
@@ -249,7 +301,7 @@ class ManagementClient(object):
         self._make_ssh_request(constants.BIGIP_CMDS['AUTH_MODIFY'] % (tmsh, self._user, password))
         self._password = password
 
-    @retry(tries=constants.RETRIES['DFL'], delay=constants.RETRIES['DFL_DELAY'])
+    @retry(tries=constants.RETRIES['DEFAULT'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _get_token(self):
         """Gets authentication token
 
