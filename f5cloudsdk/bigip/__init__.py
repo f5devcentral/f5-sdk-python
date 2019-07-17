@@ -134,7 +134,7 @@ class ManagementClient(object):
             raise Exception('user|password, user|private_key_file or token required')
 
     def _test_socket(self, port):
-        """Test socket can connect
+        """Test TCP connection can be established
 
         Parameters
         ----------

@@ -14,7 +14,7 @@ from f5cloudsdk.logger import Logger
 LOGGER = Logger(__name__).get_logger()
 
 def update_as3_config():
-    """ Function to update AS3 configuration
+    """ Update AS3 configuration
 
     Notes
     -----
