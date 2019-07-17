@@ -27,6 +27,7 @@ import os
 import json
 import time
 import requests
+from retry import retry
 
 from f5cloudsdk import constants
 from f5cloudsdk.utils import utils
@@ -93,6 +94,7 @@ class OperationClient(object):
 
         return self._metadata_client.get_endpoints()['configure']
 
+    @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _wait_for_task(self, task_url):
         """Wait for task to complete - async 'accepted' task
 
@@ -115,14 +117,10 @@ class OperationClient(object):
         """
 
         uri = requests.utils.urlparse(task_url).path
+        response, status_code = self._client.make_request(uri, advanced_return=True)
 
-        i = 0
-        while i < constants.RETRIES['LONG']:
-            response, status_code = self._client.make_request(uri, advanced_return=True)
-            if status_code == constants.HTTP_STATUS_CODE['OK']:
-                break
-            i += 1
-            time.sleep(constants.RETRIES['DELAY_IN_SECS'])
+        if status_code != constants.HTTP_STATUS_CODE['OK']:
+            raise Exception('_wait_for_task timed out with status code: %s' % status_code)
 
         return response
 

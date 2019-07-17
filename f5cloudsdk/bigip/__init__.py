@@ -185,6 +185,7 @@ class ManagementClient(object):
             return DFL_PORT_1NIC
         return DFL_PORT
 
+    @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _is_ready(self):
         """Checks that the device is ready
 
@@ -203,20 +204,11 @@ class ManagementClient(object):
         """
 
         self.logger.debug('Performing ready check')
-        ready = False
 
-        i = 0
-        while i < constants.RETRIES['LONG']:
-            if self._test_socket(self.port):
-                ready = True
-                break
-            i += 1
-            time.sleep(constants.RETRIES['DELAY_IN_SECS'])
+        if self._test_socket(self.port):
+            return True
 
-        if not ready:
-            raise DeviceReadyError('Unable to complete device ready check')
-
-        return ready
+        raise DeviceReadyError('Unable to complete device ready check')
 
     def _make_ssh_request(self, command):
         """See public method for documentation: make_ssh_request """
