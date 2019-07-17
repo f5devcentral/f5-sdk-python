@@ -26,7 +26,10 @@ Note: A virtual environment should be created first.  See [python docs](https://
 pip install -r requirements.txt && pip install .
 ```
 
-Note: This project prefers Python 3.x, however if testing against python 2.x you should use either 1) a virtual environment or 2) Python 2.7 in a container - `docker run --rm -it -v $(pwd):/usr/dir python:2.7 /bin/bash`
+Note: This project prefers Python 3.x, however if testing against python 2.x you should use either:
+
+- A virtual environment
+- Python 2.7 in a container - `docker run --rm -it -v $(pwd):/usr/dir python:2.7 /bin/bash`
 
 ### Testing
 
