@@ -10,6 +10,8 @@
 
 This project provides a use case focused python SDK for interacting with F5 products, specifically around cloud and automation.
 
+![demo](images/basic_demo.gif)
+
 ## Documentation
 
 See the [user documentation](https://cloudsolutions.pages.***REMOVED***/f5-cloud-sdk/code-docs) for details on installation, usage and much more.
