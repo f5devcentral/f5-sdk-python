@@ -24,6 +24,6 @@ In short this is the set of important rules to help contributors understand why 
 
 ## Quality
 
-- Testing exists, see [Test Readme](../tests/README.md)
-- Code coverage, which is enforced: `coverage.py`
-- Coding standards, which are enforced: `pylint`, `flake8`
+- Testing happens, see the [Test Readme](../tests/README.md) for more details.
+- Code coverage is checked, and enforced: `coverage.py`
+- Coding standards are enforced, using linters: `pylint`, `flake8`
