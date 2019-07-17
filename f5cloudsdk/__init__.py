@@ -9,6 +9,8 @@
         as3 = ToolChainClient(device, 'as3')
         # install AS3 package
         as3.package.install()
-        # create AS3 service
+        # check service is available
+        as3.service.is_available()
+        # configure AS3
         as3.service.create(config_file='./decl.json')
 """

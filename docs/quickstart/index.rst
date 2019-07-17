@@ -12,7 +12,7 @@ Installation
 
 ::
 
-    pip install f5-cloud-sdk
+    pip install f5-cloud-sdk --extra-index-url https://***REMOVED***/artifactory/api/pypi/f5-cloud-solutions-pypi/simple
 
 
 .. note::

@@ -2,7 +2,7 @@
 
 This contains useful information about contributing to this project.
 
-## Desgin Guidelines
+## Design Guidelines
 
 In short this is the set of important rules to help contributors understand why the SDK is the way it is.
 
@@ -11,10 +11,16 @@ In short this is the set of important rules to help contributors understand why 
 - [Semantic Versioning](https://semver.org) matters, this is critical to the user experience
 - Keep the interfaces clean - Seperate management client from feature functionality client(s)
 - Avoid creating hand-written documentation outside of the code to explain functionality at all costs - Doc strings exists, use them
+- CRUD operations should be provided using a consistent pattern
+   - GET -> `show()`
+   - POST -> `create()`
+   - PUT -> `modify()`
+   - DELETE -> `delete()`
 
 ## Scope
 
-TBD
+- BIG-IP toolchain components
+- F5 Cloud Services
 
 ## Quality
 

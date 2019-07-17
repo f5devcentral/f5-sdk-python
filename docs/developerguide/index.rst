@@ -4,12 +4,14 @@ Developer Guide
 Releasing a new version
 -----------------------
 
+N/A
+
 Versioning
 ----------
 
-This section describes how to rev the project version, using semver.
+N/A
 
 Release
 -------
 
-This section describes how to release the project.
+N/A

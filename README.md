@@ -2,7 +2,7 @@
 
 ## Table of Contents
 - [Introduction](#introduction)
-- [Quick Start](#quick-start)
+- [Documentation](#documentation)
 - [Developer Setup](#developer-setup)
 - [Artifacts](#artifacts)
 
@@ -10,13 +10,9 @@
 
 This project provides a use case focused python SDK for interacting with F5 products, specifically around cloud and automation.
 
-## Quick Start
+## Documentation
 
-Note: Python 3.x preferred.
-
-```bash
-pip install f5-cloud-sdk --extra-index-url https://***REMOVED***/artifactory/api/pypi/f5-cloud-solutions-pypi/simple
-```
+See the [user documentation](https://cloudsolutions.pages.***REMOVED***/f5-cloud-sdk/code-docs) for details on installation, usage and much more.
 
 ## Developer Setup
 
@@ -30,7 +26,7 @@ Note: A virtual environment should be created first.  See [python docs](https://
 pip install -r requirements.txt && pip install .
 ```
 
-Note: This project prefers Python 3.x, however testing against python 2.x could be done either by 1) using a virtual environment or 2) Python 2.7 can be run via a container - `docker run --rm -it -v $(pwd):/usr/dir python:2.7 /bin/bash`
+Note: This project prefers Python 3.x, however if testing against python 2.x you should use either 1) a virtual environment or 2) Python 2.7 in a container - `docker run --rm -it -v $(pwd):/usr/dir python:2.7 /bin/bash`
 
 ### Testing
 
