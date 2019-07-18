@@ -1,14 +1,16 @@
-F5 CLoud SDK (Python) documentation
-===================================
+F5 SDK documentation
+====================
 
 Introduction
 ============
 
-This project provides a use case focused python SDK for interacting with F5 products, specifically around cloud and automation.  The UX closely mirrors established, successful SDK's such as the Azure, AWS, and Google SDK's.
+This project provides a use case focused python SDK for interacting with F5 products.  The UX closely mirrors established, successful SDK's such as the Azure, AWS, and Google SDK's.
+
+You can interact with BIG-IP and F5 Cloud Services to perform actions such as install/configure the toolchain components (AS3, TS, DO), configure an F5 cloud services subscription and much more.
 
 .. image:: ../images/basic_demo.gif
   :width: 800
-  :alt: Demo
+  :alt: Basic Demo
 
 Table of Contents
 =================
@@ -21,6 +23,7 @@ Table of Contents
    developerguide/index
    apidocs/index
    examples/index
+   troubleshooting/index
 
 Supported Platforms
 -------------------

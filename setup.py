@@ -15,7 +15,7 @@ DEPENDENCIES = [
 setup(
     name='f5-cloud-sdk',
     version='0.9.0',
-    description='F5 Cloud SDK',
+    description='F5 SDK',
     url='http://github.com/f5networks/f5-cloud-sdk',
     author='F5 Ecosystems Group',
     author_email='solutionsfeedback@f5.com',

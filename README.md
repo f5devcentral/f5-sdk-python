@@ -1,4 +1,4 @@
-# F5 Cloud SDK
+# F5 SDK
 
 ## Table of Contents
 - [Introduction](#introduction)

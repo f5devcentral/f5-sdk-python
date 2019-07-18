@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'F5 CLoud SDK'
+project = 'F5 SDK'
 copyright = '2019, Ecosystems Group'
 author = 'Ecosystems Group'
 

@@ -1,4 +1,4 @@
-"""F5 Cloud SDK (Python)
+"""F5 SDK (Python)
 
     Example -- Basic::
 

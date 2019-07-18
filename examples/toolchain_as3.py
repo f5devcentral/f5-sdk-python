@@ -1,4 +1,10 @@
-# Note: set local environment variable(s) first
+""" Configure AS3
+
+Notes
+-----
+Set local environment variables first
+"""
+
 # export F5_SDK_HOST='192.0.2.10'
 # export F5_SDK_USERNAME='admin'
 # export F5_SDK_PWD='admin'
@@ -37,7 +43,7 @@ def update_as3_config():
     # ensure service is available
     as3_client.service.is_available()
 
-    # create (or update) service
+    # configure AS3
     return as3_client.service.create(config_file=os.environ['F5_SDK_AS3_DECL'])
 
 if __name__ == '__main__':

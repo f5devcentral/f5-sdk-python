@@ -14,7 +14,7 @@ In short this is the set of important rules to help contributors understand why 
 - CRUD operations should be provided using a consistent pattern
    - GET -> `show()`
    - POST -> `create()`
-   - PUT -> `modify()`
+   - PUT -> `update()`
    - DELETE -> `delete()`
 
 ## Scope
