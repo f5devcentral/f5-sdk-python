@@ -44,6 +44,11 @@
                 }
             },
             "versions": {
+                "1.6.0": {
+                    "downloadUrl": "https://github.com/F5Networks/f5-declarative-onboarding/raw/v1.6.0/dist/f5-declarative-onboarding-1.6.0-1.noarch.rpm",
+                    "packageName": "f5-declarative-onboarding-1.6.0-1.noarch",
+                    "latest": true
+                },
                 "1.5.0": {
                     "downloadUrl": "https://github.com/F5Networks/f5-declarative-onboarding/raw/v1.5.0/dist/f5-declarative-onboarding-1.5.0-11.noarch.rpm",
                     "packageName": "f5-declarative-onboarding-1.5.0-11.noarch",
