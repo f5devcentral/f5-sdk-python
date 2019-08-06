@@ -34,4 +34,4 @@ To connect to a BIG-IP using a non-default management port, such as 8443, it sho
     device = ManagementClient('192.0.2.10', user='admin', password='admin', port=8443)
 
 .. note::
-    The BIG-IP management client will attempt to discover the management port using the order 443 -> 8443 -> 443 (fallback).  Howeveer this may result in an unwanted delay for BIG-IP's using 8443 as a management port.
+    The BIG-IP management client will attempt to discover the management port using the order 443 -> 8443 -> 443 (fallback).  However this may result in an unwanted delay for BIG-IP's using 8443 as a management port.
