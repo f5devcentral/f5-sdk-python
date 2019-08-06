@@ -122,9 +122,13 @@ def make_request(host, uri, **kwargs):
     # raise exception on 4xx and 5xx status code(s)
     response.raise_for_status()
 
+    # response body
+    response_body = response.json()
+    logger.trace('HTTP response body: %s' % (response_body))
+
     # optionally return tuple containing status code, response, (future)
     advanced_return = kwargs.pop('advanced_return', False)
     if advanced_return:
-        return (response.json(), response.status_code)
+        return (response_body, response.status_code)
     # finally, simply return response data
-    return response.json()
+    return response_body
