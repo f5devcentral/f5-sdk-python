@@ -153,7 +153,7 @@ class ManagementClient(object):
             _socket.connect((self.host, port))
             check = True
         except (socket.timeout, OSError) as err:
-            self.logger.debug('_test_connection error: %s', err)
+            self.logger.debug('connection timeout: %s', err)
         finally:
             _socket.close()
         return check

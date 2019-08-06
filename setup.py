@@ -16,10 +16,10 @@ setup(
     name='f5-cloud-sdk',
     version='0.9.0',
     description='F5 SDK',
-    url='http://github.com/f5networks/f5-cloud-sdk',
+    url='https://***REMOVED***/cloudsolutions/f5-cloud-sdk',
     author='F5 Ecosystems Group',
     author_email='solutionsfeedback@f5.com',
-    license='MIT',
+    license='Apache License 2.0',
     packages=find_packages(exclude=["test*", "tests*", "test_*", "test.*", "*.test"]),
     install_requires=DEPENDENCIES,
     package_data={'': ['*.json', '*.yaml', '*.md', '*.rst']}

@@ -1,4 +1,4 @@
-"""Python module for BIG-IP toolchain configuration
+"""Python module for BIG-IP toolchain component configuration, including AS3, DO and TS
 
     Example - Basic::
 
@@ -13,6 +13,11 @@
         as3.service.is_available()
         # configure AS3
         as3.service.create(config_file='./decl.json')
+
+    Example - Specify Component Type::
+
+        do = ToolChainClient(device, 'do')
+        ts = ToolChainClient(device, 'ts')
 
     Example - Specify Component Version::
 
