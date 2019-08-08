@@ -18,6 +18,18 @@ DFL_LEVEL = constants.DFL_LOG_LEVEL
 LEVEL_ENV_VAR = constants.LOG_LEVEL_ENV_VAR
 LEVEL_ENV_VAR_VAL = os.environ[LEVEL_ENV_VAR] if LEVEL_ENV_VAR in os.environ else None
 
+# add custom trace logging level
+logging.TRACE = 5
+logging.addLevelName(logging.TRACE, 'TRACE')
+
+class MyLogger(logging.getLoggerClass()):
+    """ Create custom logger class """
+    def trace(self, msg, *args, **kwargs):
+        """ Add trace method to logger """
+        self.log(logging.TRACE, msg, *args, **kwargs)
+
+logging.setLoggerClass(MyLogger)
+
 class Logger():
     """Class initialization
 
@@ -81,7 +93,7 @@ class Logger():
             instantiated logger
         """
 
-        # create a logger + add handler, formatter
+        # create a logger + add handler and formatter
         logger = logging.getLogger(self.name)
         logger.setLevel(self.level)
         c_handler = logging.StreamHandler()
