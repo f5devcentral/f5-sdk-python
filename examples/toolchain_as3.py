@@ -1,4 +1,4 @@
-""" Configure AS3
+""" Update BIG-IP L4-L7 configuration using AS3
 
 Notes
 -----

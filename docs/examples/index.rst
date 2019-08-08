@@ -4,11 +4,21 @@ Examples
 The following are examples that can be followed to get up and running with the SDK.
 
 .. note::
-    These examples exist in the project under the examples directory.
+    These examples exist in the project source under the examples directory.
 
+
+Prerequisites
+-------------
+
+- Python 3.x, for installation see `python download docs <https://www.python.org/downloads/>`_.
+- Python virtual environment, for details see `python venv docs <https://docs.python.org/3/tutorial/venv.html>`_.
+- Optional: Specify the log level verbosity to see additional log messages during SDK usage.  See the :ref:`troubleshooting` section for more details.
+- Optional: Ignore untrusted TLS certificate warnings during HTTPS requests to BIG-IP.  See the :ref:`troubleshooting` section for more details.
 
 Configure AS3
 -------------
+
+This script uses the SDK to update BIG-IP L4-L7 configuration using AS3, provided via a local file.
 
 ::
 
@@ -17,8 +27,10 @@ Configure AS3
 .. literalinclude:: ../../examples/toolchain_as3.py
    :language: python
 
-Configure F5 Cloud Services
----------------------------
+Get F5 Cloud Services Configuration
+-----------------------------------
+
+This script uses the SDK to get F5 Cloud Services configuration.
 
 ::
 
