@@ -14,6 +14,7 @@ REQ = constants.MOCK['requests']
 USER = constants.USER
 USER_PWD = constants.USER_PWD
 TOKEN = constants.TOKEN
+CUSTOM_API_ENDPOINT = constants.CUSTOM_API_ENDPOINT
 
 LOGIN_RESPONSE = constants.F5_CLOUD_SERVICES['LOGIN_RESPONSE']
 
@@ -61,3 +62,37 @@ class TestCloudServices(object):
 
         _, kwargs = mock.call_args
         assert 'Bearer' in kwargs['headers'][AUTH_TOKEN_HEADER]
+
+    def test_default_api_endpoint(self, mocker):
+        """Test: Default API endpoint is used as expected
+
+        Assertions
+        ----------
+        - Validates that CloudService has api_endpoint set to default value
+        """
+        show_response = {
+            'subscription_id': 'foo',
+            'account_id': 'foo'
+        }
+
+        mocker.patch(REQ).return_value.json = Mock(side_effect=[LOGIN_RESPONSE, show_response])
+
+        mgmt_client = ManagementClient(user=USER, password=USER_PWD)
+
+        assert mgmt_client._api_endpoint == project_constants.F5_CLOUD_SERVICES['API_ENDPOINT']
+
+    def test_custom_api_endpoint(self, mocker):
+        """Test: Custom API endpoint is used as expected
+        Assertions
+        ----------
+        - Validates that CloudService api endpoint is set to custom value
+        """
+        show_response = {
+            'subscription_id': 'foo',
+            'account_id': 'foo'
+        }
+
+        mocker.patch(REQ).return_value.json = Mock(side_effect=[LOGIN_RESPONSE, show_response])
+
+        mgmt_client = ManagementClient(user=USER, password=USER_PWD, api_endpoint=CUSTOM_API_ENDPOINT)
+        assert mgmt_client._api_endpoint == constants.CUSTOM_API_ENDPOINT
