@@ -63,9 +63,8 @@ class ManagementClient(object):
 
         self.logger = Logger(__name__).get_logger()
 
-        self._api_endpoint = API_ENDPOINT
-
         # process kwargs
+        self._api_endpoint = kwargs.pop('api_endpoint', API_ENDPOINT)
         self._user = kwargs.pop('user', None)
         self._password = kwargs.pop('password', None)
         self._subscription_id = kwargs.pop('subscription_id', None)
