@@ -39,7 +39,7 @@ def revoke_license(address, pool):
 
     # get address assignment - there should only be one
     assignments = assignments['items']
-    assignment = [i for i in assignments if assignments['deviceAddress'] == address][0]
+    assignment = [i for i in assignments if i['deviceAddress'] == address][0]
 
     if not assignment:
         raise Exception('Unable to locate assignment from BIG-IQ assignments')
