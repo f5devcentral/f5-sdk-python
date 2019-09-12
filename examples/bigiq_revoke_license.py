@@ -8,8 +8,8 @@ Set local environment variables first
 # export F5_SDK_HOST='192.0.2.10'
 # export F5_SDK_USERNAME='admin'
 # export F5_SDK_PWD='admin'
-# export F5_SDK_BIGIP_TO_REVOKE='192.0.2.100'
-# export F5_SDK_BIGIQ_LICENSE_POOL='my_pool'
+# export F5_SDK_ADDRESS_TO_REVOKE='192.0.2.100'
+# export F5_SDK_LICENSE_POOL='my_pool'
 # export F5_SDK_LOG_LEVEL='DEBUG'
 
 import os
@@ -57,7 +57,7 @@ def revoke_license(address, pool):
 
 if __name__ == '__main__':
     RESPONSE = revoke_license(
-        os.environ['F5_SDK_BIGIP_TO_REVOKE'],
-        os.environ['F5_SDK_BIGIQ_LICENSE_POOL']
+        os.environ['F5_SDK_ADDRESS_TO_REVOKE'],
+        os.environ['F5_SDK_LICENSE_POOL']
     )
     LOGGER.info('Response: %s', RESPONSE)
