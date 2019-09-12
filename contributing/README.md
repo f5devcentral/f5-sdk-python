@@ -12,7 +12,7 @@ In short this is the set of important rules to help contributors understand why 
 - Keep the interfaces clean - Seperate management client from feature functionality client(s)
 - Avoid creating hand-written documentation outside of the code to explain functionality at all costs - Doc strings exists, use them
 - CRUD operations should be provided using a consistent pattern
-   - GET -> `show()`
+   - GET -> `show()` or `list()` - If performing a `GET` on a single resource, use `show()`.  If the response is an array of resources, use `list()`.
    - POST -> `create()`
    - PUT -> `update()`
    - DELETE -> `delete()`
