@@ -155,6 +155,22 @@
                 'macAddress': 'FA:16:3E:1B:6D:32'
             }
         )
+
+    Example - List license assignemnts::
+
+        IMPORTANT URI(S) (remove before merge):
+        # license assign/revoke
+        /mgmt/cm/device/licensing/assignments
+
+        from f5cloudsdk.bigiq import ManagementClient
+        from f5cloudsdk.bigiq.licensing import AssignmentClient
+
+        device = ManagementClient('192.0.2.10', user='admin', password='admin')
+
+        license_client = AssignmentClient(device)
+
+        # list license assignments
+        license_client.list()
 """
 
 from .mgmt_client import ManagementClient
