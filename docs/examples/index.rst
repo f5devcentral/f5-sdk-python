@@ -38,3 +38,15 @@ This script uses the SDK to get F5 Cloud Services configuration.
 
 .. literalinclude:: ../../examples/cloud_services.py
    :language: python
+
+Revoke License from BIG-IQ
+--------------------------
+
+This script uses the SDK to revoke a licensed BIG-IP (unreachable) from a BIG-IQ license pool.
+
+::
+
+    python example.py
+
+.. literalinclude:: ../../examples/bigiq_revoke_license.py
+   :language: python

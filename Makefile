@@ -10,6 +10,7 @@ PACKAGE_DIR := f5cloudsdk
 TEST_DIR := tests
 UNIT_TEST_DIR := ${TEST_DIR}/unit
 TEST_CACHE_DIR := .pytest_cache
+EXAMPLES_DIR := examples
 
 build:
 	echo "Creating package artifacts"
@@ -19,7 +20,7 @@ unit_test:
 	pytest --flake8 --cov=${PACKAGE_DIR} ${UNIT_TEST_DIR} --full-trace -v;
 lint:
 	echo "Running linter (any error will result in non-zero exit code)";
-	pylint ${PACKAGE_DIR}/;
+	pylint -j 0 ${PACKAGE_DIR}/ ${EXAMPLES_DIR}/;
 coverage: unit_test
 	echo "Generating code coverage documentation"
 	coverage html

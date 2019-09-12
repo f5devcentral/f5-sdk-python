@@ -42,25 +42,38 @@
 
         # add offering to pool
         license_client.offerings.create(
-            name='my_pool', offering='my_offering', config={ 'regkey': 'xxxx' })
+            name='my_pool',
+            offering='my_offering',
+            config={
+                'regkey': 'xxxx'
+            }
+        )
 
         # delete offering from pool
-        license_client.offerings.delete(
-            name='my_pool', offering='my_offering', regkey='my_reg_key')
+        license_client.offerings.delete(name='my_pool',offering='my_offering', regkey='my_reg_key')
 
         # list pool offering members
         license_client.offerings.list_members(name='my_pool', offering='my_offering')
 
         # assign member to offering - managed or unmanaged
         license_client.offerings.create_member(
-            name='my_pool', offering='my_offering', config={ 'deviceAddress': 'x.x.x.x' })
+            name='my_pool',
+            offering='my_offering',
+            config={
+                'deviceAddress': 'x.x.x.x'
+            }
+        )
 
         # delete member from offering - managed or unmanaged
         license_client.offerings.delete_member(
             name='my_pool',
             offering='my_offering',
             member_id='1234',
-            config={ 'id': '1234', 'username': 'admin', 'password': 'admin' }
+            config={
+                'id': '1234',
+                'username': 'admin',
+                'password': 'admin'
+            }
         )
 
     Example - Licensing (Utility Pool)::
@@ -88,7 +101,11 @@
 
         # create pool
         license_client.create(
-            config={ 'name': 'my_pool', 'baseRegKey': 'xxxx', 'method': 'AUTOMATIC' }
+            config={
+                'name': 'my_pool',
+                'baseRegKey': 'xxxx',
+                'method': 'AUTOMATIC'
+            }
         )
 
         # delete pool
@@ -99,7 +116,12 @@
 
         # add offering to pool
         license_client.offerings.create(
-            name='my_pool', offering='my_offering', config={ 'regkey': 'xxxx' })
+            name='my_pool',
+            offering='my_offering',
+            config={
+                'regkey': 'xxxx'
+            }
+        )
 
         # delete offering from pool
         license_client.offerings.delete(
@@ -110,14 +132,23 @@
 
         # assign member to offering - managed or unmanaged
         license_client.offerings.create_member(
-            name='my_pool', offering='my_offering', config={ 'deviceAddress': 'x.x.x.x' })
+            name='my_pool',
+            offering='my_offering',
+            config={
+                'deviceAddress': 'x.x.x.x'
+            }
+        )
 
         # delete member from offering - managed or unmanaged
         license_client.offerings.delete_member(
             name='my_pool',
             offering='my_offering',
             member_id='1234',
-            config={ 'id': '1234', 'username': 'admin', 'password': 'admin' }
+            config={
+                'id': '1234',
+                'username': 'admin',
+                'password': 'admin'
+            }
         )
 
     Example - Assign/revoke unreachable device::
@@ -156,7 +187,7 @@
             }
         )
 
-    Example - List license assignemnts::
+    Example - List license assignments::
 
         IMPORTANT URI(S) (remove before merge):
         # license assign/revoke
