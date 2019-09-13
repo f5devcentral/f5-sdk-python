@@ -132,3 +132,27 @@ def make_request(host, uri, **kwargs):
         return (response_body, response.status_code)
     # finally, simply return response data
     return response_body
+
+def parse_url(url):
+    """Parse URL
+
+
+    Parameters
+    ----------
+    url : str
+        the URL that should be parsed
+
+    Returns
+    -------
+    dict
+        object containing the parsed URL contents:
+        {
+            'path': '/foo/bar'
+        }
+    """
+
+    parsed_url = requests.utils.urlparse(url)
+
+    return {
+        'path': parsed_url.path
+    }

@@ -16,7 +16,7 @@ import os
 
 from f5cloudsdk.bigiq import ManagementClient
 from f5cloudsdk.bigiq.licensing import AssignmentClient
-from f5cloudsdk.bigiq.licensing import MemberManagementPoolClient
+from f5cloudsdk.bigiq.licensing import PoolMemberManagementClient
 from f5cloudsdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()
@@ -32,7 +32,7 @@ def revoke_license(address, pool):
 
     # create assignment client, member management client
     assignment_client = AssignmentClient(mgmt_client)
-    member_mgmt_client = MemberManagementPoolClient(mgmt_client)
+    member_mgmt_client = PoolMemberManagementClient(mgmt_client)
 
     # list assignments
     assignments = assignment_client.list()

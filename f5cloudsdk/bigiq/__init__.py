@@ -150,58 +150,6 @@
                 'password': 'admin'
             }
         )
-
-    Example - Assign/revoke unreachable device::
-
-        IMPORTANT URI(S) (remove before merge):
-        # license assign/revoke
-        /mgmt/cm/device/tasks/licensing/pool/member-management
-
-        from f5cloudsdk.bigiq import ManagementClient
-        from f5cloudsdk.bigiq.licensing import MemberManagementPoolClient
-
-        device = ManagementClient('192.0.2.10', user='admin', password='admin')
-
-        license_client = MemberManagementPoolClient(device)
-
-        # perform assignment - unreachable device
-        license_client.create(
-            config={
-                'licensePoolName': 'my_pool',
-                'command': 'assign',
-                'address': 'x.x.x.x',
-                'assignmentType': 'UNREACHABLE',
-                'macAddress': 'FA:16:3E:1B:6D:32',
-                'hypervisor': 'azure'
-            }
-        )
-
-        # perform revoke - unreachable device
-        license_client.create(
-            config={
-                'licensePoolName': 'my_pool',
-                'command': 'revoke',
-                'address': 'x.x.x.x',
-                'assignmentType': 'UNREACHABLE',
-                'macAddress': 'FA:16:3E:1B:6D:32'
-            }
-        )
-
-    Example - List license assignments::
-
-        IMPORTANT URI(S) (remove before merge):
-        # license assign/revoke
-        /mgmt/cm/device/licensing/assignments
-
-        from f5cloudsdk.bigiq import ManagementClient
-        from f5cloudsdk.bigiq.licensing import AssignmentClient
-
-        device = ManagementClient('192.0.2.10', user='admin', password='admin')
-
-        license_client = AssignmentClient(device)
-
-        # list license assignments
-        license_client.list()
 """
 
 from .mgmt_client import ManagementClient

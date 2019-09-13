@@ -88,7 +88,8 @@ class ManagementClient(object):
         self.logger.debug('Getting authentication token')
 
         response = http_utils.make_request(
-            self.host, '/mgmt/shared/authn/login',
+            self.host,
+            '/mgmt/shared/authn/login',
             port=self.port,
             method='POST',
             body={
@@ -176,8 +177,7 @@ class ManagementClient(object):
             }
         """
 
-        uri = '/mgmt/tm/sys/version'
-        response = self.make_request(uri)
+        response = self.make_request('/mgmt/tm/sys/version')
 
         version_info = response['entries'][
             'https://localhost/mgmt/tm/sys/version/0'
