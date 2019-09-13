@@ -63,7 +63,7 @@ class AssignmentClient(BaseFeatureClient):
         Returns
         -------
         dict
-            the serialized REST response:
+            the deserialized REST response:
             {
                 'assignmentType': 'xxxx'
                 'deviceAddress': 'xxxx'

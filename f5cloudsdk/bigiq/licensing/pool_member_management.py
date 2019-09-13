@@ -87,7 +87,7 @@ class PoolMemberManagementClient(BaseFeatureClient):
         Returns
         -------
         dict
-            the serialized REST response:
+            the deserialized REST response:
             {
                 'id': 'xxxx'
                 'address': 'xxxx'
@@ -115,7 +115,7 @@ class PoolMemberManagementClient(BaseFeatureClient):
         Returns
         -------
         dict
-            the serialized REST response:
+            the deserialized REST response:
             {
                 'id': 'xxxx'
                 'address': 'xxxx'
