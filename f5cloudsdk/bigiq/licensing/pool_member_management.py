@@ -31,6 +31,9 @@
                 'macAddress': 'FA:16:3E:1B:6D:32'
             }
         )
+
+        # list existing assign/revoke tasks
+        license_client.list()
 """
 
 from f5cloudsdk.base_clients import BaseFeatureClient
@@ -68,7 +71,7 @@ class PoolMemberManagementClient(BaseFeatureClient):
         None
         """
 
-        super().__init__(
+        super(PoolMemberManagementClient, self).__init__(
             client,
             logger_name=__name__,
             uri='/mgmt/cm/device/tasks/licensing/pool/member-management'
@@ -92,7 +95,7 @@ class PoolMemberManagementClient(BaseFeatureClient):
             }
         """
 
-        return super()._list()
+        return super(PoolMemberManagementClient, self)._list()
 
     def create(self, **kwargs):
         """Create pool member management task
@@ -120,4 +123,4 @@ class PoolMemberManagementClient(BaseFeatureClient):
             }
         """
 
-        return super()._create(**kwargs)
+        return super(PoolMemberManagementClient, self)._create(**kwargs)

@@ -47,7 +47,7 @@ class AssignmentClient(BaseFeatureClient):
         None
         """
 
-        super().__init__(
+        super(AssignmentClient, self).__init__(
             client,
             logger_name=__name__,
             uri='/mgmt/cm/device/licensing/assignments'
@@ -74,7 +74,7 @@ class AssignmentClient(BaseFeatureClient):
             }
         """
 
-        return super()._list()
+        return super(AssignmentClient, self)._list()
 
     def create(self, **kwargs):
         """ Unsupported method """
