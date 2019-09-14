@@ -112,8 +112,10 @@ def make_request(host, uri, **kwargs):
         verify=constants.HTTP_VERIFY
     )
 
+    status_code = response.status_code
+    status_reason = response.reason
     # helpful debug
-    logger.debug('HTTP response: %s %s' % (response.status_code, response.reason))
+    logger.debug('HTTP response: %s %s' % (status_code, status_reason))
 
     # return boolean response, if requested
     if bool_response:
@@ -129,7 +131,7 @@ def make_request(host, uri, **kwargs):
     # optionally return tuple containing status code, response, (future)
     advanced_return = kwargs.pop('advanced_return', False)
     if advanced_return:
-        return (response_body, response.status_code)
+        return (response_body, status_code)
     # finally, simply return response data
     return response_body
 
