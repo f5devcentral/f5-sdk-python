@@ -93,9 +93,6 @@ def make_request(host, uri, **kwargs):
     if basic_auth:
         auth = HTTPBasicAuth(basic_auth['user'], basic_auth['password'])
 
-    # check for boolean response
-    bool_response = kwargs.pop('bool_response', False)
-
     # note: certain requests *may* contain large payloads, do *not* log body
     logger.debug('Making HTTP request: %s %s' % (method.upper(), uri))
 
@@ -118,7 +115,7 @@ def make_request(host, uri, **kwargs):
     logger.debug('HTTP response: %s %s' % (status_code, status_reason))
 
     # return boolean response, if requested
-    if bool_response:
+    if kwargs.pop('bool_response', False):
         return response.ok
 
     # raise exception on 4xx and 5xx status code(s)
@@ -129,8 +126,7 @@ def make_request(host, uri, **kwargs):
     logger.trace('HTTP response body: %s' % (response_body))
 
     # optionally return tuple containing status code, response, (future)
-    advanced_return = kwargs.pop('advanced_return', False)
-    if advanced_return:
+    if kwargs.pop('advanced_return', False):
         return (response_body, status_code)
     # finally, simply return response data
     return response_body
