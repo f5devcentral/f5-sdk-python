@@ -4,8 +4,10 @@ from retry import retry
 
 from f5cloudsdk.logger import Logger
 from f5cloudsdk import constants
-from f5cloudsdk.utils import utils
+from f5cloudsdk.utils import misc_utils
 from f5cloudsdk.utils import http_utils
+
+from f5cloudsdk.exceptions import UnsupportedMethod
 
 class BaseFeatureClient(object):
     """A base feature client class
@@ -42,6 +44,10 @@ class BaseFeatureClient(object):
         self._client = client
         self._metadata = {
             'uri': kwargs.pop('uri', None)
+        }
+
+        self._exceptions = {
+            'UnsupportedMethod': UnsupportedMethod
         }
 
     @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
@@ -95,13 +101,8 @@ class BaseFeatureClient(object):
 
         return self._client.make_request(self._metadata['uri'])
 
-    def list(self):
-        """List: implement in child class"""
-
-        raise NotImplementedError
-
     def _create(self, **kwargs):
-        """Create (or update) operation
+        """Create operation
 
         Parameters
         ----------
@@ -123,7 +124,7 @@ class BaseFeatureClient(object):
 
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
-        config = utils.resolve_config(config, config_file)
+        config = misc_utils.resolve_config(config, config_file)
 
         response, status_code = self._client.make_request(
             self._metadata['uri'],
@@ -138,8 +139,3 @@ class BaseFeatureClient(object):
 
         # default - simply return response
         return response
-
-    def create(self, **kwargs):
-        """Create: implement in child class"""
-
-        raise NotImplementedError

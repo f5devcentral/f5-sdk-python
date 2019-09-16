@@ -29,7 +29,7 @@
 
 from f5cloudsdk.logger import Logger
 from f5cloudsdk.exceptions import InputRequiredError
-from f5cloudsdk.utils import utils
+from f5cloudsdk.utils import misc_utils
 
 SUBSCRIPTION_URI = '/v1/svc-subscription/subscriptions/%s'
 
@@ -121,7 +121,7 @@ class SubscriptionClient(object):
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
 
-        config = utils.resolve_config(config, config_file)
+        config = misc_utils.resolve_config(config, config_file)
 
         uri = SUBSCRIPTION_URI % (self._subscription_id)
         return self._client.make_request(uri, method='PUT', body=config)

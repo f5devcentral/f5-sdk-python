@@ -1,4 +1,5 @@
-"""Management client"""
+"""BIG-IP management client
+"""
 
 import os
 import socket
@@ -398,11 +399,16 @@ class ManagementClient(object):
         Returns
         -------
         dict
-            a dictionary containg version:
-            {
-                'version': 'x.x.x'
-            }
+            the device information
+
+            ::
+
+                {
+                    'version': 'x.x.x.x'
+                }
+
         """
+
         uri = '/mgmt/tm/sys/version'
         response = self.make_request(uri)
 

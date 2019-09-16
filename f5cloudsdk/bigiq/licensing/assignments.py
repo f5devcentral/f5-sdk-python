@@ -14,7 +14,6 @@
 """
 
 from f5cloudsdk.base_clients import BaseFeatureClient
-from f5cloudsdk.exceptions import UnsupportedMethod
 
 class AssignmentClient(BaseFeatureClient):
     """BIG-IQ license assignment client
@@ -63,15 +62,19 @@ class AssignmentClient(BaseFeatureClient):
         Returns
         -------
         dict
-            the deserialized REST response:
-            {
-                'assignmentType': 'xxxx'
-                'deviceAddress': 'xxxx'
-                'hypervisor': 'xxxx'
-                'id': 'xxxx'
-                'licenseText': 'xxxx'
-                'macAddress': 'xxxx'
-            }
+            the deserialized REST response
+
+            ::
+
+                {
+                    'assignmentType': 'xxxx'
+                    'deviceAddress': 'xxxx'
+                    'hypervisor': 'xxxx'
+                    'id': 'xxxx'
+                    'licenseText': 'xxxx'
+                    'macAddress': 'xxxx'
+                }
+
         """
 
         return super(AssignmentClient, self)._list()
@@ -79,4 +82,4 @@ class AssignmentClient(BaseFeatureClient):
     def create(self, **kwargs):
         """ Unsupported method """
 
-        raise UnsupportedMethod
+        raise self._exceptions['UnsupportedMethod']

@@ -1,4 +1,5 @@
-"""Management client"""
+"""BIG-IQ management client
+"""
 
 from datetime import datetime, timedelta
 
@@ -171,10 +172,14 @@ class ManagementClient(object):
         Returns
         -------
         dict
-            a dictionary containg version:
-            {
-                'version': 'x.x.x'
-            }
+            the device information
+
+            ::
+
+                {
+                    'version': 'x.x.x.x'
+                }
+
         """
 
         response = self.make_request('/mgmt/tm/sys/version')

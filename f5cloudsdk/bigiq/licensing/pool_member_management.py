@@ -87,12 +87,16 @@ class PoolMemberManagementClient(BaseFeatureClient):
         Returns
         -------
         dict
-            the deserialized REST response:
-            {
-                'id': 'xxxx'
-                'address': 'xxxx'
-                'status': 'xxxx'
-            }
+            the deserialized REST response
+
+            ::
+
+                {
+                    'id': 'xxxx'
+                    'address': 'xxxx'
+                    'status': 'xxxx'
+                }
+
         """
 
         return super(PoolMemberManagementClient, self)._list()
@@ -115,12 +119,16 @@ class PoolMemberManagementClient(BaseFeatureClient):
         Returns
         -------
         dict
-            the deserialized REST response:
-            {
-                'id': 'xxxx'
-                'address': 'xxxx'
-                'status': 'xxxx'
-            }
+            the deserialized REST response
+
+            ::
+
+                {
+                    'id': 'xxxx'
+                    'address': 'xxxx'
+                    'status': 'xxxx'
+                }
+
         """
 
         return super(PoolMemberManagementClient, self)._create(**kwargs)

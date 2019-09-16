@@ -143,10 +143,14 @@ def parse_url(url):
     Returns
     -------
     dict
-        object containing the parsed URL contents:
-        {
-            'path': '/foo/bar'
-        }
+        object containing the parsed URL contents
+
+        ::
+
+            {
+                'path': '/foo/bar'
+            }
+
     """
 
     parsed_url = requests.utils.urlparse(url)
