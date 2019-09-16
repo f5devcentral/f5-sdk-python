@@ -52,6 +52,6 @@ class AssignmentClient(BaseFeatureClient):
         )
 
     def create(self, **kwargs):
-        """ Unsupported method """
+        """ Method not allowed (action:skip_documentation) """
 
-        raise self._exceptions['UnsupportedMethod']
+        raise self._exceptions['MethodNotAllowed']

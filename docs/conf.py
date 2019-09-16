@@ -12,8 +12,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
 
+sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
@@ -73,3 +73,18 @@ napoleon_use_admonition_for_references = False
 napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
+
+def skip_member(app, what, name, obj, skip, options):
+    # retain existing skip actions
+    if skip:
+        return True
+    # check for special doc string value indicating object (method) should be skipped
+    doc_string = obj.__doc__
+    if doc_string and 'action:skip_documentation' in doc_string:
+        return True
+    # default - don't skip
+    return False
+
+def setup(app):
+    # run custom skip member function
+    app.connect('autodoc-skip-member', skip_member)

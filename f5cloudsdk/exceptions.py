@@ -18,5 +18,5 @@ class SSHCommandStdError(Exception):
 class DeviceReadyError(Exception):
     """ Error raised if device ready check fails """
 
-class UnsupportedMethod(Exception):
-    """ Error raised if method is unsupported """
+class MethodNotAllowed(Exception):
+    """ Error raised if method is not allowed """

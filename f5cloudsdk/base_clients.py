@@ -7,7 +7,7 @@ from f5cloudsdk import constants
 from f5cloudsdk.utils import misc_utils
 from f5cloudsdk.utils import http_utils
 
-from f5cloudsdk.exceptions import UnsupportedMethod
+from f5cloudsdk.exceptions import MethodNotAllowed
 
 class BaseFeatureClient(object):
     """A base feature client class
@@ -47,7 +47,7 @@ class BaseFeatureClient(object):
         }
 
         self._exceptions = {
-            'UnsupportedMethod': UnsupportedMethod
+            'MethodNotAllowed': MethodNotAllowed
         }
 
     @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
