@@ -46,10 +46,7 @@ class PoolMemberManagementClient(BaseFeatureClient):
 
     Methods
     -------
-    list()
-        Refer to method documentation
-    create()
-        Refer to method documentation
+
     """
 
     def __init__(self, client, **kwargs):
@@ -69,6 +66,7 @@ class PoolMemberManagementClient(BaseFeatureClient):
         Returns
         -------
         None
+
         """
 
         super(PoolMemberManagementClient, self).__init__(
@@ -76,59 +74,3 @@ class PoolMemberManagementClient(BaseFeatureClient):
             logger_name=__name__,
             uri='/mgmt/cm/device/tasks/licensing/pool/member-management'
         )
-
-    def list(self):
-        """List pool member management tasks
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        dict
-            the deserialized REST response
-
-            ::
-
-                {
-                    'id': 'xxxx'
-                    'address': 'xxxx'
-                    'status': 'xxxx'
-                }
-
-        """
-
-        return super(PoolMemberManagementClient, self)._list()
-
-    def create(self, **kwargs):
-        """Create pool member management task
-
-        Parameters
-        ----------
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
-        config : dict
-            object containing configuration
-        config_file : str
-            reference to a local file containing configuration
-
-        Returns
-        -------
-        dict
-            the deserialized REST response
-
-            ::
-
-                {
-                    'id': 'xxxx'
-                    'address': 'xxxx'
-                    'status': 'xxxx'
-                }
-
-        """
-
-        return super(PoolMemberManagementClient, self)._create(**kwargs)

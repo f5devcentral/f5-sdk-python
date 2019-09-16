@@ -23,8 +23,7 @@ class AssignmentClient(BaseFeatureClient):
 
     Methods
     -------
-    list()
-        Refer to method documentation
+
     """
 
     def __init__(self, client, **kwargs):
@@ -51,33 +50,6 @@ class AssignmentClient(BaseFeatureClient):
             logger_name=__name__,
             uri='/mgmt/cm/device/licensing/assignments'
         )
-
-    def list(self):
-        """List license assignments
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        dict
-            the deserialized REST response
-
-            ::
-
-                {
-                    'assignmentType': 'xxxx'
-                    'deviceAddress': 'xxxx'
-                    'hypervisor': 'xxxx'
-                    'id': 'xxxx'
-                    'licenseText': 'xxxx'
-                    'macAddress': 'xxxx'
-                }
-
-        """
-
-        return super(AssignmentClient, self)._list()
 
     def create(self, **kwargs):
         """ Unsupported method """

@@ -87,6 +87,32 @@ class BaseFeatureClient(object):
         return response
 
     def _list(self):
+        """List operation - private method"""
+
+        return self._client.make_request(self._metadata['uri'])
+
+    def _create(self, **kwargs):
+        """Create operation - private method"""
+
+        config = kwargs.pop('config', None)
+        config_file = kwargs.pop('config_file', None)
+        config = misc_utils.resolve_config(config, config_file)
+
+        response, status_code = self._client.make_request(
+            self._metadata['uri'],
+            method='POST',
+            body=config,
+            advanced_return=True
+        )
+
+        # account for async task pattern
+        if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
+            return self._wait_for_task(response['selfLink'])
+
+        # default - simply return response
+        return response
+
+    def list(self):
         """List operation
 
         Parameters
@@ -99,9 +125,9 @@ class BaseFeatureClient(object):
             the serialized REST response
         """
 
-        return self._client.make_request(self._metadata['uri'])
+        return self._list()
 
-    def _create(self, **kwargs):
+    def create(self, **kwargs):
         """Create operation
 
         Parameters
@@ -122,20 +148,4 @@ class BaseFeatureClient(object):
             the serialized REST response
         """
 
-        config = kwargs.pop('config', None)
-        config_file = kwargs.pop('config_file', None)
-        config = misc_utils.resolve_config(config, config_file)
-
-        response, status_code = self._client.make_request(
-            self._metadata['uri'],
-            method='POST',
-            body=config,
-            advanced_return=True
-        )
-
-        # account for async task pattern
-        if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
-            return self._wait_for_task(response['selfLink'])
-
-        # default - simply return response
-        return response
+        return self._create(**kwargs)
