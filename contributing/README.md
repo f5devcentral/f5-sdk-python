@@ -20,6 +20,53 @@ In short this is the set of important rules to help contributors understand why 
    - PUT -> `update()`
    - DELETE -> `delete()`
 
+### SDK API
+
+Below describes the SDK API given an example REST API containing child resource endpoints which themselves support individual CRUD operations.
+
+Given URI: `/device/pools/a_pool/members/a_member`
+
+```python
+   from device import PoolsClient, PoolMembersClient
+
+   # pool(s) level operations
+   pools_client = PoolsClient()
+   pools_client.list()
+   pools_client.create(config={})
+   pools_client.show(name='foo')
+   pools_client.update(name='foo', config={})
+   pools_client.delete(name='foo')
+
+   # pool member(s) level operations
+   pool_members_client = PoolMembersClient(pool_name='a_pool')
+   pool_members_client.list()
+   pool_members_client.create(config={})
+   pool_members_client.show(name='foo')
+   pool_members_client.update(name='foo', config={})
+   pool_members_client.delete(name='foo')
+```
+
+#### Alternate options explored
+
+```python
+   from device import PoolsClient
+
+   # pool(s) level operations
+   pools_client = PoolsClient()
+   pools_client.list()
+   pools_client.create(config={})
+   pools_client.show(name='foo')
+   pools_client.update(name='foo', config={})
+   pools_client.delete(name='foo')
+
+   # pool member(s) level operations
+   pools_client.members.list(pool_name='foo')
+   pools_client.members.create(pool_name='foo', config={})
+   pools_client.members.show(pool_name='foo', name='foo')
+   pools_client.members.update(pool_name='foo', name='foo', config={})
+   pools_client.members.delete(pool_name='foo', name='foo')
+```
+
 ## Scope
 
 - BIG-IP toolchain components

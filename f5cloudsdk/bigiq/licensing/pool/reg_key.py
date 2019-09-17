@@ -127,7 +127,16 @@ class RegKeyClient(BaseFeatureClient):
 
     Methods
     -------
-
+    list()
+        Refer to method documentation
+    create()
+        Refer to method documentation
+    show()
+        Refer to method documentation
+    update()
+        Refer to method documentation
+    delete()
+        Refer to method documentation
     """
 
     def __init__(self, client, **kwargs):
@@ -166,7 +175,16 @@ class RegKeyOfferingsClient(BaseFeatureClient):
 
     Methods
     -------
-
+    list()
+        Refer to method documentation
+    create()
+        Refer to method documentation
+    show()
+        Refer to method documentation
+    update()
+        Refer to method documentation
+    delete()
+        Refer to method documentation
     """
 
     def __init__(self, client, **kwargs):
@@ -206,7 +224,16 @@ class RegKeyOfferingMembersClient(BaseFeatureClient):
 
     Methods
     -------
-
+    list()
+        Refer to method documentation
+    create()
+        Refer to method documentation
+    show()
+        Refer to method documentation
+    update()
+        Refer to method documentation
+    delete()
+        Refer to method documentation
     """
 
     def __init__(self, client, **kwargs):

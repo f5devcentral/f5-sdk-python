@@ -1,4 +1,4 @@
-"""Python module for BIG-IQ licensing"""
+"""Module for BIG-IQ licensing"""
 
 from .assignments import AssignmentClient
 

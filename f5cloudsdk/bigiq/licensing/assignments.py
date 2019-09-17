@@ -23,7 +23,8 @@ class AssignmentClient(BaseFeatureClient):
 
     Methods
     -------
-
+    list()
+        Refer to method documentation
     """
 
     def __init__(self, client, **kwargs):
