@@ -1,6 +1,6 @@
 """ Test BIG-IQ licensing pool member management """
 
-from f5cloudsdk.bigiq.licensing import PoolMemberManagementClient
+from f5cloudsdk.bigiq.licensing.pool import MemberManagementClient
 
 from ....global_test_imports import pytest, Mock, PropertyMock
 from ....shared import constants
@@ -25,7 +25,7 @@ class TestPoolMemberManagementClient(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        client = PoolMemberManagementClient(mgmt_client)
+        client = MemberManagementClient(mgmt_client)
         assert client.list() == mock_response
 
     @pytest.mark.usefixtures("mgmt_client")
@@ -42,7 +42,7 @@ class TestPoolMemberManagementClient(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        client = PoolMemberManagementClient(mgmt_client)
+        client = MemberManagementClient(mgmt_client)
         assert client.create(config={'foo': 'bar'}) == mock_response
 
     @pytest.mark.usefixtures("mgmt_client")
@@ -67,6 +67,6 @@ class TestPoolMemberManagementClient(object):
         mock_request.json = Mock(side_effect=mock_responses)
         type(mock_request).status_code = PropertyMock(side_effect=[202, 200])
 
-        client = PoolMemberManagementClient(mgmt_client)
+        client = MemberManagementClient(mgmt_client)
         response = client.create(config={'foo': 'bar'})
         assert response == mock_responses[1]

@@ -7,7 +7,7 @@ from f5cloudsdk import constants
 from f5cloudsdk.utils import misc_utils
 from f5cloudsdk.utils import http_utils
 
-from f5cloudsdk.exceptions import MethodNotAllowed
+from f5cloudsdk.exceptions import MethodNotAllowed, InputRequiredError
 
 class BaseFeatureClient(object):
     """A base feature client class
@@ -47,7 +47,8 @@ class BaseFeatureClient(object):
         }
 
         self._exceptions = {
-            'MethodNotAllowed': MethodNotAllowed
+            'MethodNotAllowed': MethodNotAllowed,
+            'InputRequiredError': InputRequiredError
         }
 
     @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
@@ -112,6 +113,17 @@ class BaseFeatureClient(object):
         # default - simply return response
         return response
 
+    @staticmethod
+    def _get_resource_name(**kwargs):
+        """Get resource name"""
+
+        resource_name = kwargs.pop('name', None)
+
+        if not resource_name:
+            raise InputRequiredError('Resource name must be provided')
+
+        return resource_name
+
     def _list(self, **kwargs):
         """List operation - private method"""
 
@@ -130,7 +142,7 @@ class BaseFeatureClient(object):
     def _show(self, **kwargs):
         """Show operation - private method"""
 
-        resource_name = kwargs.pop('name', None)
+        resource_name = self._get_resource_name(**kwargs)
 
         return self._make_request(
             uri='%s/%s' % (self._metadata['uri'], resource_name)
@@ -143,7 +155,7 @@ class BaseFeatureClient(object):
             kwargs.pop('config', None),
             kwargs.pop('config_file', None)
         )
-        resource_name = kwargs.pop('name', None)
+        resource_name = self._get_resource_name(**kwargs)
 
         return self._make_request(
             uri='%s/%s' % (self._metadata['uri'], resource_name),
@@ -154,7 +166,7 @@ class BaseFeatureClient(object):
     def _delete(self, **kwargs):
         """Delete operation - private method"""
 
-        resource_name = kwargs.pop('name', None)
+        resource_name = self._get_resource_name(**kwargs)
 
         return self._make_request(
             uri='%s/%s' % (self._metadata['uri'], resource_name),
@@ -166,6 +178,11 @@ class BaseFeatureClient(object):
 
         Parameters
         ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
         None
 
         Returns

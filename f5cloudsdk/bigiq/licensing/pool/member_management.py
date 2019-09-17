@@ -3,11 +3,11 @@
     Example - Basic::
 
         from f5cloudsdk.bigiq import ManagementClient
-        from f5cloudsdk.bigiq.licensing import PoolMemberManagementClient
+        from f5cloudsdk.bigiq.licensing.pool import MemberManagementClient
 
         device = ManagementClient('192.0.2.10', user='admin', password='admin')
 
-        license_client = PoolMemberManagementClient(device)
+        license_client = MemberManagementClient(device)
 
         # perform assignment - unreachable device
         license_client.create(
@@ -38,8 +38,8 @@
 
 from f5cloudsdk.base_clients import BaseFeatureClient
 
-class PoolMemberManagementClient(BaseFeatureClient):
-    """BIG-IQ pool member management client
+class MemberManagementClient(BaseFeatureClient):
+    """BIG-IQ license pool member management client
 
     Attributes
     ----------
@@ -69,7 +69,7 @@ class PoolMemberManagementClient(BaseFeatureClient):
 
         """
 
-        super(PoolMemberManagementClient, self).__init__(
+        super(MemberManagementClient, self).__init__(
             client,
             logger_name=__name__,
             uri='/mgmt/cm/device/tasks/licensing/pool/member-management'

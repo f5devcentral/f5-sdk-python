@@ -124,10 +124,9 @@ def make_request(host, uri, **kwargs):
 
     # raise exception on 4xx and 5xx status code(s)
     if str(status_code)[:1] in ['4', '5']:
-        err_msg = 'Bad request for URL: %s code: %s reason: %s body: %s' % (
+        raise HTTPError('Bad request for URL: %s code: %s reason: %s body: %s' % (
             url, status_code, status_reason, response_body
-        )
-        raise HTTPError(err_msg)
+        ))
 
     # optionally return tuple containing status code, response, (future)
     if kwargs.pop('advanced_return', False):
