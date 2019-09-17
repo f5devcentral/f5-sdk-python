@@ -12,6 +12,9 @@ class InvalidComponentError(Exception):
 class InvalidComponentVersionError(Exception):
     """ Error raised if invalid component version is provided """
 
+class HTTPError(Exception):
+    """ Error raised http error occurs """
+
 class SSHCommandStdError(Exception):
     """ Error raised if ssh client command response contains stderr """
 

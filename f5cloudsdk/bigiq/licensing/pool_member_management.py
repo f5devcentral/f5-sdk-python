@@ -74,3 +74,18 @@ class PoolMemberManagementClient(BaseFeatureClient):
             logger_name=__name__,
             uri='/mgmt/cm/device/tasks/licensing/pool/member-management'
         )
+
+    def show(self, **kwargs):
+        """ Method not allowed (action:skip_documentation) """
+
+        raise self._exceptions['MethodNotAllowed']
+
+    def update(self, **kwargs):
+        """ Method not allowed (action:skip_documentation) """
+
+        raise self._exceptions['MethodNotAllowed']
+
+    def delete(self, **kwargs):
+        """ Method not allowed (action:skip_documentation) """
+
+        raise self._exceptions['MethodNotAllowed']

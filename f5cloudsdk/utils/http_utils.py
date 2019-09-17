@@ -7,6 +7,8 @@ from requests.auth import HTTPBasicAuth
 from f5cloudsdk import constants
 from f5cloudsdk.logger import Logger
 
+from f5cloudsdk.exceptions import HTTPError
+
 logger = Logger(__name__).get_logger() # pylint: disable=invalid-name
 
 def download_to_file(url, file_name):
@@ -96,7 +98,6 @@ def make_request(host, uri, **kwargs):
     # note: certain requests *may* contain large payloads, do *not* log body
     logger.debug('Making HTTP request: %s %s' % (method.upper(), uri))
 
-    # construct url
     url = 'https://%s:%s%s' % (host, port, uri)
     # make request
     response = requests.request(
@@ -109,25 +110,29 @@ def make_request(host, uri, **kwargs):
         verify=constants.HTTP_VERIFY
     )
 
-    status_code = response.status_code
-    status_reason = response.reason
-    # helpful debug
-    logger.debug('HTTP response: %s %s' % (status_code, status_reason))
-
     # return boolean response, if requested
     if kwargs.pop('bool_response', False):
         return response.ok
 
-    # raise exception on 4xx and 5xx status code(s)
-    response.raise_for_status()
-
-    # response body
+    status_code = response.status_code
+    status_reason = response.reason
     response_body = response.json()
+
+    # helpful debug
+    logger.debug('HTTP response: %s %s' % (status_code, status_reason))
     logger.trace('HTTP response body: %s' % (response_body))
+
+    # raise exception on 4xx and 5xx status code(s)
+    if str(status_code)[:1] in ['4', '5']:
+        err_msg = 'Bad request for URL: %s code: %s reason: %s body: %s' % (
+            url, status_code, status_reason, response_body
+        )
+        raise HTTPError(err_msg)
 
     # optionally return tuple containing status code, response, (future)
     if kwargs.pop('advanced_return', False):
         return (response_body, status_code)
+
     # finally, simply return response data
     return response_body
 

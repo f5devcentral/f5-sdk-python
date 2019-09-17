@@ -86,21 +86,21 @@ class BaseFeatureClient(object):
 
         return response
 
-    def _list(self):
-        """List operation - private method"""
+    def _make_request(self, **kwargs):
+        """Make request
 
-        return self._client.make_request(self._metadata['uri'])
+        Notes
+        -----
+        Codifies async task pattern handling
+        """
 
-    def _create(self, **kwargs):
-        """Create operation - private method"""
-
+        uri = kwargs.pop('uri', self._metadata['uri'])
+        method = kwargs.pop('method', 'GET')
         config = kwargs.pop('config', None)
-        config_file = kwargs.pop('config_file', None)
-        config = misc_utils.resolve_config(config, config_file)
 
         response, status_code = self._client.make_request(
-            self._metadata['uri'],
-            method='POST',
+            uri,
+            method=method,
             body=config,
             advanced_return=True
         )
@@ -112,7 +112,56 @@ class BaseFeatureClient(object):
         # default - simply return response
         return response
 
-    def list(self):
+    def _list(self, **kwargs):
+        """List operation - private method"""
+
+        return self._make_request(**kwargs)
+
+    def _create(self, **kwargs):
+        """Create operation - private method"""
+
+        config = misc_utils.resolve_config(
+            kwargs.pop('config', None),
+            kwargs.pop('config_file', None)
+        )
+
+        return self._make_request(method='POST', config=config)
+
+    def _show(self, **kwargs):
+        """Show operation - private method"""
+
+        resource_name = kwargs.pop('name', None)
+
+        return self._make_request(
+            uri='%s/%s' % (self._metadata['uri'], resource_name)
+        )
+
+    def _update(self, **kwargs):
+        """Update operation - private method"""
+
+        config = misc_utils.resolve_config(
+            kwargs.pop('config', None),
+            kwargs.pop('config_file', None)
+        )
+        resource_name = kwargs.pop('name', None)
+
+        return self._make_request(
+            uri='%s/%s' % (self._metadata['uri'], resource_name),
+            method='PUT',
+            config=config
+        )
+
+    def _delete(self, **kwargs):
+        """Delete operation - private method"""
+
+        resource_name = kwargs.pop('name', None)
+
+        return self._make_request(
+            uri='%s/%s' % (self._metadata['uri'], resource_name),
+            method='DELETE'
+        )
+
+    def list(self, **kwargs):
         """List operation
 
         Parameters
@@ -125,7 +174,7 @@ class BaseFeatureClient(object):
             the serialized REST response
         """
 
-        return self._list()
+        return self._list(**kwargs)
 
     def create(self, **kwargs):
         """Create operation
@@ -149,3 +198,78 @@ class BaseFeatureClient(object):
         """
 
         return self._create(**kwargs)
+
+    def show(self, **kwargs):
+        """Show operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._show(**kwargs)
+
+    def update(self, **kwargs):
+        """Update operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._update(**kwargs)
+
+    def delete(self, **kwargs):
+        """Delete operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._delete(**kwargs)

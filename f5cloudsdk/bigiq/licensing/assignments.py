@@ -55,3 +55,18 @@ class AssignmentClient(BaseFeatureClient):
         """ Method not allowed (action:skip_documentation) """
 
         raise self._exceptions['MethodNotAllowed']
+
+    def show(self, **kwargs):
+        """ Method not allowed (action:skip_documentation) """
+
+        raise self._exceptions['MethodNotAllowed']
+
+    def update(self, **kwargs):
+        """ Method not allowed (action:skip_documentation) """
+
+        raise self._exceptions['MethodNotAllowed']
+
+    def delete(self, **kwargs):
+        """ Method not allowed (action:skip_documentation) """
+
+        raise self._exceptions['MethodNotAllowed']
