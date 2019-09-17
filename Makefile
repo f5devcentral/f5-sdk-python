@@ -12,7 +12,7 @@ UNIT_TEST_DIR := ${TEST_DIR}/unit
 TEST_CACHE_DIR := .pytest_cache
 EXAMPLES_DIR := examples
 
-export SPHINX_APIDOC_OPTIONS = members,undoc-members,show-inheritance,inherited-members
+export SPHINX_APIDOC_OPTIONS = members,undoc-members,inherited-members
 
 build:
 	echo "Creating package artifacts";
