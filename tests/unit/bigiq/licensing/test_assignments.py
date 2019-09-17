@@ -2,8 +2,9 @@
 
 from f5cloudsdk.bigiq.licensing import AssignmentClient
 
-from ....global_test_imports import pytest, Mock
+from ....global_test_imports import pytest
 from ....shared import constants
+from ... import utils
 
 REQ = constants.MOCK['requests']
 
@@ -12,18 +13,35 @@ class TestAssignmentClient(object):
     """Test"""
 
     @pytest.mark.usefixtures("mgmt_client")
-    def test_list(self, mgmt_client, mocker):
-        """Test: list function
+    def test_crud_operations(self, mgmt_client, mocker):
+        """Test: CRUD operation functions
 
         Assertions
         ----------
-        - List response should match mocked return value
+        - response should match mocked return value
         """
 
-        mock_response = {
-            'items': []
-        }
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
+        client = AssignmentClient(mgmt_client)
+
+        utils.validate_crud_operations(
+            client,
+            mocker=mocker,
+            methods=['list']
+        )
+
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_invalid_crud_operations(self, mgmt_client, mocker):
+        """Test: Invalid CRUD operation functions
+
+        Assertions
+        ----------
+        - Exception should be raised for each invalid CRUD operation
+        """
 
         client = AssignmentClient(mgmt_client)
-        assert client.list() == mock_response
+
+        utils.invalidate_crud_operations(
+            client,
+            mocker=mocker,
+            methods=['create', 'show', 'update', 'delete']
+        )

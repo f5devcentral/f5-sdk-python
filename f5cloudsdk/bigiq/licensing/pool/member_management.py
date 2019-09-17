@@ -9,6 +9,9 @@
 
         license_client = MemberManagementClient(device)
 
+        # list existing assign/revoke tasks
+        license_client.list()
+
         # perform assignment - unreachable device
         license_client.create(
             config={
@@ -31,9 +34,6 @@
                 'macAddress': 'FA:16:3E:1B:6D:32'
             }
         )
-
-        # list existing assign/revoke tasks
-        license_client.list()
 """
 
 from f5cloudsdk.base_clients import BaseFeatureClient

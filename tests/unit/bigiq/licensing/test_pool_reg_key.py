@@ -1,18 +1,17 @@
 """ Test BIG-IQ licensing pool member management """
 
-from f5cloudsdk.bigiq.licensing.pool import RegKeyClient
+from f5cloudsdk.bigiq.licensing.pool import \
+    RegKeyClient, RegKeyOfferingsClient, RegKeyOfferingMembersClient
 
-from ....global_test_imports import pytest, Mock
-from ....shared import constants
-
-REQ = constants.MOCK['requests']
+from ....global_test_imports import pytest
+from ... import utils
 
 
-class TestPoolRegKeyClient(object):
+class TestRegKeyClient(object):
     """Test"""
 
     @pytest.mark.usefixtures("mgmt_client")
-    def test_list(self, mgmt_client, mocker):
+    def test_crud_operations(self, mgmt_client, mocker):
         """Test: CRUD operation functions
 
         Assertions
@@ -20,20 +19,53 @@ class TestPoolRegKeyClient(object):
         - response should match mocked return value
         """
 
-        for method in ['list', 'create', 'show', 'update', 'delete']:
-            mock_response = {
-                'items': [
-                    {
-                        'foo': 'bar'
-                    }
-                ]
-            }
-            mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
-            client = RegKeyClient(mgmt_client)
+        client = RegKeyClient(mgmt_client)
 
-            kwargs = {}
-            if method in ['show', 'update', 'delete']:
-                kwargs['name'] = 'foo'
-            if method in ['create', 'update']:
-                kwargs['config'] = {'foo': 'bar'}
-            assert getattr(client, method)(**kwargs) == mock_response
+        utils.validate_crud_operations(
+            client,
+            mocker=mocker
+        )
+
+
+class TestRegKeyOfferingsClient(object):
+    """Test"""
+
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_crud_operations(self, mgmt_client, mocker):
+        """Test: CRUD operation functions
+
+        Assertions
+        ----------
+        - response should match mocked return value
+        """
+
+        client = RegKeyOfferingsClient(mgmt_client, pool_name='foo')
+
+        utils.validate_crud_operations(
+            client,
+            mocker=mocker
+        )
+
+
+class TestRegKeyOfferingMembersClient(object):
+    """Test"""
+
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_crud_operations(self, mgmt_client, mocker):
+        """Test: CRUD operation functions
+
+        Assertions
+        ----------
+        - response should match mocked return value
+        """
+
+        client = RegKeyOfferingMembersClient(
+            mgmt_client,
+            pool_name='foo',
+            offering_name='bar'
+        )
+
+        utils.validate_crud_operations(
+            client,
+            mocker=mocker
+        )

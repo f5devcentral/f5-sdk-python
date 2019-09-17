@@ -20,17 +20,18 @@
         )
 
         # show license pool details
-        license_client.show(name='my_pool')
+        license_client.show(name='my_pool_id')
 
         # update license pool
         license_client.update(
+            name='my_pool_id',
             config={
                 'name': 'my_pool'
             }
         )
 
         # delete license pool
-        license_client.delete(name='my_pool')
+        license_client.delete(name='my_pool_id')
 
     Example - Offerings::
 
@@ -55,17 +56,18 @@
         )
 
         # show license pool offering details
-        offerings_client.show(name='my_offering')
+        offerings_client.show(name='my_offering_id')
 
         # update offering in license pool
         offerings_client.update(
+            name='my_offering_id',
             config={
                 'regkey': 'my_reg_key'
             }
         )
 
         # delete offering from license pool
-        offerings_client.delete(name='my_offering')
+        offerings_client.delete(name='my_offering_id')
 
     Example - Offering Members::
 
@@ -81,7 +83,7 @@
         )
 
         # list license pool offering members
-        members_client.list(name='my_reg_key)
+        members_client.list()
 
         # create (assign) member in license pool offering - managed or unmanaged
         members_client.create(
@@ -91,10 +93,11 @@
         )
 
         # show license pool offering member details
-        members_client.show(name='my_offering')
+        members_client.show(name='my_member_id')
 
         # update member in license pool offering
         members_client.update(
+            name='my_member_id',
             config={
                 'regkey': 'my_reg_key'
             }
@@ -102,9 +105,9 @@
 
         # delete (revoke) member from license pool offering - managed or unmanaged
         members_client.delete(
-            member_id='1234',
+            name='my_member_id',
             config={
-                'id': '1234',
+                'id': 'my_member_id',
                 'username': 'admin',
                 'password': 'admin'
             }

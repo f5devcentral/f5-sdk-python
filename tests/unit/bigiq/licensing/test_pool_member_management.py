@@ -4,6 +4,7 @@ from f5cloudsdk.bigiq.licensing.pool import MemberManagementClient
 
 from ....global_test_imports import pytest, Mock, PropertyMock
 from ....shared import constants
+from ... import utils
 
 REQ = constants.MOCK['requests']
 
@@ -12,38 +13,38 @@ class TestPoolMemberManagementClient(object):
     """Test"""
 
     @pytest.mark.usefixtures("mgmt_client")
-    def test_list(self, mgmt_client, mocker):
-        """Test: list function
+    def test_crud_operations(self, mgmt_client, mocker):
+        """Test: CRUD operation functions
 
         Assertions
         ----------
-        - List response should match mocked return value
+        - response should match mocked return value
         """
 
-        mock_response = {
-            'items': []
-        }
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
-
         client = MemberManagementClient(mgmt_client)
-        assert client.list() == mock_response
+
+        utils.validate_crud_operations(
+            client,
+            mocker=mocker,
+            methods=['list', 'create']
+        )
 
     @pytest.mark.usefixtures("mgmt_client")
-    def test_create(self, mgmt_client, mocker):
-        """Test: create function
+    def test_invalid_crud_operations(self, mgmt_client, mocker):
+        """Test: Invalid CRUD operation functions
 
         Assertions
         ----------
-        - Create response should match mocked return value
+        - Exception should be raised for each invalid CRUD operation
         """
 
-        mock_response = {
-            'items': []
-        }
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
-
         client = MemberManagementClient(mgmt_client)
-        assert client.create(config={'foo': 'bar'}) == mock_response
+
+        utils.invalidate_crud_operations(
+            client,
+            mocker=mocker,
+            methods=['show', 'update', 'delete']
+        )
 
     @pytest.mark.usefixtures("mgmt_client")
     def test_create_async(self, mgmt_client, mocker):

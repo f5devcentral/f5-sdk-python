@@ -58,8 +58,10 @@ class BaseFeatureClient(object):
         Notes
         -----
         Certain operations use an async task pattern, where a 202 response on the initial
-        POST is returned along with a self link to query.  The self link will return 202
-        until the task is complete, at which time it will return 200.
+        POST is returned along with a self link to query.  The operation is complete when
+        one of the following is true (depends on the REST API)
+        - The self link returns 200 (as opposed to 202)
+        - The response object contains the following: { 'status': 'FINISHED' }
 
         Parameters
         ----------
@@ -77,9 +79,7 @@ class BaseFeatureClient(object):
             advanced_return=True
         )
 
-        # check for async task pattern success/failure using multiple means
-        # - success code (200)
-        # - response object: { 'status': 'FINISHED' }
+        # check for async task pattern success/failure
         if status_code != constants.HTTP_STATUS_CODE['OK']:
             raise Exception('Successful status code not returned: %s' % status_code)
         if 'status' in response and response['status'] not in ['FINISHED']:
