@@ -7,7 +7,8 @@ This contains useful information about contributing to this project.
 In short this is the set of important rules to help contributors understand why the SDK is the way it is.
 
 - Be consistent with industry standard SDK(s) - The goal is to make the SDK easy to understand...
-- Keep the interfaces clean - Seperate management client from feature functionality client(s)
+- Keep the interfaces clean and simple
+   - Seperate management client from feature functionality client(s)
 - Each feature functionality client should support a single set of CRUD operations
 - When in doubt, use keyword arguments - In general the point is to avoid making assumptions and think ahead
 - [Semantic Versioning](https://semver.org) matters, this is critical to the user experience
@@ -19,6 +20,7 @@ In short this is the set of important rules to help contributors understand why 
    - POST -> `create()`
    - PUT -> `update()`
    - DELETE -> `delete()`
+- Prefer plural over singular for namespaces.  `from sdk import subscription` becomes `from sdk import subscriptions`
 
 ### SDK API
 

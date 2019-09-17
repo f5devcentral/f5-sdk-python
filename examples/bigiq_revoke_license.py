@@ -16,7 +16,7 @@ import os
 
 from f5cloudsdk.bigiq import ManagementClient
 from f5cloudsdk.bigiq.licensing import AssignmentClient
-from f5cloudsdk.bigiq.licensing.pool import MemberManagementClient
+from f5cloudsdk.bigiq.licensing.pools import MemberManagementClient
 from f5cloudsdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()

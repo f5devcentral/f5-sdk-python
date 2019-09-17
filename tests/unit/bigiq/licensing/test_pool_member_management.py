@@ -1,6 +1,6 @@
 """ Test BIG-IQ licensing pool member management """
 
-from f5cloudsdk.bigiq.licensing.pool import MemberManagementClient
+from f5cloudsdk.bigiq.licensing.pools import MemberManagementClient
 
 from ....global_test_imports import pytest, Mock, PropertyMock
 from ....shared import constants

@@ -3,7 +3,7 @@
     Example - Basic::
 
         from f5cloudsdk.bigiq import ManagementClient
-        from f5cloudsdk.bigiq.licensing.pool import UtilityClient
+        from f5cloudsdk.bigiq.licensing.pools import UtilityClient
 
         device = ManagementClient('192.0.2.10', user='admin', password='admin')
 
@@ -36,7 +36,7 @@
     Example - Offerings::
 
         from f5cloudsdk.bigiq import ManagementClient
-        from f5cloudsdk.bigiq.licensing.pool import UtilityOfferingsClient
+        from f5cloudsdk.bigiq.licensing.pools import UtilityOfferingsClient
 
         device = ManagementClient('192.0.2.10', user='admin', password='admin')
 
@@ -72,7 +72,7 @@
     Example - Offering Members::
 
         from f5cloudsdk.bigiq import ManagementClient
-        from f5cloudsdk.bigiq.licensing.pool import UtilityOfferingMembersClient
+        from f5cloudsdk.bigiq.licensing.pools import UtilityOfferingMembersClient
 
         device = ManagementClient('192.0.2.10', user='admin', password='admin')
 

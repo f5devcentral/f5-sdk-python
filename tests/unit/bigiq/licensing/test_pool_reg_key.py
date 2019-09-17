@@ -1,6 +1,6 @@
 """ Test BIG-IQ licensing pool member management """
 
-from f5cloudsdk.bigiq.licensing.pool import \
+from f5cloudsdk.bigiq.licensing.pools import \
     RegKeyClient, RegKeyOfferingsClient, RegKeyOfferingMembersClient
 
 from ....global_test_imports import pytest
