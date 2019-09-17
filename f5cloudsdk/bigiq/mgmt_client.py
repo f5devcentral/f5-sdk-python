@@ -1,4 +1,5 @@
-"""Management client"""
+"""BIG-IQ management client
+"""
 
 from datetime import datetime, timedelta
 
@@ -88,7 +89,8 @@ class ManagementClient(object):
         self.logger.debug('Getting authentication token')
 
         response = http_utils.make_request(
-            self.host, '/mgmt/shared/authn/login',
+            self.host,
+            '/mgmt/shared/authn/login',
             port=self.port,
             method='POST',
             body={
@@ -170,14 +172,17 @@ class ManagementClient(object):
         Returns
         -------
         dict
-            a dictionary containg version:
-            {
-                'version': 'x.x.x'
-            }
+            the device information
+
+            ::
+
+                {
+                    'version': 'x.x.x.x'
+                }
+
         """
 
-        uri = '/mgmt/tm/sys/version'
-        response = self.make_request(uri)
+        response = self.make_request('/mgmt/tm/sys/version')
 
         version_info = response['entries'][
             'https://localhost/mgmt/tm/sys/version/0'

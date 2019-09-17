@@ -142,7 +142,8 @@ disable=print-statement,
         inconsistent-return-statements,
         useless-object-inheritance,
         logging-not-lazy,
-        fixme
+        fixme,
+        useless-super-delegation
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

@@ -23,4 +23,6 @@
 
 from .mgmt_client import ManagementClient
 
-__all__ = ['ManagementClient']
+__all__ = [
+    'ManagementClient'
+]

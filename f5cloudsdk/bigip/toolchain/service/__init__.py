@@ -30,7 +30,7 @@ import requests
 from retry import retry
 
 from f5cloudsdk import constants
-from f5cloudsdk.utils import utils
+from f5cloudsdk.utils import misc_utils
 from f5cloudsdk.exceptions import InputRequiredError
 
 class OperationClient(object):
@@ -178,7 +178,7 @@ class OperationClient(object):
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
 
-        config = utils.resolve_config(config, config_file)
+        config = misc_utils.resolve_config(config, config_file)
 
         uri = self._get_configure_endpoint()['uri']
         response, status_code = self._client.make_request(

@@ -7,19 +7,72 @@ This contains useful information about contributing to this project.
 In short this is the set of important rules to help contributors understand why the SDK is the way it is.
 
 - Be consistent with industry standard SDK(s) - The goal is to make the SDK easy to understand...
+- Keep the interfaces clean and simple
+   - Seperate management client from feature functionality client(s)
+- Each feature functionality client should support a single set of CRUD operations
 - When in doubt, use keyword arguments - In general the point is to avoid making assumptions and think ahead
 - [Semantic Versioning](https://semver.org) matters, this is critical to the user experience
-- Keep the interfaces clean - Seperate management client from feature functionality client(s)
 - Avoid creating hand-written documentation outside of the code to explain functionality at all costs - Doc strings exists, use them
 - CRUD operations should be provided using a consistent pattern
-   - GET -> `show()`
+   - GET -> `list()` or `show()`
+      - `list()`: If performing a `GET` on a collection of resources.
+      - `show()`: If performing a `GET` on a single resource.
    - POST -> `create()`
    - PUT -> `update()`
    - DELETE -> `delete()`
+- Prefer plural over singular for namespaces.  `from sdk import subscription` becomes `from sdk import subscriptions`
+
+### SDK API
+
+Below describes the SDK API given an example REST API containing child resource endpoints which themselves support individual CRUD operations.
+
+Given URI: `/device/pools/a_pool/members/a_member`
+
+```python
+   from device import PoolsClient, PoolMembersClient
+
+   # pool(s) level operations
+   pools_client = PoolsClient()
+   pools_client.list()
+   pools_client.create(config={})
+   pools_client.show(name='foo')
+   pools_client.update(name='foo', config={})
+   pools_client.delete(name='foo')
+
+   # pool member(s) level operations
+   pool_members_client = PoolMembersClient(pool_name='a_pool')
+   pool_members_client.list()
+   pool_members_client.create(config={})
+   pool_members_client.show(name='foo')
+   pool_members_client.update(name='foo', config={})
+   pool_members_client.delete(name='foo')
+```
+
+#### Alternate options explored
+
+```python
+   from device import PoolsClient
+
+   # pool(s) level operations
+   pools_client = PoolsClient()
+   pools_client.list()
+   pools_client.create(config={})
+   pools_client.show(name='foo')
+   pools_client.update(name='foo', config={})
+   pools_client.delete(name='foo')
+
+   # pool member(s) level operations
+   pools_client.members.list(pool_name='foo')
+   pools_client.members.create(pool_name='foo', config={})
+   pools_client.members.show(pool_name='foo', name='foo')
+   pools_client.members.update(pool_name='foo', name='foo', config={})
+   pools_client.members.delete(pool_name='foo', name='foo')
+```
 
 ## Scope
 
 - BIG-IP toolchain components
+- BIG-IQ licensing API's
 - F5 Cloud Services
 
 ## Quality
