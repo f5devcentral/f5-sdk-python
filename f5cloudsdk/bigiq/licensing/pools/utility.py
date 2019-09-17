@@ -99,7 +99,7 @@
         members_client.update(
             name='my_member_id',
             config={
-                'regkey': 'my_reg_key'
+                'deviceAddress': 'x.x.x.x'
             }
         )
 

@@ -151,11 +151,11 @@ class BaseFeatureClient(object):
     def _update(self, **kwargs):
         """Update operation - private method"""
 
+        resource_name = self._get_resource_name(**kwargs)
         config = misc_utils.resolve_config(
             kwargs.pop('config', None),
             kwargs.pop('config_file', None)
         )
-        resource_name = self._get_resource_name(**kwargs)
 
         return self._make_request(
             uri='%s/%s' % (self._metadata['uri'], resource_name),
@@ -167,10 +167,16 @@ class BaseFeatureClient(object):
         """Delete operation - private method"""
 
         resource_name = self._get_resource_name(**kwargs)
+        config = misc_utils.resolve_config(
+            kwargs.pop('config', None),
+            kwargs.pop('config_file', None),
+            required=False
+        )
 
         return self._make_request(
             uri='%s/%s' % (self._metadata['uri'], resource_name),
-            method='DELETE'
+            method='DELETE',
+            config=config
         )
 
     def list(self, **kwargs):

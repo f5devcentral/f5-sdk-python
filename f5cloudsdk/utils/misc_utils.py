@@ -3,7 +3,7 @@
 from f5cloudsdk.exceptions import InputRequiredError
 from . import file_utils
 
-def resolve_config(config, config_file):
+def resolve_config(config, config_file, **kwargs):
     """Resolve config options: config|config_file
 
     Parameters
@@ -12,6 +12,8 @@ def resolve_config(config, config_file):
         configuration (resolved)
     config_file : str
         configuration file (to resolve)
+    required : bool
+        when false, input is not required and none object may be returned
 
     Returns
     -------
@@ -20,7 +22,9 @@ def resolve_config(config, config_file):
     """
 
     if not config and not config_file:
-        raise InputRequiredError('One of config|config_file must be provided')
+        if kwargs.pop('required', True):
+            raise InputRequiredError('One of config|config_file must be provided')
+        return None
 
     if config_file:
         config = file_utils.load_file(config_file)
