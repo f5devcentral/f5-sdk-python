@@ -1,4 +1,4 @@
-"""Python module for BIG-IP
+"""Module for BIG-IP
 
     Example - Basic::
 

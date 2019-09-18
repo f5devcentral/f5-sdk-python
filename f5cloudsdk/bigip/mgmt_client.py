@@ -1,5 +1,4 @@
-"""BIG-IP management client
-"""
+"""BIG-IP management client"""
 
 import os
 import socket

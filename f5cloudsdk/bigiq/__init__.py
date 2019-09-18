@@ -1,4 +1,4 @@
-"""Python module for BIG-IQ
+"""Module for BIG-IQ
 
     Example - Basic::
 
