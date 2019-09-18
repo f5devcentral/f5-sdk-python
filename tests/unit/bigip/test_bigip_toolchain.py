@@ -1,42 +1,28 @@
 """ Test BIG-IP module """
 
-# standard imports
 from os import path
 import json
 import tempfile
 import shutil
-# project imports
+
 from f5cloudsdk import exceptions
 from f5cloudsdk.bigip.toolchain import ToolChainClient
-# unittest imports
+
 from ...global_test_imports import pytest, Mock
 
-# local test imports
 from ...shared import constants
 from ...shared import mock_utils
-from . import utils as BigIpUtils
 
 TOKEN = constants.TOKEN
 
-# packages to mock
 REQ = constants.MOCK['requests']
 
 
 class TestToolChain(object):
     """Test Class: bigip.toolchain module """
 
-    def setup_method(self):
-        """ setup any state tied to the execution of the given method in a
-        class
-        """
-        self.device = BigIpUtils.get_mgmt_client(token=TOKEN)
-
-    def teardown_method(self):
-        """ teardown any state that was previously setup with a setup_method
-        call
-        """
-
-    def test_init(self):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_init(self, mgmt_client):
         """Test: Initialize toolchain client
 
         Assertions
@@ -45,12 +31,13 @@ class TestToolChain(object):
         - 'service' attribute exists
         """
 
-        toolchain = ToolChainClient(self.device, 'as3')
+        toolchain = ToolChainClient(mgmt_client, 'as3')
 
         assert toolchain.package
         assert toolchain.service
 
-    def test_component_invalid(self):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_component_invalid(self, mgmt_client):
         """Test: Invalid component
 
         Assertions
@@ -58,9 +45,10 @@ class TestToolChain(object):
         - InvalidComponentError exception should be raised
         """
 
-        pytest.raises(exceptions.InvalidComponentError, ToolChainClient, self.device, 'foo')
+        pytest.raises(exceptions.InvalidComponentError, ToolChainClient, mgmt_client, 'foo')
 
-    def test_component_version_invalid(self):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_component_version_invalid(self, mgmt_client):
         """Test: Invalid component version
 
         Assertions
@@ -71,7 +59,7 @@ class TestToolChain(object):
         pytest.raises(
             exceptions.InvalidComponentVersionError,
             ToolChainClient,
-            self.device,
+            mgmt_client,
             'as3',
             version='0.0.0'
         )
@@ -80,18 +68,8 @@ class TestToolChain(object):
 class TestToolChainPackage(object):
     """Test Class: bigip.toolchain.package module """
 
-    def setup_method(self):
-        """ setup any state tied to the execution of the given method in a
-        class
-        """
-        self.device = BigIpUtils.get_mgmt_client(token=TOKEN)
-
-    def teardown_method(self):
-        """ teardown any state that was previously setup with a setup_method
-        call
-        """
-
-    def test_install(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_install(self, mgmt_client, mocker):
         """Test: install
 
         Assertions
@@ -123,15 +101,15 @@ class TestToolChainPackage(object):
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        toolchain = ToolChainClient(self.device, 'as3', version='3.9.0')
+        toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0')
 
-        response = toolchain.package.install()
-        assert response == {
+        assert toolchain.package.install() == {
             'component': 'as3',
             'version': '3.9.0'
         }
 
-    def test_uninstall(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_uninstall(self, mgmt_client, mocker):
         """Test: uninstall
 
         Assertions
@@ -158,15 +136,15 @@ class TestToolChainPackage(object):
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        toolchain = ToolChainClient(self.device, 'as3', version='3.9.0')
+        toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0')
 
-        response = toolchain.package.uninstall()
-        assert response == {
+        assert toolchain.package.uninstall() == {
             'component': 'as3',
             'version': '3.9.0'
         }
 
-    def test_is_installed(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_is_installed(self, mgmt_client, mocker):
         """Test: is_installed
 
         Assertions
@@ -185,12 +163,12 @@ class TestToolChainPackage(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
 
-        toolchain = ToolChainClient(self.device, 'as3', version='3.9.0')
+        toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0')
 
-        response = toolchain.package.is_installed()
-        assert response
+        assert toolchain.package.is_installed()
 
-    def test_failed_task_status(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_failed_task_status(self, mgmt_client, mocker):
         """Test: is_installed with failed RPM task status
 
         Assertions
@@ -204,7 +182,7 @@ class TestToolChainPackage(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
 
-        toolchain = ToolChainClient(self.device, 'as3', version='3.9.0')
+        toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0')
 
         pytest.raises(Exception, toolchain.package.is_installed)
 
@@ -222,18 +200,8 @@ class TestToolChainService(object):
         """" Teardown func """
         shutil.rmtree(cls.test_tmp_dir)
 
-    def setup_method(self):
-        """ setup any state tied to the execution of the given method in a
-        class
-        """
-        self.device = BigIpUtils.get_mgmt_client(token=TOKEN)
-
-    def teardown_method(self):
-        """ teardown any state that was previously setup with a setup_method
-        call
-        """
-
-    def test_show(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_show(self, mgmt_client, mocker):
         """Test: show
 
         Assertions
@@ -241,15 +209,15 @@ class TestToolChainService(object):
         - show() response should equal requests response
         """
 
-        mock_resp = {'message': 'success'}
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
+        mock_response = {'message': 'success'}
+        mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        toolchain = ToolChainClient(self.device, 'as3')
+        toolchain = ToolChainClient(mgmt_client, 'as3')
 
-        response = toolchain.service.show()
-        assert mock_resp == response
+        assert toolchain.service.show() == mock_response
 
-    def test_create(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_create(self, mgmt_client, mocker):
         """Test: create
 
         Assertions
@@ -257,15 +225,15 @@ class TestToolChainService(object):
         - create() response should equal requests response
         """
 
-        mock_resp = {'message': 'success'}
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
+        mock_response = {'message': 'success'}
+        mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        toolchain = ToolChainClient(self.device, 'as3')
+        toolchain = ToolChainClient(mgmt_client, 'as3')
 
-        response = toolchain.service.create(config={'config': 'foo'})
-        assert mock_resp == response
+        assert toolchain.service.create(config={'config': 'foo'}) == mock_response
 
-    def test_create_config_file(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_create_config_file(self, mgmt_client, mocker):
         """Test: create with config file
 
         Assertions
@@ -273,19 +241,19 @@ class TestToolChainService(object):
         - create() response should equal requests response
         """
 
-        mock_resp = {'message': 'success'}
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
+        mock_response = {'message': 'success'}
+        mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        toolchain = ToolChainClient(self.device, 'as3')
+        toolchain = ToolChainClient(mgmt_client, 'as3')
 
         config_file = path.join(self.test_tmp_dir, 'config.json')
         with open(config_file, 'w') as _f:
             _f.write(json.dumps({'config': 'foo'}))
 
-        response = toolchain.service.create(config_file=config_file)
-        assert mock_resp == response
+        assert toolchain.service.create(config_file=config_file) == mock_response
 
-    def test_create_no_config(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_create_no_config(self, mgmt_client):
         """Test: create with no config provided
 
         Assertions
@@ -293,14 +261,12 @@ class TestToolChainService(object):
         - InputRequiredError exception should be raised
         """
 
-        mock_resp = {'message': 'success'}
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
-
-        toolchain = ToolChainClient(self.device, 'as3')
+        toolchain = ToolChainClient(mgmt_client, 'as3')
 
         pytest.raises(exceptions.InputRequiredError, toolchain.service.create)
 
-    def test_create_async(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_create_async(self, mgmt_client, mocker):
         """Test: create async response
 
         Assertions
@@ -310,21 +276,22 @@ class TestToolChainService(object):
         - make_request() second call uri should equal task uri
         """
 
-        mock_resp = {'foo': 'bar'}
+        mock_response = {'foo': 'bar'}
         make_request_mock = mocker.patch(
             'f5cloudsdk.utils.http_utils.make_request',
-            side_effect=[({'selfLink': 'https://localhost/foo/1234'}, 202), (mock_resp, 200)])
+            side_effect=[({'selfLink': 'https://localhost/foo/1234'}, 202), (mock_response, 200)])
 
-        toolchain = ToolChainClient(self.device, 'as3')
+        toolchain = ToolChainClient(mgmt_client, 'as3')
 
         response = toolchain.service.create(config={'foo': 'bar', 'async': True})
 
-        assert mock_resp == response
+        assert mock_response == response
         assert make_request_mock.call_count == 2
         args, _ = make_request_mock.call_args_list[1]
         assert args[1] == '/foo/1234'
 
-    def test_delete(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_delete(self, mgmt_client, mocker):
         """Test: delete
 
         Assertions
@@ -332,15 +299,15 @@ class TestToolChainService(object):
         - delete() response should equal requests response
         """
 
-        mock_resp = {'message': 'success'}
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
+        mock_response = {'message': 'success'}
+        mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        toolchain = ToolChainClient(self.device, 'as3')
+        toolchain = ToolChainClient(mgmt_client, 'as3')
 
-        response = toolchain.service.delete()
-        assert mock_resp == response
+        assert toolchain.service.delete() == mock_response
 
-    def test_delete_method_exception(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_delete_method_exception(self, mgmt_client):
         """Test: delete - against invalid toolchain component
 
         For example, DO does not support the 'DELETE' method
@@ -350,14 +317,12 @@ class TestToolChainService(object):
         - Exception should be raised
         """
 
-        mock_resp = {'message': 'success'}
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
-
-        toolchain = ToolChainClient(self.device, 'do')
+        toolchain = ToolChainClient(mgmt_client, 'do')
 
         pytest.raises(Exception, toolchain.service.delete)
 
-    def test_is_available(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_is_available(self, mgmt_client, mocker):
         """Test: is_available
 
         Assertions
@@ -365,10 +330,9 @@ class TestToolChainService(object):
         - is_available() response should be boolean (True)
         """
 
-        mock_resp = {'message': 'success'}
-        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
+        mock_response = {'message': 'success'}
+        mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        toolchain = ToolChainClient(self.device, 'as3')
+        toolchain = ToolChainClient(mgmt_client, 'as3')
 
-        response = toolchain.service.is_available()
-        assert response
+        assert toolchain.service.is_available()

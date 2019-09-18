@@ -1,29 +1,25 @@
 """ Test BIG-IP module """
 
-# project imports
 import base64
 import socket
 import os
 from paramiko import ssh_exception
 from f5cloudsdk import exceptions
 from f5cloudsdk import constants as project_constants
-# unittest imports
+
 from ...global_test_imports import pytest, Mock, call
 
-# local test imports
 from ...shared import constants
 from ...shared import mock_utils
 from . import utils as BigIpUtils
 
-# packages to mock
 REQ = constants.MOCK['requests']
-
-DFL_MGMT_PORT = 443
 
 HOST = constants.HOST
 USER = constants.USER
 USER_PWD = constants.USER_PWD
 TOKEN = constants.TOKEN
+DFL_MGMT_PORT = constants.PORT
 
 TOKEN_RESPONSE = {
     'token': {
@@ -49,18 +45,8 @@ class TestBigIp(object):
     def teardown_class(cls):
         """" Teardown func """
 
-    def setup_method(self):
-        """ setup any state tied to the execution of the given method in a
-        class
-        """
-        self.device = BigIpUtils.get_mgmt_client(token=TOKEN)
-
-    def teardown_method(self):
-        """ teardown any state that was previously setup with a setup_method
-        call
-        """
-
-    def test_mgmt_client(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_mgmt_client(self, mgmt_client):
         """Test: Initialize mgmt client
 
         Assertions
@@ -68,11 +54,7 @@ class TestBigIp(object):
         - Device instance token should match 'TOKEN'
         """
 
-        mocker.patch(REQ).return_value.json = Mock(return_value=TOKEN_RESPONSE)
-
-        device = BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
-
-        assert device.token == TOKEN
+        assert mgmt_client.token == TOKEN
 
     def test_mgmt_client_key_auth(self, mocker):
         """Test: Initialize mgmt client using key-based auth
@@ -207,7 +189,8 @@ class TestBigIp(object):
             token=TOKEN,
             skip_ready_check=False)
 
-    def test_get_info(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_get_info(self, mgmt_client, mocker):
         """Test: get_info
 
         Assertions
@@ -231,10 +214,10 @@ class TestBigIp(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=response)
 
-        device_info = self.device.get_info()
-        assert device_info['version'] == version
+        assert mgmt_client.get_info()['version'] == version
 
-    def test_make_request_no_token(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_make_request_no_token(self, mgmt_client):
         """Test: make_request with no device token
 
         Assertions
@@ -242,13 +225,12 @@ class TestBigIp(object):
         - AuthRequiredError exception should be raised
         """
 
-        mocker.patch(REQ).return_value.json = Mock(return_value={})
+        mgmt_client.token = None
 
-        self.device.token = None
+        pytest.raises(exceptions.AuthRequiredError, mgmt_client.make_request, '/')
 
-        pytest.raises(exceptions.AuthRequiredError, self.device.make_request, '/')
-
-    def test_make_request_auth_header(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_make_request_auth_header(self, mgmt_client, mocker):
         """Test: make_request should insert auth header
 
         Assertions
@@ -258,12 +240,13 @@ class TestBigIp(object):
 
         mock = mocker.patch(REQ)
 
-        self.device.make_request('/')
+        mgmt_client.make_request('/')
 
         _, kwargs = mock.call_args
         assert kwargs['headers'][project_constants.F5_AUTH_TOKEN_HEADER] == TOKEN
 
-    def test_make_request_bool(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_make_request_bool(self, mgmt_client, mocker):
         """Test: make_request with bool_response=True
 
         Assertions
@@ -273,10 +256,10 @@ class TestBigIp(object):
 
         mocker.patch(REQ).return_value.json = Mock(return_value={})
 
-        response = self.device.make_request('/', bool_response=True)
-        assert response
+        assert mgmt_client.make_request('/', bool_response=True)
 
-    def test_make_ssh_request_stderr(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_make_ssh_request_stderr(self, mgmt_client, mocker):
         """Test: make_ssh_request - stderr response should raise exception
 
         Assertions
@@ -284,15 +267,16 @@ class TestBigIp(object):
         - SSHCommandStdError exception should be raised
         """
 
-        mocker.patch(REQ).return_value.json = Mock(return_value=TOKEN_RESPONSE)
         mock_utils.create_ssh_client(
-            mocker.patch('paramiko.SSHClient'), '', stderr='error')
+            mocker.patch('paramiko.SSHClient'),
+            '',
+            stderr='error'
+        )
 
-        device = BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
+        pytest.raises(exceptions.SSHCommandStdError, mgmt_client.make_ssh_request, 'command')
 
-        pytest.raises(exceptions.SSHCommandStdError, device.make_ssh_request, 'command')
-
-    def test_make_ssh_request_connect_error(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_make_ssh_request_connect_error(self, mgmt_client, mocker):
         """Test: make_ssh_request - connect exception should raise exception
 
         Assertions
@@ -300,10 +284,7 @@ class TestBigIp(object):
         - SSHException should be raised
         """
 
-        mocker.patch(REQ).return_value.json = Mock(return_value=TOKEN_RESPONSE)
         mock_utils.create_ssh_client(
             mocker.patch('paramiko.SSHClient'), '', connect_raise=ssh_exception.SSHException)
 
-        device = BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
-
-        pytest.raises(ssh_exception.SSHException, device.make_ssh_request, 'command')
+        pytest.raises(ssh_exception.SSHException, mgmt_client.make_ssh_request, 'command')
