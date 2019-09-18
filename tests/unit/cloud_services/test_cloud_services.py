@@ -1,14 +1,11 @@
 """ Test module """
 
-# project imports
-from f5cloudsd.cloud_services import ManagementClient
+from f5cloudsdk.cloud_services import ManagementClient
 from f5cloudsdk import constants as project_constants
-# unittest imports
-from ...global_test_imports import pytest, Mock
 
-# local test imports
+from ...global_test_imports import pytest, Mock
 from ...shared import constants
-# packages to mock
+
 REQ = constants.MOCK['requests']
 
 USER = constants.USER
