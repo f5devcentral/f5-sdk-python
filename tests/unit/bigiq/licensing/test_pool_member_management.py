@@ -1,6 +1,7 @@
 """ Test BIG-IQ licensing pool member management """
 
 from f5cloudsdk.bigiq.licensing.pools import MemberManagementClient
+from f5cloudsdk.exceptions import MethodNotAllowed
 
 from ....global_test_imports import pytest, Mock, PropertyMock
 from ....shared import constants
@@ -43,6 +44,7 @@ class TestPoolMemberManagementClient(object):
         utils.invalidate_crud_operations(
             client,
             mocker=mocker,
+            exception=MethodNotAllowed,
             methods=['show', 'update', 'delete']
         )
 

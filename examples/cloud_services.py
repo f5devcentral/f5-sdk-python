@@ -13,7 +13,7 @@ Set local environment variables first
 import os
 
 from f5cloudsdk.cloud_services import ManagementClient
-from f5cloudsdk.cloud_services.subscription import SubscriptionClient
+from f5cloudsdk.cloud_services.subscriptions import SubscriptionClient
 from f5cloudsdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()
@@ -25,11 +25,10 @@ def get_cs_config():
         user=os.environ['F5_SDK_USERNAME'], password=os.environ['F5_SDK_PWD'])
 
     # create subscription client
-    subscription_client = SubscriptionClient(
-        cs_client, subscription_id=os.environ['F5_SDK_CS_SUBSCRIPTION_ID'])
+    subscription_client = SubscriptionClient(cs_client)
 
-    # configure subscription
-    return subscription_client.show()
+    # get subscription details
+    return subscription_client.show(name=os.environ['F5_SDK_CS_SUBSCRIPTION_ID'])
 
 if __name__ == '__main__':
     LOGGER.info(get_cs_config())

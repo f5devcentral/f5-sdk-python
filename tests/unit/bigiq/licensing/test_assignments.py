@@ -1,6 +1,7 @@
 """ Test BIG-IQ licensing assignment """
 
 from f5cloudsdk.bigiq.licensing import AssignmentClient
+from f5cloudsdk.exceptions import MethodNotAllowed
 
 from ....global_test_imports import pytest
 from ....shared import constants
@@ -43,5 +44,6 @@ class TestAssignmentClient(object):
         utils.invalidate_crud_operations(
             client,
             mocker=mocker,
+            exception=MethodNotAllowed,
             methods=['create', 'show', 'update', 'delete']
         )

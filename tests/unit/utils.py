@@ -6,6 +6,17 @@ from ..shared import constants
 REQ = constants.MOCK['requests']
 
 
+def set_default_crud_kwargs(method):
+    """ Set default crud operation kwargs"""
+
+    kwargs = {}
+    if method in ['show', 'update', 'delete']:
+        kwargs['name'] = 'foo'
+    if method in ['create', 'update']:
+        kwargs['config'] = {'foo': 'bar'}
+    return kwargs
+
+
 def validate_crud_operations(client, **kwargs):
     """Validate CRUD operations
 
@@ -41,11 +52,7 @@ def validate_crud_operations(client, **kwargs):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        kwargs = {}
-        if method in ['show', 'update', 'delete']:
-            kwargs['name'] = 'foo'
-        if method in ['create', 'update']:
-            kwargs['config'] = {'foo': 'bar'}
+        kwargs = set_default_crud_kwargs(method)
         assert getattr(client, method)(**kwargs) == mock_response
 
 
@@ -75,4 +82,5 @@ def invalidate_crud_operations(client, **kwargs):
     exception = kwargs.pop('exception', Exception)
 
     for method in methods:
+        kwargs = set_default_crud_kwargs(method)
         pytest.raises(exception, getattr(client, method), **kwargs)

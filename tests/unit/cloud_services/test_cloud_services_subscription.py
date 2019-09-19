@@ -1,90 +1,44 @@
-""" Test BIG-IP module """
+""" Test module """
 
-# standard imports
+
 import json
-# project imports
-from f5cloudsdk.cloud_services import ManagementClient
-from f5cloudsdk.cloud_services.subscription import SubscriptionClient
-from f5cloudsdk.exceptions import InputRequiredError
-# unittest imports
-from ...global_test_imports import pytest, Mock
 
-# local test imports
+from f5cloudsdk.cloud_services import ManagementClient
+from f5cloudsdk.cloud_services.subscriptions import SubscriptionClient
+
+from ...global_test_imports import pytest, Mock
 from ...shared import constants
-# packages to mock
+from .. import utils
+
 REQ = constants.MOCK['requests']
 
 USER = constants.USER
 USER_PWD = constants.USER_PWD
-
 LOGIN_RESPONSE = constants.F5_CLOUD_SERVICES['LOGIN_RESPONSE']
 
 
 class TestSubscription(object):
-    """Test Class: cloud_services.subscription module """
+    """Test Class: cloud_services.subscriptions module """
 
-    @classmethod
-    def setup_class(cls):
-        """" Setup func """
-
-    @classmethod
-    def teardown_class(cls):
-        """" Teardown func """
-
-    def test_mgmt_client_no_sub_id(self, mocker):
-        """Test: Subscription client should raise error if subscription id is not provided
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_crud_operations(self, mgmt_client, mocker):
+        """Test: CRUD operation functions
 
         Assertions
         ----------
-        - Exception InputRequiredError is raised
+        - response should match mocked return value
         """
 
-        mocker.patch(REQ).return_value.json = Mock(return_value=LOGIN_RESPONSE)
+        client = SubscriptionClient(mgmt_client)
 
-        mgmt_client = ManagementClient(user=USER, password=USER_PWD)
+        utils.validate_crud_operations(
+            client,
+            mocker=mocker,
+            methods=['list', 'create', 'show', 'update', 'delete']
+        )
 
-        pytest.raises(InputRequiredError, SubscriptionClient, mgmt_client)
-
-    def test_subscription_client_show(self, mocker):
-        """Test: Subscription client show()
-
-        Assertions
-        ----------
-        - Subscription client show() return value should be mocked response
-        """
-
-        show_response = {
-            'subscription_id': 'foo',
-            'account_id': 'foo'
-        }
-        mocker.patch(REQ).return_value.json = Mock(side_effect=[LOGIN_RESPONSE, show_response])
-
-        mgmt_client = ManagementClient(user=USER, password=USER_PWD)
-        sub_client = SubscriptionClient(mgmt_client, subscription_id='foo')
-
-        response = sub_client.show()
-        assert response == show_response
-
-    def test_subscription_client_update(self, mocker):
-        """Test: Subscription client update()
-
-        Assertions
-        ----------
-        - Subscription client update() return value should be mocked response
-        """
-
-        update_response = {
-            'configuration': {}
-        }
-        mocker.patch(REQ).return_value.json = Mock(side_effect=[LOGIN_RESPONSE, update_response])
-
-        mgmt_client = ManagementClient(user=USER, password=USER_PWD)
-        sub_client = SubscriptionClient(mgmt_client, subscription_id='foo')
-
-        response = sub_client.update(config={'configuration': {}})
-        assert response == update_response
-
-    def test_subscription_client_update_config_file(self, mocker):
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_subscription_client_update_config_file(self, mgmt_client, mocker):
         """Test: Subscription client update() - with config_file
 
         Assertions
@@ -99,7 +53,6 @@ class TestSubscription(object):
         mocker.patch('f5cloudsdk.utils.file_utils.open', mocker.mock_open(read_data=json.dumps({})))
 
         mgmt_client = ManagementClient(user=USER, password=USER_PWD)
-        sub_client = SubscriptionClient(mgmt_client, subscription_id='foo')
+        sub_client = SubscriptionClient(mgmt_client)
 
-        response = sub_client.update(config_file='/foo.json')
-        assert response == update_response
+        assert sub_client.update(name='foo', config_file='/foo.json') == update_response

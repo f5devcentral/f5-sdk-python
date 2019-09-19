@@ -1,6 +1,6 @@
-"""Python module for F5 Cloud Services
+"""Module for Cloud Services subscriptions
 
-    Example - Basic::
+    Example - Update Subscription::
 
         from f5cloudsdk.cloud_services import ManagementClient
         from f5cloudsdk.cloud_services.subscriptions import SubscriptionClient
@@ -16,8 +16,8 @@
         )
 """
 
-from .mgmt_client import ManagementClient
+from .subscription import SubscriptionClient
 
 __all__ = [
-    'ManagementClient'
+    'SubscriptionClient'
 ]
