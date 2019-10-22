@@ -265,10 +265,16 @@ class OperationClient(object):
 
         Returns
         -------
-        bool
-            a boolean based on toolchain component package existence
+        dict
+            a dictionary containing version info:
+                {'is_installed': 'true', 'installed_version': 'x.x.x', 'latest_version': 'y.y.y'}
         """
 
         # list installed packages, check if this version's package name is installed
         package_name = self._metadata_client.get_package_name()
-        return self._check_rpm_exists(package_name)
+        version_data = {
+            'is_installed': self._check_rpm_exists(package_name),
+            'installed_version': self._metadata_client.version if self._check_rpm_exists(package_name) else '',
+            'latest_version': self._metadata_client.get_latest_version()
+        }
+        return version_data

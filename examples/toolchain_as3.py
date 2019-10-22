@@ -37,7 +37,7 @@ def update_as3_config():
     as3_client = ToolChainClient(mgmt_client, 'as3')
 
     # install package
-    if not as3_client.package.is_installed():
+    if not as3_client.package.is_installed()['is_installed']:
         as3_client.package.install()
 
     # ensure service is available

@@ -149,7 +149,9 @@ class TestToolChainPackage(object):
 
         Assertions
         ----------
-        - is_installed() response should be boolean (True)
+        - is_installed() response should be a dict {'is_installed': True,
+                                                    'installed_version': '3.9.0',
+                                                    'latest_version': '3.13.0'}
         """
 
         mock_resp = {
@@ -165,7 +167,9 @@ class TestToolChainPackage(object):
 
         toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0')
 
-        assert toolchain.package.is_installed()
+        assert toolchain.package.is_installed() == {'is_installed': True,
+                                                    'installed_version': '3.9.0',
+                                                    'latest_version': '3.13.0'}
 
     @pytest.mark.usefixtures("mgmt_client")
     def test_failed_task_status(self, mgmt_client, mocker):
@@ -185,6 +189,34 @@ class TestToolChainPackage(object):
         toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0')
 
         pytest.raises(Exception, toolchain.package.is_installed)
+
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_is_not_installed(self, mgmt_client, mocker):
+        """Test: is_not_installed
+
+        Assertions
+        ----------
+        - is_installed() response should be a dict {'is_installed': False,
+                                                    'installed_version': '',
+                                                    'latest_version': '3.13.0'}
+        """
+
+        mock_resp = {
+            'id': 'xxxx',
+            'status': 'FINISHED',
+            'queryResponse': [
+                {
+                    'packageName': ''
+                }
+            ]
+        }
+        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
+
+        toolchain = ToolChainClient(mgmt_client, 'as3')
+
+        assert toolchain.package.is_installed() == {'is_installed': False,
+                                                    'installed_version': '',
+                                                    'latest_version': '3.13.0'}
 
 
 class TestToolChainService(object):
