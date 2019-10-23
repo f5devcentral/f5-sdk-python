@@ -287,7 +287,8 @@ class MetadataClient(object):
             a string containing the component's package name. Example: 'telemetry'
         """
 
-        return re.split('-[0-9]', re.split('f5-?', self._get_version_metadata()['packageName'])[1])[0]
+        return re.split('-[0-9]',
+                        re.split('f5-?', self._get_version_metadata()['packageName'])[1])[0]
 
     def get_endpoints(self):
         """Gets the component endpoints from toolchain metadata
