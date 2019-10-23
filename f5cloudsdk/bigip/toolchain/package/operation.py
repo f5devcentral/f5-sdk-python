@@ -274,6 +274,7 @@ class OperationClient(object):
         package_name = self._metadata_client.get_package_name()
         version_data = {
             'is_installed': self._check_rpm_exists(package_name),
-            'installed_version': self._metadata_client.version if self._check_rpm_exists(package_name) else '',
+            'installed_version':
+                self._metadata_client.version if self._check_rpm_exists(package_name) else '',
             'latest_version': self._metadata_client.get_latest_version()}
         return version_data
