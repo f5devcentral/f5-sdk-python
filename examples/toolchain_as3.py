@@ -38,7 +38,7 @@ def update_as3_config():
 
     # Get installed package version info
     version_info = as3_client.package.is_installed()
-    LOGGER.info(version_info['is_installed'])
+    LOGGER.info(version_info['installed'])
     LOGGER.info(version_info['installed_version'])
     LOGGER.info(version_info['latest_version'])
 

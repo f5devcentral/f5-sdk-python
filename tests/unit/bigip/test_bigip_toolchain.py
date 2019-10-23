@@ -149,7 +149,7 @@ class TestToolChainPackage(object):
 
         Assertions
         ----------
-        - is_installed() response should be a dict {'is_installed': True,
+        - is_installed() response should be a dict {'installed': True,
                                                     'installed_version': '3.9.0',
                                                     'latest_version': '3.13.0'}
         """
@@ -167,7 +167,7 @@ class TestToolChainPackage(object):
 
         toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0')
 
-        assert toolchain.package.is_installed() == {'is_installed': True,
+        assert toolchain.package.is_installed() == {'installed': True,
                                                     'installed_version': '3.9.0',
                                                     'latest_version': '3.13.0'}
 
@@ -196,7 +196,7 @@ class TestToolChainPackage(object):
 
         Assertions
         ----------
-        - is_installed() response should be a dict {'is_installed': False,
+        - is_installed() response should be a dict {'installed': False,
                                                     'installed_version': '',
                                                     'latest_version': '3.13.0'}
         """
@@ -214,7 +214,7 @@ class TestToolChainPackage(object):
 
         toolchain = ToolChainClient(mgmt_client, 'as3')
 
-        assert toolchain.package.is_installed() == {'is_installed': False,
+        assert toolchain.package.is_installed() == {'installed': False,
                                                     'installed_version': '',
                                                     'latest_version': '3.13.0'}
 

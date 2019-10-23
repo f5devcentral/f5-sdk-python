@@ -173,7 +173,11 @@ class OperationClient(object):
         Returns
         -------
         dict
-            a dictionary containing component and version: {'component': 'as3', 'version': 'x.x.x'}
+            a dictionary containing component and version:
+            {
+              'component': 'as3',
+              'version': 'x.x.x'
+            }
         """
 
         # download package (rpm) locally, upload to BIG-IP, install on BIG-IP
@@ -221,7 +225,11 @@ class OperationClient(object):
         Returns
         -------
         dict
-            a dictionary containing component and version: {'component': 'as3', 'version': 'x.x.x'}
+            a dictionary containing component and version:
+            {
+              'component': 'as3',
+              'version': 'x.x.x'
+            }
         """
 
         # uninstall from BIG-IP
@@ -266,14 +274,18 @@ class OperationClient(object):
         Returns
         -------
         dict
-            a dictionary containing version info:
-                {'is_installed': 'true', 'installed_version': 'x.x.x', 'latest_version': 'y.y.y'}
+            a dictionary containing version info
+            {
+              'is_installed': 'true',
+              'installed_version': 'x.x.x',
+              'latest_version': 'y.y.y'
+            }
         """
 
         # list installed packages, check if this version's package name is installed
         package_name = self._metadata_client.get_package_name()
         version_data = {
-            'is_installed': self._check_rpm_exists(package_name),
+            'installed': self._check_rpm_exists(package_name),
             'installed_version':
                 self._metadata_client.version if self._check_rpm_exists(package_name) else '',
             'latest_version': self._metadata_client.get_latest_version()}
