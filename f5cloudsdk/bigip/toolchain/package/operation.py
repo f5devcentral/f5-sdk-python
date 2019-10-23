@@ -261,7 +261,8 @@ class OperationClient(object):
         response = self._check_rpm_task_status(response['id'])
         # check queryResponse for matching package_name
         query_response = response['queryResponse']
-        matching_packages = [i for i in query_response if component_package_name in i['packageName']]
+        matching_packages = [i for i in query_response
+                             if component_package_name in i['packageName']]
         return len(matching_packages) == 1
 
     def is_installed(self):
@@ -287,6 +288,7 @@ class OperationClient(object):
         version_data = {
             'installed': self._check_rpm_exists(component_package_name),
             'installed_version':
-                self._metadata_client.version if self._check_rpm_exists(component_package_name) else '',
+                self._metadata_client.version
+                if self._check_rpm_exists(component_package_name) else '',
             'latest_version': self._metadata_client.get_latest_version()}
         return version_data
