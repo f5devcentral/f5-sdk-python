@@ -26,6 +26,7 @@
 
 import os
 import json
+import re
 
 from f5cloudsdk.exceptions import InvalidComponentError, InvalidComponentVersionError
 
@@ -272,6 +273,21 @@ class MetadataClient(object):
         """
 
         return self._get_version_metadata()['packageName']
+
+    def get_component_package_name(self):
+        """Gets the component's package name from toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            a string containing the component's package name. Example: 'telemetry'
+        """
+
+        return re.split('-[0-9]', re.split('f5-?', self._get_version_metadata()['packageName'])[1])[0]
 
     def get_endpoints(self):
         """Gets the component endpoints from toolchain metadata

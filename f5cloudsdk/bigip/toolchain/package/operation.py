@@ -237,7 +237,7 @@ class OperationClient(object):
         self._uninstall_rpm(package_name)
         return {'component': self.component, 'version': self.version} # temp
 
-    def _check_rpm_exists(self, package_name):
+    def _check_rpm_exists(self, component_package_name):
         """Checks RPM (LX extension) exists on a remote device
 
         Parameters
@@ -261,7 +261,7 @@ class OperationClient(object):
         response = self._check_rpm_task_status(response['id'])
         # check queryResponse for matching package_name
         query_response = response['queryResponse']
-        matching_packages = [i for i in query_response if i['packageName'] == package_name]
+        matching_packages = [i for i in query_response if component_package_name in i['packageName']]
         return len(matching_packages) == 1
 
     def is_installed(self):
@@ -283,10 +283,10 @@ class OperationClient(object):
         """
 
         # list installed packages, check if this version's package name is installed
-        package_name = self._metadata_client.get_package_name()
+        component_package_name = self._metadata_client.get_component_package_name()
         version_data = {
-            'installed': self._check_rpm_exists(package_name),
+            'installed': self._check_rpm_exists(component_package_name),
             'installed_version':
-                self._metadata_client.version if self._check_rpm_exists(package_name) else '',
+                self._metadata_client.version if self._check_rpm_exists(component_package_name) else '',
             'latest_version': self._metadata_client.get_latest_version()}
         return version_data
