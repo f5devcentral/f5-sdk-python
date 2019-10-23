@@ -43,7 +43,7 @@ def update_as3_config():
     LOGGER.info(version_info['latest_version'])
 
     # install package
-    if not as3_client.package.is_installed()['is_installed']:
+    if not as3_client.package.is_installed()['installed']:
         as3_client.package.install()
 
     # ensure service is available

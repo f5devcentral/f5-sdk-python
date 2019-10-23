@@ -288,7 +288,7 @@ class OperationClient(object):
         version_data = {
             'installed': self._check_rpm_exists(component_package_name),
             'installed_version':
-                self._metadata_client.version
+                self.version
                 if self._check_rpm_exists(component_package_name) else '',
             'latest_version': self._metadata_client.get_latest_version()}
         return version_data
