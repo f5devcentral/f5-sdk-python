@@ -1,6 +1,7 @@
 """Module for BIG-IP toolchain component package configuration"""
 
 import os
+import re
 import time
 
 from f5cloudsdk import constants
@@ -242,7 +243,7 @@ class OperationClient(object):
 
         Parameters
         ----------
-        package_name : str
+        component_package_name : str
             the name of the installed package
 
         Returns
@@ -263,7 +264,17 @@ class OperationClient(object):
         query_response = response['queryResponse']
         matching_packages = [i for i in query_response
                              if component_package_name in i['packageName']]
-        return len(matching_packages) == 1
+        if len(matching_packages) == 1:
+            return self._get_version_number_from_package_name(matching_packages[0]['packageName'])
+        else:
+            return ''
+
+    @staticmethod
+    def _get_version_number_from_package_name(package_name):
+        version_number_pattern = '[0-9].[0-9].[0-9]'
+        compiled_pattern = re.compile(version_number_pattern)
+        version_index = compiled_pattern.search(package_name)
+        return package_name[version_index.start():version_index.end()]
 
     def is_installed(self):
         """Checks if the toolchain component package is installed on a remote device
@@ -285,10 +296,9 @@ class OperationClient(object):
 
         # list installed packages, check if this version's package name is installed
         component_package_name = self._metadata_client.get_component_package_name()
+        retrieve_rpm_version = self._check_rpm_exists(component_package_name)
         version_data = {
-            'installed': self._check_rpm_exists(component_package_name),
-            'installed_version':
-                self.version
-                if self._check_rpm_exists(component_package_name) else '',
+            'installed': retrieve_rpm_version != '',
+            'installed_version': retrieve_rpm_version,
             'latest_version': self._metadata_client.get_latest_version()}
         return version_data
