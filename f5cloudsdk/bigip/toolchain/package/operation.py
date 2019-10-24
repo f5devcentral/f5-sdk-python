@@ -264,10 +264,8 @@ class OperationClient(object):
         query_response = response['queryResponse']
         matching_packages = [i for i in query_response
                              if component_package_name in i['packageName']]
-        if len(matching_packages) == 1:
-            return self._get_version_number_from_package_name(matching_packages[0]['packageName'])
-        else:
-            return ''
+        return self._get_version_number_from_package_name(matching_packages[0]['packageName']) \
+            if len(matching_packages) == 1 else ''
 
     @staticmethod
     def _get_version_number_from_package_name(package_name):
