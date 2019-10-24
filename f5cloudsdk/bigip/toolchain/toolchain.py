@@ -26,6 +26,7 @@
 
 import os
 import json
+import re
 
 from f5cloudsdk.exceptions import InvalidComponentError, InvalidComponentVersionError
 
@@ -123,7 +124,7 @@ class MetadataClient(object):
         self.component = self._validate_component(component)
         self.version = self._validate_component_version(
             self.component,
-            version or self._get_latest_version()
+            version or self.get_latest_version()
             )
 
     @staticmethod
@@ -143,23 +144,6 @@ class MetadataClient(object):
         with open(os.path.join(os.path.dirname(__file__), TOOLCHAIN_METADATA)) as m_file:
             metadata = json.loads(m_file.read())
         return metadata
-
-    def _get_latest_version(self):
-        """Gets the latest component version from the toolchain metadata
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        str
-            a string containing the latest version
-        """
-
-        c_v_metadata = self.toolchain_metadata['components'][self.component]['versions']
-        latest = {k: v for (k, v) in c_v_metadata.items() if v['latest']}
-        return list(latest.keys())[0] # we should only have one
 
     def _validate_component(self, component):
         """Validates the toolchain component exists in metadata
@@ -243,6 +227,23 @@ class MetadataClient(object):
 
         return self.toolchain_metadata['components'][self.component]['versions'][self.version]
 
+    def get_latest_version(self):
+        """Gets the latest component version from the toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            a string containing the latest version
+        """
+
+        c_v_metadata = self.toolchain_metadata['components'][self.component]['versions']
+        latest = {k: v for (k, v) in c_v_metadata.items() if v['latest']}
+        return list(latest.keys())[0]  # we should only have one
+
     def get_download_url(self):
         """Gets the component versions download url from toolchain metadata
 
@@ -272,6 +273,22 @@ class MetadataClient(object):
         """
 
         return self._get_version_metadata()['packageName']
+
+    def get_component_package_name(self):
+        """Gets the component's package name from toolchain metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            a string containing the component's package name. Example: 'telemetry'
+        """
+
+        return re.split('-[0-9]',
+                        re.split('f5-?', self._get_version_metadata()['packageName'])[1])[0]
 
     def get_endpoints(self):
         """Gets the component endpoints from toolchain metadata

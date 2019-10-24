@@ -1,6 +1,7 @@
 """Module for BIG-IP toolchain component package configuration"""
 
 import os
+import re
 import time
 
 from f5cloudsdk import constants
@@ -173,7 +174,11 @@ class OperationClient(object):
         Returns
         -------
         dict
-            a dictionary containing component and version: {'component': 'as3', 'version': 'x.x.x'}
+            a dictionary containing component and version:
+            {
+              'component': 'as3',
+              'version': 'x.x.x'
+            }
         """
 
         # download package (rpm) locally, upload to BIG-IP, install on BIG-IP
@@ -221,7 +226,11 @@ class OperationClient(object):
         Returns
         -------
         dict
-            a dictionary containing component and version: {'component': 'as3', 'version': 'x.x.x'}
+            a dictionary containing component and version:
+            {
+              'component': 'as3',
+              'version': 'x.x.x'
+            }
         """
 
         # uninstall from BIG-IP
@@ -229,12 +238,12 @@ class OperationClient(object):
         self._uninstall_rpm(package_name)
         return {'component': self.component, 'version': self.version} # temp
 
-    def _check_rpm_exists(self, package_name):
+    def _check_rpm_exists(self, component_package_name):
         """Checks RPM (LX extension) exists on a remote device
 
         Parameters
         ----------
-        package_name : str
+        component_package_name : str
             the name of the installed package
 
         Returns
@@ -253,8 +262,17 @@ class OperationClient(object):
         response = self._check_rpm_task_status(response['id'])
         # check queryResponse for matching package_name
         query_response = response['queryResponse']
-        matching_packages = [i for i in query_response if i['packageName'] == package_name]
-        return len(matching_packages) == 1
+        matching_packages = [i for i in query_response
+                             if component_package_name in i['packageName']]
+        return self._get_version_number_from_package_name(matching_packages[0]['packageName']) \
+            if len(matching_packages) == 1 else ''
+
+    @staticmethod
+    def _get_version_number_from_package_name(package_name):
+        version_number_pattern = '[0-9].[0-9].[0-9]'
+        compiled_pattern = re.compile(version_number_pattern)
+        version_index = compiled_pattern.search(package_name)
+        return package_name[version_index.start():version_index.end()]
 
     def is_installed(self):
         """Checks if the toolchain component package is installed on a remote device
@@ -265,10 +283,20 @@ class OperationClient(object):
 
         Returns
         -------
-        bool
-            a boolean based on toolchain component package existence
+        dict
+            a dictionary containing version info
+            {
+              'is_installed': 'true',
+              'installed_version': 'x.x.x',
+              'latest_version': 'y.y.y'
+            }
         """
 
         # list installed packages, check if this version's package name is installed
-        package_name = self._metadata_client.get_package_name()
-        return self._check_rpm_exists(package_name)
+        component_package_name = self._metadata_client.get_component_package_name()
+        retrieve_rpm_version = self._check_rpm_exists(component_package_name)
+        version_data = {
+            'installed': retrieve_rpm_version != '',
+            'installed_version': retrieve_rpm_version,
+            'latest_version': self._metadata_client.get_latest_version()}
+        return version_data

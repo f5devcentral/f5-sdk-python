@@ -36,8 +36,14 @@ def update_as3_config():
     # create toolchain client
     as3_client = ToolChainClient(mgmt_client, 'as3')
 
+    # Get installed package version info
+    version_info = as3_client.package.is_installed()
+    LOGGER.info(version_info['installed'])
+    LOGGER.info(version_info['installed_version'])
+    LOGGER.info(version_info['latest_version'])
+
     # install package
-    if not as3_client.package.is_installed():
+    if not version_info['installed']:
         as3_client.package.install()
 
     # ensure service is available
