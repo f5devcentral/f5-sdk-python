@@ -18,6 +18,7 @@ from f5cloudsdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()
 
+
 def get_cs_config():
     """ Get Cloud Services configuration """
     # create management client
@@ -29,6 +30,7 @@ def get_cs_config():
 
     # get subscription details
     return subscription_client.show(name=os.environ['F5_SDK_CS_SUBSCRIPTION_ID'])
+
 
 if __name__ == '__main__':
     LOGGER.info(get_cs_config())

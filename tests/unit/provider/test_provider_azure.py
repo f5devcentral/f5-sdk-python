@@ -24,7 +24,8 @@ class ResponseItem(object):
 class TestProviderAzure(object):
     """Test Class: provider module (azure) """
 
-    def test_virtual_machines_list(self, mocker):
+    @staticmethod
+    def test_virtual_machines_list(mocker):
         """Test: virtual_machines.list()
 
         Assertions

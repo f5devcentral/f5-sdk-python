@@ -45,8 +45,9 @@ class TestBigIp(object):
     def teardown_class(cls):
         """" Teardown func """
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_mgmt_client(self, mgmt_client):
+    def test_mgmt_client(mgmt_client):
         """Test: Initialize mgmt client
 
         Assertions
@@ -113,7 +114,8 @@ class TestBigIp(object):
         mock_ssh_client_instance.exec_command.assert_has_calls(calls)
         assert device.token == TOKEN
 
-    def test_port_discovery(self, mocker):
+    @staticmethod
+    def test_port_discovery(mocker):
         """Test: Port discovery during mgmt client init
 
         Assertions
@@ -137,7 +139,8 @@ class TestBigIp(object):
 
         assert device.port == DFL_MGMT_PORT
 
-    def test_port_discovery_timeout(self, mocker):
+    @staticmethod
+    def test_port_discovery_timeout(mocker):
         """Test: Port discovery during mgmt client init - when timeout occurrs
 
         Verify result when timeout for all DFL_ ports occurs
@@ -156,7 +159,8 @@ class TestBigIp(object):
         mock_socket.connect.assert_called()
         assert device.port == DFL_MGMT_PORT
 
-    def test_is_ready(self, mocker):
+    @staticmethod
+    def test_is_ready(mocker):
         """Test: Device ready check
 
         Assertions
@@ -170,7 +174,8 @@ class TestBigIp(object):
 
         mock_socket.connect.assert_called_with((HOST, device.port))
 
-    def test_is_ready_false(self, mocker):
+    @staticmethod
+    def test_is_ready_false(mocker):
         """Test: Device ready check should raise exception
 
         Assertions
@@ -189,8 +194,9 @@ class TestBigIp(object):
             token=TOKEN,
             skip_ready_check=False)
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_get_info(self, mgmt_client, mocker):
+    def test_get_info(mgmt_client, mocker):
         """Test: get_info
 
         Assertions
@@ -216,8 +222,9 @@ class TestBigIp(object):
 
         assert mgmt_client.get_info()['version'] == version
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_make_request_no_token(self, mgmt_client):
+    def test_make_request_no_token(mgmt_client):
         """Test: make_request with no device token
 
         Assertions
@@ -229,8 +236,9 @@ class TestBigIp(object):
 
         pytest.raises(exceptions.AuthRequiredError, mgmt_client.make_request, '/')
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_make_request_auth_header(self, mgmt_client, mocker):
+    def test_make_request_auth_header(mgmt_client, mocker):
         """Test: make_request should insert auth header
 
         Assertions
@@ -245,8 +253,9 @@ class TestBigIp(object):
         _, kwargs = mock.call_args
         assert kwargs['headers'][project_constants.F5_AUTH_TOKEN_HEADER] == TOKEN
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_make_request_bool(self, mgmt_client, mocker):
+    def test_make_request_bool(mgmt_client, mocker):
         """Test: make_request with bool_response=True
 
         Assertions
@@ -258,8 +267,9 @@ class TestBigIp(object):
 
         assert mgmt_client.make_request('/', bool_response=True)
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_make_ssh_request_stderr(self, mgmt_client, mocker):
+    def test_make_ssh_request_stderr(mgmt_client, mocker):
         """Test: make_ssh_request - stderr response should raise exception
 
         Assertions
@@ -275,8 +285,9 @@ class TestBigIp(object):
 
         pytest.raises(exceptions.SSHCommandStdError, mgmt_client.make_ssh_request, 'command')
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_make_ssh_request_connect_error(self, mgmt_client, mocker):
+    def test_make_ssh_request_connect_error(mgmt_client, mocker):
         """Test: make_ssh_request - connect exception should raise exception
 
         Assertions

@@ -21,8 +21,9 @@ AUTH_TOKEN_HEADER = project_constants.F5_CLOUD_SERVICES['AUTH_TOKEN_HEADER']
 class TestCloudServices(object):
     """Test Class: cloud_services module """
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_mgmt_client(self, mgmt_client):
+    def test_mgmt_client(mgmt_client):
         """Test: Initialize mgmt client
 
         Assertions
@@ -32,8 +33,9 @@ class TestCloudServices(object):
 
         assert mgmt_client.access_token == TOKEN
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_make_request_auth_header(self, mgmt_client, mocker):
+    def test_make_request_auth_header(mgmt_client, mocker):
         """Test: make_request should insert auth header
 
         Assertions
@@ -48,18 +50,21 @@ class TestCloudServices(object):
         _, kwargs = mock.call_args
         assert 'Bearer' in kwargs['headers'][AUTH_TOKEN_HEADER]
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_default_api_endpoint(self, mgmt_client):
+    def test_default_api_endpoint(mgmt_client):
         """Test: Default API endpoint is used as expected
 
         Assertions
         ----------
         - Validates that CloudService has api_endpoint set to default value
         """
+        # pylint: disable=protected-access
 
         assert mgmt_client._api_endpoint == project_constants.F5_CLOUD_SERVICES['API_ENDPOINT']
 
-    def test_api_endpoint_no_api_endpoint_value(self, mocker):
+    @staticmethod
+    def test_api_endpoint_no_api_endpoint_value(mocker):
         """Test: Default API endpoint is used as expected
             when api_endpoint is provided with a None value
 
@@ -67,6 +72,7 @@ class TestCloudServices(object):
         ----------
         - Validates that CloudService has api_endpoint set to default value
         """
+        # pylint: disable=protected-access
 
         mocker.patch(REQ).return_value.json = Mock(return_value=LOGIN_RESPONSE)
 
@@ -74,15 +80,19 @@ class TestCloudServices(object):
 
         assert mgmt_client._api_endpoint == project_constants.F5_CLOUD_SERVICES['API_ENDPOINT']
 
-    def test_custom_api_endpoint(self, mocker):
+    @staticmethod
+    def test_custom_api_endpoint(mocker):
         """Test: Custom API endpoint is used as expected
         Assertions
         ----------
         - Validates that CloudService api endpoint is set to custom value
         """
+        # pylint: disable=protected-access
 
         mocker.patch(REQ).return_value.json = Mock(return_value=LOGIN_RESPONSE)
 
-        mgmt_client = ManagementClient(user=USER, password=USER_PWD, api_endpoint=CUSTOM_API_ENDPOINT)
+        mgmt_client = ManagementClient(
+            user=USER, password=USER_PWD, api_endpoint=CUSTOM_API_ENDPOINT
+        )
 
         assert mgmt_client._api_endpoint == constants.CUSTOM_API_ENDPOINT

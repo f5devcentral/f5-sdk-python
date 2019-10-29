@@ -4,6 +4,7 @@ from f5cloudsdk.base_clients import BaseFeatureClient
 
 BASE_URI = '/mgmt/cm/device/licensing/pool/regkey/licenses'
 
+
 class RegKeyClient(BaseFeatureClient):
     """BIG-IQ license pool reg key client
 
@@ -51,6 +52,7 @@ class RegKeyClient(BaseFeatureClient):
             logger_name=__name__,
             uri=BASE_URI
         )
+
 
 class RegKeyOfferingsClient(BaseFeatureClient):
     """BIG-IQ license pool reg key offerings client
@@ -100,6 +102,7 @@ class RegKeyOfferingsClient(BaseFeatureClient):
             logger_name=__name__,
             uri='%s/%s/offerings' % (BASE_URI, self._pool_name)
         )
+
 
 class RegKeyOfferingMembersClient(BaseFeatureClient):
     """BIG-IQ license pool reg key offering members client

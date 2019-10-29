@@ -1,9 +1,9 @@
 """ Test BIG-IP module """
 
-from os import path
 import json
 import tempfile
 import shutil
+from os import path
 
 from f5cloudsdk import exceptions
 from f5cloudsdk.bigip.toolchain import ToolChainClient
@@ -21,8 +21,9 @@ REQ = constants.MOCK['requests']
 class TestToolChain(object):
     """Test Class: bigip.toolchain module """
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_init(self, mgmt_client):
+    def test_init(mgmt_client):
         """Test: Initialize toolchain client
 
         Assertions
@@ -36,8 +37,9 @@ class TestToolChain(object):
         assert toolchain.package
         assert toolchain.service
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_component_invalid(self, mgmt_client):
+    def test_component_invalid(mgmt_client):
         """Test: Invalid component
 
         Assertions
@@ -47,8 +49,9 @@ class TestToolChain(object):
 
         pytest.raises(exceptions.InvalidComponentError, ToolChainClient, mgmt_client, 'foo')
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_component_version_invalid(self, mgmt_client):
+    def test_component_version_invalid(mgmt_client):
         """Test: Invalid component version
 
         Assertions
@@ -68,8 +71,9 @@ class TestToolChain(object):
 class TestToolChainPackage(object):
     """Test Class: bigip.toolchain.package module """
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_install(self, mgmt_client, mocker):
+    def test_install(mgmt_client, mocker):
         """Test: install
 
         Assertions
@@ -108,8 +112,9 @@ class TestToolChainPackage(object):
             'version': '3.9.0'
         }
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_uninstall(self, mgmt_client, mocker):
+    def test_uninstall(mgmt_client, mocker):
         """Test: uninstall
 
         Assertions
@@ -143,8 +148,9 @@ class TestToolChainPackage(object):
             'version': '3.9.0'
         }
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_is_installed(self, mgmt_client, mocker):
+    def test_is_installed(mgmt_client, mocker):
         """Test: is_installed
 
         Assertions
@@ -171,8 +177,9 @@ class TestToolChainPackage(object):
                                                     'installed_version': '3.9.0',
                                                     'latest_version': '3.13.0'}
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_failed_task_status(self, mgmt_client, mocker):
+    def test_failed_task_status(mgmt_client, mocker):
         """Test: is_installed with failed RPM task status
 
         Assertions
@@ -190,8 +197,9 @@ class TestToolChainPackage(object):
 
         pytest.raises(Exception, toolchain.package.is_installed)
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_is_not_installed(self, mgmt_client, mocker):
+    def test_is_not_installed(mgmt_client, mocker):
         """Test: is_not_installed
 
         Assertions
@@ -232,8 +240,9 @@ class TestToolChainService(object):
         """" Teardown func """
         shutil.rmtree(cls.test_tmp_dir)
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_show(self, mgmt_client, mocker):
+    def test_show(mgmt_client, mocker):
         """Test: show
 
         Assertions
@@ -248,8 +257,9 @@ class TestToolChainService(object):
 
         assert toolchain.service.show() == mock_response
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_create(self, mgmt_client, mocker):
+    def test_create(mgmt_client, mocker):
         """Test: create
 
         Assertions
@@ -284,8 +294,9 @@ class TestToolChainService(object):
 
         assert toolchain.service.create(config_file=config_file) == mock_response
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_create_no_config(self, mgmt_client):
+    def test_create_no_config(mgmt_client):
         """Test: create with no config provided
 
         Assertions
@@ -297,8 +308,9 @@ class TestToolChainService(object):
 
         pytest.raises(exceptions.InputRequiredError, toolchain.service.create)
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_create_async(self, mgmt_client, mocker):
+    def test_create_async(mgmt_client, mocker):
         """Test: create async response
 
         Assertions
@@ -322,8 +334,9 @@ class TestToolChainService(object):
         args, _ = make_request_mock.call_args_list[1]
         assert args[1] == '/foo/1234'
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_delete(self, mgmt_client, mocker):
+    def test_delete(mgmt_client, mocker):
         """Test: delete
 
         Assertions
@@ -338,8 +351,9 @@ class TestToolChainService(object):
 
         assert toolchain.service.delete() == mock_response
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_delete_method_exception(self, mgmt_client):
+    def test_delete_method_exception(mgmt_client):
         """Test: delete - against invalid toolchain component
 
         For example, DO does not support the 'DELETE' method
@@ -353,8 +367,9 @@ class TestToolChainService(object):
 
         pytest.raises(Exception, toolchain.service.delete)
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_is_available(self, mgmt_client, mocker):
+    def test_is_available(mgmt_client, mocker):
         """Test: is_available
 
         Assertions

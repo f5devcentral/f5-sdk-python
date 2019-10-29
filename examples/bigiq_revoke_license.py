@@ -21,6 +21,7 @@ from f5cloudsdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()
 
+
 def revoke_license(address, pool):
     """ Revoke license"""
 
@@ -54,6 +55,7 @@ def revoke_license(address, pool):
             'macAddress': assignment['macAddress']
         }
     )
+
 
 if __name__ == '__main__':
     RESPONSE = revoke_license(

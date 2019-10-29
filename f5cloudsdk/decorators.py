@@ -12,6 +12,7 @@ from functools import wraps
 from f5cloudsdk.exceptions import AuthRequiredError
 from f5cloudsdk import constants
 
+
 def check_auth(function):
     """Checks authentication
 
@@ -32,6 +33,7 @@ def check_auth(function):
             raise AuthRequiredError('Device authentication required')
         return function(self, *args, **kwargs)
     return _wrapper
+
 
 def add_auth_header(function):
     """Add authentication header

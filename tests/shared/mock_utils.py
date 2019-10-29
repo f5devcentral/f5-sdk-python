@@ -1,7 +1,8 @@
 """Mock utility module for test framework """
 
-## unittest imports ##
+# unittest imports
 from ..global_test_imports import Mock
+
 
 class MockRequestsResponse:
     """ Mock requests response instance """
@@ -11,7 +12,8 @@ class MockRequestsResponse:
         self.status_code = None
         self.reason = None
 
-    def raise_for_status(self):
+    @staticmethod
+    def raise_for_status():
         """ Mock function """
         return True
 
@@ -19,13 +21,15 @@ class MockRequestsResponse:
         """ Mock function """
         return self.body
 
-    def ok(self):
+    @staticmethod
+    def ok():  # pylint: disable=invalid-name
         """ Mock function """
         return True
 
-    def iter_content(self, *args, **kwargs):
+    def iter_content(self, *args, **kwargs):  # pylint: disable=unused-argument
         """ Mock function """
         return [self.body]
+
 
 class ExecCommand(object):
     """ Mock exec_command response instance """
@@ -37,6 +41,7 @@ class ExecCommand(object):
     def read(self):
         """ Mock function """
         return self.response.encode('ascii')
+
 
 def create_response(response_body, **kwargs):
     """Create mock requests.request response instance
@@ -70,7 +75,7 @@ def create_response(response_body, **kwargs):
 
     c_response = kwargs.pop('conditional', None)
 
-    def _func(*a, **k): # pylint: disable=unused-argument
+    def _func(*a, **k):  # pylint: disable=unused-argument
         """ Function """
         url = a[1]
 
@@ -85,6 +90,7 @@ def create_response(response_body, **kwargs):
         # standard return
         return MockRequestsResponse(response_body)
     return _func
+
 
 def create_ssh_client(mock, command_response, **kwargs):
     """Create mock paramiko SSHClient instance
@@ -112,7 +118,7 @@ def create_ssh_client(mock, command_response, **kwargs):
     """
 
     connect_raise = kwargs.pop('connect_raise', None)
-    stderr = kwargs.pop('stderr', '') # default should be empty string
+    stderr = kwargs.pop('stderr', '')  # default should be empty string
 
     instance = mock.return_value
     if connect_raise:

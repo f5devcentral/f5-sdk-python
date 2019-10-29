@@ -19,10 +19,11 @@ build:
 	python3 setup.py sdist bdist_wheel;
 unit_test:
 	echo "Running unit tests";
-	pytest --flake8 --cov=${PACKAGE_DIR} ${UNIT_TEST_DIR} --full-trace -v;
+	pytest ${UNIT_TEST_DIR} --cov=${PACKAGE_DIR} --full-trace -v;
 lint:
 	echo "Running linter (any error will result in non-zero exit code)";
-	pylint -j 0 ${PACKAGE_DIR}/ ${EXAMPLES_DIR}/;
+	flake8 ${PACKAGE_DIR}/ ${EXAMPLES_DIR}/ ${TEST_DIR}/;
+	pylint -j 0 ${PACKAGE_DIR}/ ${EXAMPLES_DIR}/ ${TEST_DIR}/;
 coverage: unit_test
 	echo "Generating code coverage documentation";
 	coverage html;

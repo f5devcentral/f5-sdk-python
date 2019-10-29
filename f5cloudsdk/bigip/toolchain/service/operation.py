@@ -7,6 +7,7 @@ from retry import retry
 from f5cloudsdk import constants
 from f5cloudsdk.utils import misc_utils
 
+
 class OperationClient(object):
     """A class used as a toolchain service operation client for BIG-IP
 
@@ -200,4 +201,3 @@ class OperationClient(object):
 
         uri = self._get_configure_endpoint()['uri']
         return self._client.make_request(uri, method='DELETE')
-        

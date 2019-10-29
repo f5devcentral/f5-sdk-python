@@ -9,7 +9,8 @@ from f5cloudsdk.logger import Logger
 
 from f5cloudsdk.exceptions import HTTPError
 
-logger = Logger(__name__).get_logger() # pylint: disable=invalid-name
+logger = Logger(__name__).get_logger()  # pylint: disable=invalid-name
+
 
 def download_to_file(url, file_name):
     """Downloads an artifact to a local file
@@ -40,6 +41,7 @@ def download_to_file(url, file_name):
             # filter out keep-alive new lines
             if chunk:
                 file_object.write(chunk)
+
 
 def make_request(host, uri, **kwargs):
     """Makes request to device (HTTP/S)
@@ -84,7 +86,7 @@ def make_request(host, uri, **kwargs):
 
     # check for body, normalize
     body = kwargs.pop('body', None)
-    body_content_type = kwargs.pop('body_content_type', 'json') # json (default), raw
+    body_content_type = kwargs.pop('body_content_type', 'json')  # json (default), raw
     if body and body_content_type == 'json':
         headers.update({'Content-Type': 'application/json'})
         body = json.dumps(body)
@@ -134,6 +136,7 @@ def make_request(host, uri, **kwargs):
 
     # finally, simply return response data
     return response_body
+
 
 def parse_url(url):
     """Parse URL

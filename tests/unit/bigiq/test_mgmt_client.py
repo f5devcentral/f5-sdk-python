@@ -10,8 +10,9 @@ TOKEN = constants.TOKEN
 class TestMgmtClient(object):
     """Test Class: bigiq module """
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_mgmt_client(self, mgmt_client):
+    def test_mgmt_client(mgmt_client):
         """Test: Initialize mgmt client
 
         Assertions
@@ -21,8 +22,9 @@ class TestMgmtClient(object):
 
         assert mgmt_client.token == TOKEN
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_get_info(self, mgmt_client, mocker):
+    def test_get_info(mgmt_client, mocker):
         """Test: get_info function
 
         Assertions

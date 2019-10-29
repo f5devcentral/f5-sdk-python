@@ -13,8 +13,9 @@ REQ = constants.MOCK['requests']
 class TestAssignmentClient(object):
     """Test"""
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_crud_operations(self, mgmt_client, mocker):
+    def test_crud_operations(mgmt_client, mocker):
         """Test: CRUD operation functions
 
         Assertions
@@ -30,8 +31,9 @@ class TestAssignmentClient(object):
             methods=['list']
         )
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_invalid_crud_operations(self, mgmt_client, mocker):
+    def test_invalid_crud_operations(mgmt_client, mocker):
         """Test: Invalid CRUD operation functions
 
         Assertions

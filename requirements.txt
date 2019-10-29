@@ -3,14 +3,14 @@ azure-mgmt-compute==4.5.1
 azure-mgmt-network==2.6.0
 boto3==1.9.141
 google-cloud==0.34.0
-requests==2.21.0
+requests==2.22.0
 retry==0.9.2
-paramiko==2.4.2
+paramiko==2.6.0
 ## required dev packages
 pytest==4.3.1
 pytest-mock==1.10.4
 pytest-cov==2.6.1
-pytest-flake8==1.0.4
+flake8==3.7.9
 pylint==2.3.1 ; python_version > '3.0'
 safety==1.8.5
 # unittest.mock built in to python 3.3+

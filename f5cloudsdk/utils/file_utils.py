@@ -2,6 +2,7 @@
 
 import json
 
+
 def load_file(file, **kwargs):
     """Load file (read + additional actions)
 

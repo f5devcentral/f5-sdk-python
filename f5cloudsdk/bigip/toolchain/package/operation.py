@@ -9,6 +9,7 @@ from f5cloudsdk.utils import http_utils
 
 PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 
+
 class OperationClient(object):
     """A class used as a toolchain package operation client for BIG-IP
 
@@ -80,7 +81,7 @@ class OperationClient(object):
         file_object = open(file_name, 'rb')
         max_chunk = 1024 * 1024
         file_size = len(file_object.read())
-        file_object.seek(0) # move to start
+        file_object.seek(0)  # move to start
         start_index = 0
         while True:
             file_slice = file_object.read(max_chunk)
@@ -128,7 +129,7 @@ class OperationClient(object):
         status_link_uri = '%s/%s' % (PKG_MGMT_URI, task_id)
         sleep_secs = 1
         count = 0
-        max_count = 120 # max_count + sleep_secs = 2 mins
+        max_count = 120  # max_count + sleep_secs = 2 mins
         while True:
             response = self._client.make_request(status_link_uri)
             if response['status'] == 'FINISHED':
@@ -192,7 +193,7 @@ class OperationClient(object):
         # install
         tmp_file_bigip_path = '/var/config/rest/downloads/%s' % (download_pkg)
         self._install_rpm(tmp_file_bigip_path)
-        return {'component': self.component, 'version': self.version} # temp
+        return {'component': self.component, 'version': self.version}
 
     def _uninstall_rpm(self, package_name):
         """Uninstalls RPM (LX extension) on a remote device
@@ -236,7 +237,7 @@ class OperationClient(object):
         # uninstall from BIG-IP
         package_name = self._metadata_client.get_package_name()
         self._uninstall_rpm(package_name)
-        return {'component': self.component, 'version': self.version} # temp
+        return {'component': self.component, 'version': self.version}
 
     def _check_rpm_exists(self, component_package_name):
         """Checks RPM (LX extension) exists on a remote device
