@@ -5,6 +5,7 @@ from boto3.session import Session
 from ..abstract import AbstractProviderClient
 from .virtual_machines import OperationClient as VirtualMachinesClient
 
+
 class ProviderClient(AbstractProviderClient):
     """A class used as a provider client for AWS
 
@@ -77,7 +78,6 @@ class ProviderClient(AbstractProviderClient):
         """
 
         return bool(self.session)
-
 
     @property
     def virtual_machines(self):

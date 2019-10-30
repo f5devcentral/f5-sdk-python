@@ -3,6 +3,7 @@
 from f5cloudsdk.exceptions import InputRequiredError
 from . import file_utils
 
+
 def resolve_config(config, config_file, **kwargs):
     """Resolve config options: config|config_file
 

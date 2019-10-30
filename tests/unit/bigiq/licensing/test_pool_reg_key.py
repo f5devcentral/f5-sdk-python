@@ -10,8 +10,9 @@ from ... import utils
 class TestRegKeyClient(object):
     """Test"""
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_crud_operations(self, mgmt_client, mocker):
+    def test_crud_operations(mgmt_client, mocker):
         """Test: CRUD operation functions
 
         Assertions
@@ -30,8 +31,9 @@ class TestRegKeyClient(object):
 class TestRegKeyOfferingsClient(object):
     """Test"""
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_crud_operations(self, mgmt_client, mocker):
+    def test_crud_operations(mgmt_client, mocker):
         """Test: CRUD operation functions
 
         Assertions
@@ -50,8 +52,9 @@ class TestRegKeyOfferingsClient(object):
 class TestRegKeyOfferingMembersClient(object):
     """Test"""
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_crud_operations(self, mgmt_client, mocker):
+    def test_crud_operations(mgmt_client, mocker):
         """Test: CRUD operation functions
 
         Assertions

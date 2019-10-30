@@ -20,8 +20,9 @@ LOGIN_RESPONSE = constants.F5_CLOUD_SERVICES['LOGIN_RESPONSE']
 class TestSubscription(object):
     """Test Class: cloud_services.subscriptions module """
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_crud_operations(self, mgmt_client, mocker):
+    def test_crud_operations(mgmt_client, mocker):
         """Test: CRUD operation functions
 
         Assertions
@@ -37,8 +38,9 @@ class TestSubscription(object):
             methods=['list', 'create', 'show', 'update', 'delete']
         )
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_subscription_client_update_config_file(self, mgmt_client, mocker):
+    def test_subscription_client_update_config_file(mgmt_client, mocker):
         """Test: Subscription client update() - with config_file
 
         Assertions

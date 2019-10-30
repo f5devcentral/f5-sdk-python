@@ -22,6 +22,7 @@ SSH_EXCEPTIONS = (
     paramiko.ssh_exception.BadHostKeyException
 )
 
+
 class ManagementClient(object):
     """A class used as a management client for BIG-IP
 
@@ -82,7 +83,7 @@ class ManagementClient(object):
 
         self.logger = Logger(__name__).get_logger()
 
-        self.host = host.split(':')[0] # disallow providing port here
+        self.host = host.split(':')[0]  # disallow providing port here
         self.port = kwargs.pop('port', None) or self._discover_port()
         self._user = kwargs.pop('user', None)
         self._password = kwargs.pop('password', None)
@@ -206,7 +207,7 @@ class ManagementClient(object):
         # workaround for deprecation warning described here, until fixed
         # https://github.com/paramiko/paramiko/issues/1369
         # workaround: temporarily catch warnings on client.connect
-        with warnings.catch_warnings(record=True) as _w:
+        with warnings.catch_warnings(record=True) as _:
             # create client
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy)
@@ -261,7 +262,7 @@ class ManagementClient(object):
         except SSHCommandStdError:
             user_info = self._make_ssh_request(auth_list_cmd % ('tmsh', self._user))
         if 'shell bash' in user_info:
-            tmsh = 'tmsh' # add tmsh to command
+            tmsh = 'tmsh'  # add tmsh to command
 
         # set password
         self._make_ssh_request(constants.BIGIP_CMDS['AUTH_MODIFY'] % (tmsh, self._user, password))
@@ -287,7 +288,7 @@ class ManagementClient(object):
         self.logger.debug('Getting authentication token')
 
         expiration_date = (datetime.now() + timedelta(hours=1)).isoformat()
-        timeout = 3600 # set timeout to 1 hour
+        timeout = 3600  # set timeout to 1 hour
 
         uri = '/mgmt/shared/authn/login'
         body = {
@@ -415,4 +416,3 @@ class ManagementClient(object):
             'https://localhost/mgmt/tm/sys/version/0'
         ]['nestedStats']['entries']['Version']['description']
         return {'version': version}
-        

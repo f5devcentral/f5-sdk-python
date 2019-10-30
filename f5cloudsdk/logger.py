@@ -22,13 +22,16 @@ LEVEL_ENV_VAR_VAL = os.environ[LEVEL_ENV_VAR] if LEVEL_ENV_VAR in os.environ els
 logging.TRACE = 5
 logging.addLevelName(logging.TRACE, 'TRACE')
 
+
 class MyLogger(logging.getLoggerClass()):
     """ Create custom logger class """
     def trace(self, msg, *args, **kwargs):
         """ Add trace method to logger """
         self.log(logging.TRACE, msg, *args, **kwargs)
 
+
 logging.setLoggerClass(MyLogger)
+
 
 class Logger():
     """Class initialization

@@ -8,6 +8,7 @@ from ..abstract.virtual_machines import AbstractOperationClient
 PRIVATE_IP_KEY = 'private_ip_address'
 PUBLIC_IP_KEY = 'public_ip_address'
 
+
 class OperationClient(AbstractOperationClient):
     """Operation client class for provider virtual machines
 

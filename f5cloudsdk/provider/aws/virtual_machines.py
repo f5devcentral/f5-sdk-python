@@ -2,6 +2,7 @@
 
 from ..abstract.virtual_machines import AbstractOperationClient
 
+
 class OperationClient(AbstractOperationClient):
     """Operation client class for provider virtual machines
 
@@ -43,7 +44,7 @@ class OperationClient(AbstractOperationClient):
             a dict containing information about the virtual machine
         """
 
-        tags = {i['Key']:i['Value'] for i in output['Tags']} if 'Tags' in output else None
+        tags = {i['Key']: i['Value'] for i in output['Tags']} if 'Tags' in output else None
         private_ip = output['PrivateIpAddress'] if 'PrivateIpAddress' in output else ''
         public_ip = output['PublicIpAddress'] if 'PublicIpAddress' in output else ''
 

@@ -13,8 +13,9 @@ REQ = constants.MOCK['requests']
 class TestPoolMemberManagementClient(object):
     """Test"""
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_crud_operations(self, mgmt_client, mocker):
+    def test_crud_operations(mgmt_client, mocker):
         """Test: CRUD operation functions
 
         Assertions
@@ -30,8 +31,9 @@ class TestPoolMemberManagementClient(object):
             methods=['list', 'create']
         )
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_invalid_crud_operations(self, mgmt_client, mocker):
+    def test_invalid_crud_operations(mgmt_client, mocker):
         """Test: Invalid CRUD operation functions
 
         Assertions
@@ -48,8 +50,9 @@ class TestPoolMemberManagementClient(object):
             methods=['show', 'update', 'delete']
         )
 
+    @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
-    def test_create_async(self, mgmt_client, mocker):
+    def test_create_async(mgmt_client, mocker):
         """Test: create function - async response
 
         Assertions

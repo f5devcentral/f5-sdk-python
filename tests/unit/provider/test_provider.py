@@ -9,7 +9,8 @@ CREDS_RESPONSE = 'foo'
 class TestProvider(object):
     """Test Class: provider module """
 
-    def test_azure_provider_client(self, mocker):
+    @staticmethod
+    def test_azure_provider_client(mocker):
         """Test: azure provider client init
 
         Assertions
@@ -31,7 +32,8 @@ class TestProvider(object):
 
         assert provider_client.credentials == CREDS_RESPONSE
 
-    def test_aws_provider_client(self, mocker):
+    @staticmethod
+    def test_aws_provider_client(mocker):
         """Test: aws provider client init
 
         Assertions

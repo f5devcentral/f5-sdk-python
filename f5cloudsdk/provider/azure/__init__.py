@@ -5,6 +5,7 @@ from azure.common.credentials import ServicePrincipalCredentials
 from ..abstract import AbstractProviderClient
 from .virtual_machines import OperationClient as VirtualMachinesClient
 
+
 class ProviderClient(AbstractProviderClient):
     """A class used as a provider client for Azure
 
