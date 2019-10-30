@@ -128,6 +128,8 @@ pages:
     artifacts:
         paths:
             - public
+    only:
+        - develop
 
 # publish test: test internal (artifactory) install
 publish_test_internal_install:
