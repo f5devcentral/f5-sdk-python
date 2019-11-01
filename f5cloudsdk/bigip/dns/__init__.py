@@ -9,7 +9,7 @@
         datacenters_client = DataCentersClient(device)
 
         # list datacenters
-        dns_datacenters_client.list()
+        datacenters_client.list()
 
     Example - Data Centers::
 
@@ -20,7 +20,7 @@
         datacenters_client = DataCentersClient(device)
 
         # list datacenters
-        dns_datacenters_client.list()
+        datacenters_client.list()
 
         # create datacenter
         datacenters_client.create(
