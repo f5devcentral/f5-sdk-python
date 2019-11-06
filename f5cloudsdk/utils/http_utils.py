@@ -118,7 +118,15 @@ def make_request(host, uri, **kwargs):
 
     status_code = response.status_code
     status_reason = response.reason
-    response_body = response.json()
+
+    # determine response body using the following logic
+    # 1) if the content-length header exists and is 0: set to empty dict
+    # 2) response is valid JSON: decode JSON to native python object (dict, list)
+    headers = response.headers
+    if 'content-length' in headers.keys() and headers['content-length'] == '0':
+        response_body = {}
+    else:
+        response_body = response.json()
 
     # helpful debug
     logger.debug('HTTP response: %s %s' % (status_code, status_reason))

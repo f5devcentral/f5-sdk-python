@@ -12,6 +12,8 @@ class MockRequestsResponse:
         self.status_code = None
         self.reason = None
 
+        self.headers = {}
+
     @staticmethod
     def raise_for_status():
         """ Mock function """

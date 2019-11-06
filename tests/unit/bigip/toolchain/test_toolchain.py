@@ -8,10 +8,10 @@ from os import path
 from f5cloudsdk import exceptions
 from f5cloudsdk.bigip.toolchain import ToolChainClient
 
-from ...global_test_imports import pytest, Mock
+from ....global_test_imports import pytest, Mock
 
-from ...shared import constants
-from ...shared import mock_utils
+from ....shared import constants
+from ....shared import mock_utils
 
 TOKEN = constants.TOKEN
 

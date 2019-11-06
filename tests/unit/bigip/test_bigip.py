@@ -7,7 +7,7 @@ from paramiko import ssh_exception
 from f5cloudsdk import exceptions
 from f5cloudsdk import constants as project_constants
 
-from ...global_test_imports import pytest, Mock, call
+from ...global_test_imports import pytest, Mock, PropertyMock, call
 
 from ...shared import constants
 from ...shared import mock_utils
@@ -299,3 +299,19 @@ class TestBigIp(object):
             mocker.patch('paramiko.SSHClient'), '', connect_raise=ssh_exception.SSHException)
 
         pytest.raises(ssh_exception.SSHException, mgmt_client.make_ssh_request, 'command')
+
+    @staticmethod
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_make_request_content_length_header_zero(mgmt_client, mocker):
+        """Test: make_request with Content-Length header set to '0'
+
+        Assertions
+        ----------
+        - Response should equal empty dict
+        """
+
+        mock_request = mocker.patch(REQ).return_value
+        mock_request.json = Mock(return_value={'foo': 'bar'})
+        type(mock_request).headers = PropertyMock(return_value={'content-length': '0'})
+
+        assert mgmt_client.make_request('/') == {}
