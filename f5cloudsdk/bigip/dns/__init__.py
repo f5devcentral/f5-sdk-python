@@ -4,33 +4,33 @@
 
         from f5cloudsdk.bigip import ManagementClient
         from f5cloudsdk.bigip.dns import DataCentersClient
+        from f5cloudsdk.bigip.dns import VirtualServersClient
+
         device = ManagementClient('192.0.2.10', user='admin', password='admin')
 
         datacenters_client = DataCentersClient(device)
+        virtualservers_client = VirtualServersClient(device)
 
-        # list datacenters
+        # list
         datacenters_client.list()
+        virtualservers_client.list()
 
-    Example - Data Centers::
-
-        from f5cloudsdk.bigip import ManagementClient
-        from f5cloudsdk.bigip.dns import DataCentersClient
-        device = ManagementClient('192.0.2.10', user='admin', password='admin')
-
-        datacenters_client = DataCentersClient(device)
-
-        # list datacenters
-        datacenters_client.list()
-
-        # create datacenter
+        # create
         datacenters_client.create(
             config={
                 'name': 'my_datacenter'
             }
         )
+        virtualservers_client.create(
+            config={
+                'name': 'my_virtual_server'
+            }
+        )
 
-        # show datacenter
+
+        # show
         datacenters_client.show(name='my_datacenter')
+        virtualservers_client.show(name='my_virtual_server')
 
         # update dns datacenter
         datacenters_client.update(
@@ -40,12 +40,15 @@
             }
         )
 
-        # delete datacenter
+        # delete
         datacenters_client.delete(name='my_datacenter')
+        virtualservers_client.delete(name='my_virtual_server')
 """
 
 from .datacenters import DataCentersClient
+from .virtualservers import VirtualServersClient
 
 __all__ = [
-    'DataCentersClient'
+    'DataCentersClient',
+    'VirtualServersClient'
 ]
