@@ -4,16 +4,19 @@
 
         from f5cloudsdk.bigip import ManagementClient
         from f5cloudsdk.bigip.dns import DataCentersClient
-        from f5cloudsdk.bigip.dns import VirtualServersClient
+        from f5cloudsdk.bigip.dns import ServersClient
+        from f5cloudsdk.bigip.dns import PoolsClient
 
         device = ManagementClient('192.0.2.10', user='admin', password='admin')
 
         datacenters_client = DataCentersClient(device)
-        virtualservers_client = VirtualServersClient(device)
+        servers_client = ServersClient(device)
+        pools_client = PoolsClient(device)
 
         # list
         datacenters_client.list()
-        virtualservers_client.list()
+        servers_client.list()
+        pools_client.list()
 
         # create
         datacenters_client.create(
@@ -21,16 +24,22 @@
                 'name': 'my_datacenter'
             }
         )
-        virtualservers_client.create(
+        servers_client.create(
             config={
-                'name': 'my_virtual_server'
+                'name': 'my_server'
+            }
+        )
+        pools_client.create(
+            config={
+                'name': 'my_pool'
             }
         )
 
 
         # show
         datacenters_client.show(name='my_datacenter')
-        virtualservers_client.show(name='my_virtual_server')
+        servers_client.show(name='my_server')
+        pools_client.show(name='my_pool')
 
         # update dns datacenter
         datacenters_client.update(
@@ -39,16 +48,33 @@
                 'regkey': 'my_reg_key'
             }
         )
+        # update server
+        servers_client.update(
+            name='my_server',
+            config={
+                'description': 'added description'
+            }
+        )
+        # update pool
+        pools_client.update(
+            name='my_pool',
+            config={
+                'description': 'added description'
+            }
+        )
 
         # delete
         datacenters_client.delete(name='my_datacenter')
-        virtualservers_client.delete(name='my_virtual_server')
+        servers_client.delete(name='my_server')
+        pools_client.delete(name='my_pool')
 """
 
 from .datacenters import DataCentersClient
-from .virtualservers import VirtualServersClient
+from .servers import ServersClient
+from .pools import PoolsClient
 
 __all__ = [
     'DataCentersClient',
-    'VirtualServersClient'
+    'ServersClient',
+    'PoolsClient'
 ]

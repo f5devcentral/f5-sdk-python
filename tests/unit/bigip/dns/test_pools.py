@@ -1,6 +1,6 @@
-""" Test BIG-IP DNS datacenters client """
+""" Test BIG-IP DNS pools client """
 
-from f5cloudsdk.bigip.dns import VirtualServersClient
+from f5cloudsdk.bigip.dns import PoolsClient
 
 from ....global_test_imports import pytest
 from ....shared import constants
@@ -9,7 +9,7 @@ from ... import utils
 REQ = constants.MOCK['requests']
 
 
-class TestVirtualServersClient(object):
+class TestPoolsClient(object):
     """Test"""
 
     @staticmethod
@@ -22,7 +22,7 @@ class TestVirtualServersClient(object):
         - response should match mocked return value
         """
 
-        client = VirtualServersClient(mgmt_client)
+        client = PoolsClient(mgmt_client)
 
         utils.validate_crud_operations(
             client,
