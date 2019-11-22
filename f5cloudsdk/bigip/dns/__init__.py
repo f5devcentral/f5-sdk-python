@@ -35,7 +35,6 @@
             }
         )
 
-
         # show
         datacenters_client.show(name='my_datacenter')
         servers_client.show(name='my_server')

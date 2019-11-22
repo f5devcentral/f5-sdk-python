@@ -9,7 +9,7 @@ from ... import utils
 REQ = constants.MOCK['requests']
 
 
-class ServersClient(object):
+class TestServersClient(object):
     """Test"""
 
     @staticmethod
