@@ -1,12 +1,12 @@
-"""Module for BIG-IP Virtual server management"""
+"""Module for BIG-IP DNS servers management"""
 
 from f5cloudsdk.base_clients import BaseFeatureClient
 
 BASE_URI = '/mgmt/tm/gtm/server'
 
 
-class VirtualServersClient(BaseFeatureClient):
-    """BIG-IP virtual server management client
+class ServersClient(BaseFeatureClient):
+    """BIG-IP servers management client
 
     Attributes
     ----------
@@ -45,7 +45,7 @@ class VirtualServersClient(BaseFeatureClient):
 
         """
 
-        super(VirtualServersClient, self).__init__(
+        super(ServersClient, self).__init__(
             client,
             logger_name=__name__,
             uri=BASE_URI
