@@ -1,0 +1,81 @@
+{
+   "class": "AS3",
+   "action": "deploy",
+   "persist": true,
+   "declaration": {
+      "class": "ADC",
+      "schemaVersion": "3.13.0",
+      "id": "ltm-declaration-id-0001",
+      "label": "HTTP application",
+      "remark": "Simple HTTP application with RR pool",
+      "PartitionA": {
+         "class": "Tenant",
+         "Application1": {
+            "class": "Application",
+            "template": "http",
+            "serviceMain": {
+               "class": "Service_HTTP",
+               "iRules": [
+                  "http_irule"
+               ],
+               "virtualAddresses": [
+                  "10.0.1.80"
+               ],
+               "pool": "http_pool"
+            },
+            "http_pool": {
+               "class": "Pool",
+               "monitors": [
+                  "http"
+               ],
+               "members": [
+                  {
+                     "servicePort": 80,
+                     "serverAddresses": [
+                        "10.0.1.10",
+                        "10.0.1.11"
+                     ]
+                  }
+               ]
+            },
+            "http_irule": {
+               "class": "iRule",
+               "iRule": "when HTTP_REQUEST {\nHTTP::respond 200 content {\n<html>\n<head><title>Blocked Page</title></head>\n<body>\nThe site is currently under Maintenance<br>\n</body>\n</html>\n}\n}"
+            }
+         }
+      },
+      "Common": {
+         "class": "Tenant",
+         "Shared": {
+            "class": "Application",
+            "template": "shared",
+            "SDKDataCenter": {
+               "class": "GSLB_Data_Center"
+            },
+            "SDKServer": {
+               "class": "GSLB_Server",
+               "dataCenter": {
+                  "use": "SDKDataCenter"
+               },
+               "devices": [
+                  {
+                     "address": "10.11.90.1"
+                  }
+               ],
+               "virtualServerDiscoveryMode": "enabled",
+               "exposeRouteDomainsEnabled": true
+            },
+            "SDKPool": {
+               "class": "GSLB_Pool",
+               "resourceRecordType": "A"
+            },
+            "SDKDomain": {
+               "class": "GSLB_Domain",
+               "domainName": "sdk.domainA",
+               "resourceRecordType": "A"
+            }
+         }
+      }
+   }
+}
+ 

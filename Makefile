@@ -9,6 +9,7 @@ EXCLUDE_PATTERN := "*/abstract/*"
 PACKAGE_DIR := f5cloudsdk
 TEST_DIR := tests
 UNIT_TEST_DIR := ${TEST_DIR}/unit
+FUNCTIONAL_TEST_DIR := ${TEST_DIR}/functional
 TEST_CACHE_DIR := .pytest_cache
 EXAMPLES_DIR := examples
 
@@ -20,6 +21,9 @@ build:
 unit_test:
 	echo "Running unit tests";
 	pytest ${UNIT_TEST_DIR} --cov=${PACKAGE_DIR} --full-trace -v;
+functional_test:
+	echo "Running functional tests";
+	pytest ${FUNCTIONAL_TEST_DIR} --full-trace -v;
 lint:
 	echo "Running linter (any error will result in non-zero exit code)";
 	flake8 ${PACKAGE_DIR}/ ${EXAMPLES_DIR}/ ${TEST_DIR}/;

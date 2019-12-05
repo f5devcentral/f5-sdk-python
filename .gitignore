@@ -24,3 +24,14 @@ docs/apidocs/source/
 .DS_Store
 temp_*
 .idea/
+.vscode/
+
+# local test directory/files
+**/.terraform/*
+*.tfstate*
+terraform
+terraform.zip
+# virtual envs
+venv/
+# deployment info
+deployment_info.json
