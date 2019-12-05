@@ -35,11 +35,12 @@ def test_toolchain_as3(management_client):
     # Configure DNS objects using AS3 extension
     as3_client.service.create(config_file=os.path.join(os.path.dirname(__file__),
                                                        "dns_declaration.json"))
-    # Validate DSN objects created by AS3 extension
+    # Validate DNS objects created by AS3 extension
     datac = {'name': 'SDKDataCenter', 'object': DataCentersClient(management_client)}
     server = {'name': 'SDKServer', 'object': ServersClient(management_client)}
-    validate_list(datac)
-    validate_list(server)
+    pool = {'name': 'SDKPool', 'object': PoolsClient(management_client, uri='/a')}
+    for obj in (datac, server, pool):
+        validate_list(obj)
 
 
 def validate_create(dicts):
@@ -73,17 +74,25 @@ def validate_delete(dicts):
     assert not delete_obj, 'Validate delete {} failed.'.format(dicts['name'])
 
 
+def validate_show(dicts):
+    """"Validate show objects"""
+    show_obj = dicts['object'].show(name=dicts['name'])
+    assert show_obj['name'] in dicts['name'], 'Validate show{} failed.'.format(dicts['name'])
+
+
 def validate_crud_operations(dicts):
     """Validate CRUD SDK DNS"""
-    for method in ('create', 'list', 'update', 'delete'):
+    for method in ('create', 'list', 'update', 'show', 'delete'):
         if 'create' in method:
             validate_create(dicts)
-        if 'list' in method:
+        elif 'list' in method:
             validate_list(dicts)
-        if 'update' in method:
+        elif 'update' in method:
             validate_update(dicts)
-        if 'delete' in method:
+        elif 'delete' in method:
             validate_delete(dicts)
+        else:
+            validate_show(dicts)
 
 
 def test_datacenter(management_client):
@@ -96,7 +105,7 @@ def test_datacenter(management_client):
 def test_server(management_client):
     """Validate CRUD server"""
     datac = {"name": "SDKDataCenter1", "object": DataCentersClient(management_client),
-             "create": {"name": "SDKDataCenter1"}, "update": {"description": "Updated"}}
+             "create": {"name": "SDKDataCenter1"}}
     cserver = {"name": "SDKServer1", "datacenter": "SDKDataCenter1",
                "exposeRouteDomains": "no", "virtualServerDiscovery": "enabled",
                "addresses": [{"name": "10.0.1.1", "deviceName": "sdkbigipmv0",
@@ -119,17 +128,16 @@ def test_pool(management_client):
 def test_dns(management_client):
     """Validate create datacenter, server, pool"""
     datac = {"name": "SDKDataCenter2", "object": DataCentersClient(management_client),
-             "create": {"name": "SDKDataCenter2"}, "update": {"description": "Updated"}}
+             "create": {"name": "SDKDataCenter2"}}
     cserver = {"name": "SDKServer2", "datacenter": "SDKDataCenter2",
                "exposeRouteDomains": "no", "virtualServerDiscovery": "enabled",
                "addresses": [{"name": "10.0.1.2", "deviceName": "sdkbigipmv0",
                               "translation": "none"}]}
     server = {"name": "SDKServer2", "object": ServersClient(management_client),
-              "create": cserver, "update": {"description": "Updated",
-                                            "datacenter": "SDKDataCenter2"}}
+              "create": cserver}
     pool = {'name': 'SDKPool2', 'object': PoolsClient(management_client, uri='/a'),
-            'create': {"name": "SDKPool2"}, 'update': {"description": "Updated"}}
+            'create': {"name": "SDKPool2"}}
     for obj in (datac, server, pool):
         validate_create(obj)
-    for obj in (server, pool, datac):
+    for obj in (pool, server, datac):
         validate_delete(obj)
