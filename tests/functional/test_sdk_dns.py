@@ -35,6 +35,11 @@ def test_toolchain_as3(management_client):
     # Configure DNS objects using AS3 extension
     as3_client.service.create(config_file=os.path.join(os.path.dirname(__file__),
                                                        "dns_declaration.json"))
+    # Validate DSN objects created by AS3 extension
+    datac = {'name': 'SDKDataCenter', 'object': DataCentersClient(management_client)}
+    server = {'name': 'SDKServer', 'object': ServersClient(management_client)}
+    validate_list(datac)
+    validate_list(server)
 
 
 def validate_create(dicts):
@@ -49,6 +54,7 @@ def validate_list(dicts):
         assert False, "Expected name: {} in items".format(dicts['name'])
     else:
         for item in dicts['object'].list()['items']:
+            print(item)
             if item['name'] == dicts['name']:
                 break
         else:
@@ -109,3 +115,22 @@ def test_pool(management_client):
     pool = {'name': 'SDKPool1', 'object': PoolsClient(management_client, uri='/a'),
             'create': {"name": "SDKPool1"}, 'update': {"description": "Updated"}}
     validate_crud_operations(pool)
+
+
+def test_dns(management_client):
+    """Validate create datacenter, server, pool"""
+    datac = {"name": "SDKDataCenter2", "object": DataCentersClient(management_client),
+             "create": {"name": "SDKDataCenter2"}, "update": {"description": "Updated"}}
+    cserver = {"name": "SDKServer2", "datacenter": "SDKDataCenter2",
+               "exposeRouteDomains": "no", "virtualServerDiscovery": "enabled",
+               "addresses": [{"name": "10.0.1.2", "deviceName": "sdkbigipmv0",
+                              "translation": "none"}]}
+    server = {"name": "SDKServer2", "object": ServersClient(management_client),
+              "create": cserver, "update": {"description": "Updated",
+                                            "datacenter": "SDKDataCenter2"}}
+    pool = {'name': 'SDKPool2', 'object': PoolsClient(management_client, uri='/a'),
+            'create': {"name": "SDKPool2"}, 'update': {"description": "Updated"}}
+    for obj in (datac, server, pool):
+        validate_create(obj)
+    for obj in (server, pool, datac):
+        validate_delete(obj)
