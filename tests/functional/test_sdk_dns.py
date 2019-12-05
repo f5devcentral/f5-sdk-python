@@ -54,7 +54,6 @@ def validate_list(dicts):
         assert False, "Expected name: {} in items".format(dicts['name'])
     else:
         for item in dicts['object'].list()['items']:
-            print(item)
             if item['name'] == dicts['name']:
                 break
         else:
