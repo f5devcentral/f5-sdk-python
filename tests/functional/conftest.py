@@ -10,8 +10,8 @@ from f5cloudsdk.bigip import ManagementClient
 @pytest.fixture(scope="session")
 def management_client():
     """Return management client"""
-    with open(os.path.join(os.path.dirname(__file__), \
-                "../deployment/deployment_info.json")) as json_file:
+    with open(os.path.join(os.path.dirname(__file__),
+                           "../deployment/deployment_info.json")) as json_file:
         json_data = json.load(json_file)
         for data in json_data['instances']:
             os.environ['mgmt_address'] = data['mgmt_address']

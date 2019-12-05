@@ -33,14 +33,14 @@ def test_toolchain_as3(management_client):
     assert as3_client.service.is_available(), 'Validate AS3 service available failed'
 
     # Configure DNS objects using AS3 extension
-    as3_client.service.create(config_file=os.path.join(os.path.dirname(__file__),\
-                                "dns_declaration.json"))
+    as3_client.service.create(config_file=os.path.join(os.path.dirname(__file__),
+                                                       "dns_declaration.json"))
+
 
 def validate_create(dicts):
     """"Validate create objects"""
     create_obj = dicts['object'].create(config=dicts['create'])
-    assert create_obj['name'] in dicts['name'],\
-            ('Validate create {} failed.'.format(dicts['name']))
+    assert create_obj['name'] in dicts['name'], ('Validate create {} failed.'.format(dicts['name']))
 
 
 def validate_list(dicts):
@@ -58,8 +58,8 @@ def validate_list(dicts):
 def validate_update(dicts):
     """Validate update objects"""
     update_obj = dicts['object'].update(name=dicts['name'], config=dicts['update'])
-    assert update_obj['description'] in "Updated",\
-            ('Validate update {} failed.'.format(dicts['name']))
+    assert update_obj['description'] in "Updated", ('Validate update {} failed.'
+                                                    .format(dicts['name']))
 
 
 def validate_delete(dicts):
