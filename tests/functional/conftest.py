@@ -13,13 +13,7 @@ def management_client():
     with open(os.path.join(os.path.dirname(__file__),
                            "../deployment/deployment_info.json")) as json_file:
         json_data = json.load(json_file)
-        for data in json_data['instances']:
-            os.environ['mgmt_address'] = data['mgmt_address']
-            os.environ['admin_username'] = data['admin_username']
-            os.environ['admin_password'] = data['admin_password']
-    # Connect to BIG-IP
-    mgmt_client = ManagementClient(
-        os.environ.get('mgmt_address'),
-        user=os.environ.get('admin_username'),
-        password=os.environ.get('admin_password'))
-    return mgmt_client
+        mgmt_client = ManagementClient(json_data['instances'][0]['mgmt_address'],
+                                       user=json_data['instances'][0]['admin_username'],
+                                       password=json_data['instances'][0]['admin_password'])
+        return mgmt_client

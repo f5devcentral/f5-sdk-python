@@ -44,11 +44,8 @@ class PoolsClient(BaseFeatureClient):
         None
 
         """
-        uri = ''
-        if kwargs:
-            uri = kwargs['uri']
         super(PoolsClient, self).__init__(
             client,
             logger_name=__name__,
-            uri=BASE_URI+uri
+            uri=BASE_URI+kwargs.pop('uri', '')
         )
