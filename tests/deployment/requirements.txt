@@ -1,0 +1,8 @@
+# Environment variable(s) are required to securely execute the pip installation
+# export ARTIFACTORY_SERVER='artifactory.example.com'
+
+--extra-index-url https://${ARTIFACTORY_SERVER}/artifactory/api/pypi/f5-cloud-solutions-pypi/simple
+
+# requirements
+f5-cloud-cli==0.9.*
+awscli==1.16.*

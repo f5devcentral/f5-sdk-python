@@ -126,7 +126,7 @@ def test_pool(management_client):
 
 
 def test_dns(management_client):
-    """Validate create datacenter, server, pool"""
+    """Validate create datacenter, server, and pool with various record types"""
     datac = {"name": "SDKDataCenter2", "object": DataCentersClient(management_client),
              "create": {"name": "SDKDataCenter2"}}
     cserver = {"name": "SDKServer2", "datacenter": "SDKDataCenter2",
@@ -135,9 +135,11 @@ def test_dns(management_client):
                               "translation": "none"}]}
     server = {"name": "SDKServer2", "object": ServersClient(management_client),
               "create": cserver}
-    pool = {'name': 'SDKPool2', 'object': PoolsClient(management_client, uri='/a'),
-            'create': {"name": "SDKPool2"}}
-    for obj in (datac, server, pool):
+    pool = {"name": "SDKPoolA", "object": PoolsClient(management_client, uri="/a"),
+            "create": {"name": "SDKPoolA"}}
+    pool2 = {"name": "SDKPoolNAPTR", "object": PoolsClient(management_client, uri="/naptr"),
+             "create": {"name": "SDKPoolNAPTR"}}
+    for obj in (datac, server, pool, pool2):
         validate_create(obj)
-    for obj in (pool, server, datac):
+    for obj in (pool, pool2, server, datac):
         validate_delete(obj)

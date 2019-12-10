@@ -2,9 +2,32 @@ image: python:3.7
 
 stages:
     - test
+    - test_functional
+    - test_functional_cleanup
     - docs
     - publish
     - publish_test
+
+variables:
+    TERRAFORM_PKG_URL: 'https://releases.hashicorp.com/terraform/0.12.6/terraform_0.12.6_linux_386.zip'
+    ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
+    # azure vars - normalize env var options between ansible and terraform
+    AZURE_TENANT: "$AZURE_TENANT_ID"
+    AZURE_SECRET: "$AZURE_CLIENT_SECRET"
+    ARM_CLIENT_ID: "$AZURE_CLIENT_ID"
+    ARM_CLIENT_SECRET: "$AZURE_CLIENT_SECRET"
+    ARM_SUBSCRIPTION_ID: "$AZURE_SUBSCRIPTION_ID"
+    ARM_TENANT_ID: "$AZURE_TENANT_ID"
+    # aws vars
+    AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+    AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
+    # gcp vars
+    GOOGLE_CREDENTIALS: "$GOOGLE_CREDENTIALS"
+    GOOGLE_PROJECT_ID: "$GOOGLE_PROJECT_ID"
+    # debug vars
+    F5_SDK_LOG_LEVEL: "INFO"
+    PYTHONWARNINGS: 'ignore:Unverified HTTPS request'
 
 # unit tests: python 3.x (preferred)
 test_unit:
@@ -42,6 +65,32 @@ test_security_check:
         - pip install .
         # run dependency check
         - safety check -r requirements.txt
+    tags:
+        - cm-official-docker-executor
+
+test_functional:
+    stage: test_functional
+    retry:
+        max: 1
+    script:
+        # install terraform
+        - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
+        # deploy aws enviroment
+        - bash ./tests/deployment/deploy.sh aws create
+        # run functional tests
+        - make functional_test
+        # run linter
+        - make lint
+    tags:
+        - cm-official-docker-executor
+
+test_functional_cleanup:
+    stage: test_functional_cleanup
+    retry:
+        max: 1
+    script:
+        # deploy aws enviroment
+        - bash ./tests/deployment/deploy.sh aws delete    
     tags:
         - cm-official-docker-executor
 

@@ -31,7 +31,10 @@ temp_*
 *.tfstate*
 terraform
 terraform.zip
+!terraform/
+
 # virtual envs
 venv/
+
 # deployment info
 deployment_info.json
