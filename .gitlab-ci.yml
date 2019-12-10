@@ -90,6 +90,8 @@ test_functional_execute:
     retry:
         max: 1
     script:
+        # install pytest
+        - pip install -U pytest
         # run functional tests
         - make functional_test
         # run linter
