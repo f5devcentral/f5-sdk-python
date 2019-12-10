@@ -2,7 +2,8 @@ image: python:3.7
 
 stages:
     - test
-    - test_functional
+    - test_functional_init
+    - test_functional_execute
     - test_functional_cleanup
     - docs
     - publish
@@ -68,15 +69,27 @@ test_security_check:
     tags:
         - cm-official-docker-executor
 
-test_functional:
-    stage: test_functional
+test_functional_init:
+    stage: test_functional_init
     retry:
         max: 1
     script:
+        # install jq
+        - apt-get update
+        - apt-get install -y jq
         # install terraform
         - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
         # deploy aws enviroment
         - bash ./tests/deployment/deploy.sh aws create
+    tags:
+        - cm-official-docker-executor
+
+# run functional tests: aws
+test_functional_execute:
+    stage: test_functional_execute
+    retry:
+        max: 1
+    script:
         # run functional tests
         - make functional_test
         # run linter
