@@ -80,9 +80,20 @@ test_functional_init:
         # install terraform
         - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
         # deploy aws enviroment
+        - set -e
         - bash ./tests/deployment/deploy.sh aws create
+        - mkdir -p env_metadata/aws
+        - chmod -R +wr env_metadata/aws
+        - cp deployment_info.json env_metadata/aws
+        - cp *.tfstate env_metadata/aws
+        - ls -laR
     tags:
         - cm-official-docker-executor
+    artifacts:
+        paths:
+            - env_metadata/aws
+        when: always
+        expire_in: 1 month
 
 # run functional tests: aws
 test_functional_execute:
@@ -93,9 +104,9 @@ test_functional_execute:
         # install packages
         - pip install -r requirements.txt
         - pip install .
+        # copying artifacts inherited from functional_test_init target to deployment directory
+        - cp -a env_metadata/aws/. tests/deployment/
         # run function tests
-        - pwd
-        - ls -laR
         - make functional_test
         # run linter
         - make lint
