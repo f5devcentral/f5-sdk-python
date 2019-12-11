@@ -12,20 +12,10 @@ stages:
 variables:
     TERRAFORM_PKG_URL: 'https://releases.hashicorp.com/terraform/0.12.6/terraform_0.12.6_linux_386.zip'
     ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
-    # azure vars - normalize env var options between ansible and terraform
-    AZURE_TENANT: "$AZURE_TENANT_ID"
-    AZURE_SECRET: "$AZURE_CLIENT_SECRET"
-    ARM_CLIENT_ID: "$AZURE_CLIENT_ID"
-    ARM_CLIENT_SECRET: "$AZURE_CLIENT_SECRET"
-    ARM_SUBSCRIPTION_ID: "$AZURE_SUBSCRIPTION_ID"
-    ARM_TENANT_ID: "$AZURE_TENANT_ID"
     # aws vars
     AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
     AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
     AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
-    # gcp vars
-    GOOGLE_CREDENTIALS: "$GOOGLE_CREDENTIALS"
-    GOOGLE_PROJECT_ID: "$GOOGLE_PROJECT_ID"
     # debug vars
     F5_SDK_LOG_LEVEL: "INFO"
     PYTHONWARNINGS: 'ignore:Unverified HTTPS request'
