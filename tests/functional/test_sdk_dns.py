@@ -21,7 +21,7 @@ SERVER = {"name": "SDKServer1", "create": CSERVER,
 POOL1 = {"name": "SDKPool1", "create": {"name": "SDKPool1"},
          "update": {"description": "Updated"}}
 POOL2 = {"name": "SDKPoolNAPTR", "create": {"name": "SDKPoolNAPTR"},
-        "update": {"description": "Updated"}}
+         "update": {"description": "Updated"}}
 
 
 def test_management_client(management_client):
