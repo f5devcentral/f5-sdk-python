@@ -86,7 +86,6 @@ test_functional_init:
         - chmod -R +wr env_metadata/aws
         - cp deployment_info.json env_metadata/aws
         - cp *.tfstate env_metadata/aws
-        - ls -laR
     tags:
         - cm-official-docker-executor
     artifacts:
@@ -117,8 +116,16 @@ test_functional_cleanup:
     stage: test_functional_cleanup
     retry:
         max: 1
+    when: always
     script:
-        # deploy aws enviroment
+        # install jq
+        - apt-get update
+        - apt-get install -y jq
+        # install terraform
+        - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
+        # copying artifacts inherited from functional_test_init target to deployment directory
+        - cp -a env_metadata/aws/. tests/deployment/
+        # teardown enviroment
         - bash ./tests/deployment/deploy.sh aws delete    
     tags:
         - cm-official-docker-executor
