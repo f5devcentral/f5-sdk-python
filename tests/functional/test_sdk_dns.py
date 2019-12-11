@@ -10,6 +10,20 @@ from f5cloudsdk.bigip.dns import DataCentersClient, ServersClient, PoolsClient
 LOGGER = Logger(__name__).get_logger()
 
 
+DATAC = {"name": "SDKDataCenter1", "create": {"name": "SDKDataCenter1"},
+         "update": {"description": "Updated"}}
+CSERVER = {"name": "SDKServer1", "datacenter": "SDKDataCenter1",
+           "exposeRouteDomains": "no", "virtualServerDiscovery": "enabled",
+           "addresses": [{"name": "10.0.1.1", "deviceName": "sdkbigipmv0",
+                          "translation": "none"}]}
+SERVER = {"name": "SDKServer1", "create": CSERVER,
+          "update": {"description": "Updated", "datacenter": "SDKDataCenter1"}}
+POOL1 = {"name": "SDKPool1", "create": {"name": "SDKPool1"},
+         "update": {"description": "Updated"}}
+POOL2 = {"name": "SDKPoolNAPTR", "create": {"name": "SDKPoolNAPTR"},
+        "update": {"description": "Updated"}}
+
+
 def test_management_client(management_client):
     """Validate management client connection by check version on a BIG-IP"""
     version_info = management_client.get_info()
@@ -97,49 +111,40 @@ def validate_crud_operations(dicts):
 
 def test_datacenter(management_client):
     """Validate CRUD datacenter"""
-    datac = {"name": "SDKDataCenter1", "object": DataCentersClient(management_client),
-             "create": {"name": "SDKDataCenter1"}, "update": {"description": "Updated"}}
-    validate_crud_operations(datac)
+    DATAC.update({"object": DataCentersClient(management_client)})
+    validate_crud_operations(DATAC)
 
 
 def test_server(management_client):
     """Validate CRUD server"""
-    datac = {"name": "SDKDataCenter1", "object": DataCentersClient(management_client),
-             "create": {"name": "SDKDataCenter1"}}
-    cserver = {"name": "SDKServer1", "datacenter": "SDKDataCenter1",
-               "exposeRouteDomains": "no", "virtualServerDiscovery": "enabled",
-               "addresses": [{"name": "10.0.1.1", "deviceName": "sdkbigipmv0",
-                              "translation": "none"}]}
-    server = {"name": "SDKServer1", "object": ServersClient(management_client),
-              "create": cserver, "update": {"description": "Updated",
-                                            "datacenter": "SDKDataCenter1"}}
-    validate_create(datac)
-    validate_crud_operations(server)
-    validate_delete(datac)
+    DATAC.update({"object": DataCentersClient(management_client)})
+    SERVER.update({'object': ServersClient(management_client)})
+    validate_create(DATAC)
+    validate_crud_operations(SERVER)
+    validate_delete(DATAC)
 
 
 def test_pool(management_client):
     """Validate CRUD pool"""
-    pool = {'name': 'SDKPool1', 'object': PoolsClient(management_client, uri='/a'),
-            'create': {"name": "SDKPool1"}, 'update': {"description": "Updated"}}
-    validate_crud_operations(pool)
+    POOL1.update({'object': PoolsClient(management_client, uri='/a')})
+    validate_crud_operations(POOL1)
 
 
-def test_dns(management_client):
+def test_dns_create(management_client):
     """Validate create datacenter, server, and pool with various record types"""
-    datac = {"name": "SDKDataCenter2", "object": DataCentersClient(management_client),
-             "create": {"name": "SDKDataCenter2"}}
-    cserver = {"name": "SDKServer2", "datacenter": "SDKDataCenter2",
-               "exposeRouteDomains": "no", "virtualServerDiscovery": "enabled",
-               "addresses": [{"name": "10.0.1.2", "deviceName": "sdkbigipmv0",
-                              "translation": "none"}]}
-    server = {"name": "SDKServer2", "object": ServersClient(management_client),
-              "create": cserver}
-    pool = {"name": "SDKPoolA", "object": PoolsClient(management_client, uri="/a"),
-            "create": {"name": "SDKPoolA"}}
-    pool2 = {"name": "SDKPoolNAPTR", "object": PoolsClient(management_client, uri="/naptr"),
-             "create": {"name": "SDKPoolNAPTR"}}
-    for obj in (datac, server, pool, pool2):
+    DATAC.update({"object": DataCentersClient(management_client)})
+    SERVER.update({'object': ServersClient(management_client)})
+    POOL1.update({'object': PoolsClient(management_client, uri='/a')})
+    POOL2.update({'object': PoolsClient(management_client, uri='/naptr')})
+    for obj in (DATAC, SERVER, POOL1, POOL2):
         validate_create(obj)
-    for obj in (pool, pool2, server, datac):
+
+
+def test_dns_delete(management_client):
+    """Validate delete pool, server, and datacenter"""
+    DATAC.update({"object": DataCentersClient(management_client)})
+    SERVER.update({'object': ServersClient(management_client)})
+    POOL1.update({'object': PoolsClient(management_client, uri='/a')})
+    POOL2.update({'object': PoolsClient(management_client, uri='/naptr')})
+    for obj in (POOL1, POOL2, SERVER, DATAC):
         validate_delete(obj)
