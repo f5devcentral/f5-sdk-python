@@ -94,6 +94,8 @@ test_functional_execute:
         - pip install -r requirements.txt
         - pip install .
         # run function tests
+        - pwd
+        - ls -laR
         - make functional_test
         # run linter
         - make lint
