@@ -35,6 +35,3 @@ terraform.zip
 
 # virtual envs
 venv/
-
-# deployment info
-deployment_info.json
