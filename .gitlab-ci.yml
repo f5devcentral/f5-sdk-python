@@ -93,10 +93,8 @@ test_functional_execute:
         # install packages
         - pip install -r requirements.txt
         - pip install .
-        # copying artifacts inherited from functional_test_init target to deployment directory
-        - pwd
-        - ls -laR
-        - cp -af env_metadata/aws/. ./tests/deployment/
+        # copying artifacts inherited from functional_test_init target to deployment root directory
+        - cp -a env_metadata/aws/. .
         # run function tests
         - make functional_test
         # run linter
@@ -115,8 +113,8 @@ test_functional_cleanup:
         - apt-get install -y jq
         # install terraform
         - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
-        # copying artifacts inherited from functional_test_init target to deployment directory
-        - cp -af env_metadata/aws/. ./tests/deployment/
+        # copying artifacts inherited from functional_test_init target to root directory
+        - cp -a env_metadata/aws/. .
         # teardown enviroment
         - bash ./tests/deployment/deploy.sh aws delete    
     tags:
