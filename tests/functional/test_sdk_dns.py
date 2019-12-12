@@ -52,7 +52,7 @@ def test_toolchain_as3(management_client):
     # Validate DNS objects created by AS3 extension
     datac = {'name': 'SDKDataCenter', 'object': DataCentersClient(management_client)}
     server = {'name': 'SDKServer', 'object': ServersClient(management_client)}
-    pool = {'name': 'SDKPool', 'object': PoolsClient(management_client, uri='/a')}
+    pool = {'name': 'SDKPool', 'object': PoolsClient(management_client, record_type='/a')}
     for obj in (datac, server, pool):
         validate_list(obj)
 
@@ -126,7 +126,7 @@ def test_server(management_client):
 
 def test_pool(management_client):
     """Validate CRUD pool"""
-    POOL1.update({'object': PoolsClient(management_client, uri='/a')})
+    POOL1.update({'object': PoolsClient(management_client, record_type='/a')})
     validate_crud_operations(POOL1)
 
 
@@ -134,8 +134,8 @@ def test_dns_create(management_client):
     """Validate create datacenter, server, and pool with various record types"""
     DATAC.update({"object": DataCentersClient(management_client)})
     SERVER.update({'object': ServersClient(management_client)})
-    POOL1.update({'object': PoolsClient(management_client, uri='/a')})
-    POOL2.update({'object': PoolsClient(management_client, uri='/naptr')})
+    POOL1.update({'object': PoolsClient(management_client, record_type='/a')})
+    POOL2.update({'object': PoolsClient(management_client, record_type='/naptr')})
     for obj in (DATAC, SERVER, POOL1, POOL2):
         validate_create(obj)
 
@@ -144,7 +144,7 @@ def test_dns_delete(management_client):
     """Validate delete pool, server, and datacenter"""
     DATAC.update({"object": DataCentersClient(management_client)})
     SERVER.update({'object': ServersClient(management_client)})
-    POOL1.update({'object': PoolsClient(management_client, uri='/a')})
-    POOL2.update({'object': PoolsClient(management_client, uri='/naptr')})
+    POOL1.update({'object': PoolsClient(management_client, record_type='/a')})
+    POOL2.update({'object': PoolsClient(management_client, record_type='/naptr')})
     for obj in (POOL1, POOL2, SERVER, DATAC):
         validate_delete(obj)

@@ -21,6 +21,9 @@ build:
 unit_test:
 	echo "Running unit tests";
 	pytest ${UNIT_TEST_DIR} --cov=${PACKAGE_DIR} --full-trace -v;
+create_environment:
+	echo "Creating environment for functional tests";	
+	bash ./tests/deployment/deploy.sh aws create;
 functional_test:
 	echo "Running functional tests";
 	pytest ${FUNCTIONAL_TEST_DIR} --full-trace -v;
@@ -41,6 +44,9 @@ code_docs:
 code_docs_doxygen:
 	echo "Generating code documentation (via doxygen)";
 	doxygen doxygen.conf;
+delete_environment:
+	echo "Deleting environment";	
+	bash ./tests/deployment/deploy.sh aws delete;
 clean:
 	echo "Removing artifacts"
 	rm -rf ${API_DOCS_SOURCE}

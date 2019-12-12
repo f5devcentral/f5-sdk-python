@@ -14,15 +14,6 @@ if [[ -z "$environment" ]]; then
   exit 1
 fi
 
-# validate environment variable(s)
-if [[ ${environment} == "gcp" ]]; then
-    # check for required GCP project ID environment variable
-    if [[ -z "$GOOGLE_PROJECT_ID" ]]; then
-        echo "Environment variable 'GOOGLE_PROJECT_ID' must be provided"
-        exit 1
-    fi
-    echo "project_id = \"${GOOGLE_PROJECT_ID}\"" > terraform.tfvars
-fi
 if [[ -z "$ARTIFACTORY_SERVER" ]]; then
     echo "Environment variable 'ARTIFACTORY_SERVER' must be provided"
     exit 1
@@ -49,6 +40,8 @@ if [[ ${action} == "create" ]]; then
 elif [[ ${action} == "delete" ]]; then
     ${tf_command} init ${script_location}/terraform/${environment}
     ${tf_command} destroy -auto-approve ${script_location}/terraform/${environment}
+    # perform cleanup
+    deactivate && rm -rf venv
 elif [[ ${action} == "show" ]]; then
     ${tf_command} output -json
     echo $(${tf_command} output -json) | jq .deployment_info.value -r > deployment_info.json
@@ -56,8 +49,3 @@ else
     echo "Unknown action: ${action}"
     exit 1
 fi
-
-# perform any cleanup necessary
-deactivate && rm -rf venv
-
-

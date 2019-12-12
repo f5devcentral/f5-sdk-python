@@ -47,5 +47,5 @@ class PoolsClient(BaseFeatureClient):
         super(PoolsClient, self).__init__(
             client,
             logger_name=__name__,
-            uri=BASE_URI+kwargs.pop('uri', '')
+            uri=BASE_URI+kwargs.pop('record_type', '')
         )
