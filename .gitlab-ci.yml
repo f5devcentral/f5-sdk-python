@@ -74,8 +74,8 @@ test_functional_init:
         - bash ./tests/deployment/deploy.sh aws create
         - mkdir -p env_metadata/aws
         - chmod -R +wr env_metadata/aws
-        - cp ./tests/deployment/deployment_info.json env_metadata/aws
-        - cp ./tests/deployment/*.tfstate env_metadata/aws
+        - cp deployment_info.json env_metadata/aws
+        - cp *.tfstate env_metadata/aws
     tags:
         - cm-official-docker-executor
     artifacts:
@@ -94,6 +94,8 @@ test_functional_execute:
         - pip install -r requirements.txt
         - pip install .
         # copying artifacts inherited from functional_test_init target to deployment directory
+        - pwd
+        - ls -laR
         - cp -af env_metadata/aws/. ./tests/deployment/
         # run function tests
         - make functional_test
