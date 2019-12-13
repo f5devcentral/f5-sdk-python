@@ -13,6 +13,9 @@
         servers_client = ServersClient(device)
         pools_client = PoolsClient(device)
 
+        # create/list/update/delete various record types
+        pools_client = PoolsClient(device, record_tye='a')
+
         # list
         datacenters_client.list()
         servers_client.list()
