@@ -2,9 +2,23 @@ image: python:3.7
 
 stages:
     - test
+    - test_functional_init
+    - test_functional_execute
+    - test_functional_cleanup
     - docs
     - publish
     - publish_test
+
+variables:
+    TERRAFORM_PKG_URL: 'https://releases.hashicorp.com/terraform/0.12.6/terraform_0.12.6_linux_386.zip'
+    ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
+    # aws vars
+    AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+    AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
+    # debug vars
+    F5_SDK_LOG_LEVEL: "INFO"
+    PYTHONWARNINGS: 'ignore:Unverified HTTPS request'
 
 # unit tests: python 3.x (preferred)
 test_unit:
@@ -44,6 +58,79 @@ test_security_check:
         - safety check -r requirements.txt
     tags:
         - cm-official-docker-executor
+
+test_functional_init:
+    stage: test_functional_init
+    retry:
+        max: 1
+    script:
+        # install jq
+        - apt-get update
+        - apt-get install -y jq
+        # install terraform
+        - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
+        # deploy aws enviroment
+        - set -e
+        - bash ./tests/deployment/deploy.sh aws create
+        - mkdir -p env_metadata/aws
+        - chmod -R +wr env_metadata/aws
+        - cp deployment_info.json env_metadata/aws
+        - cp *.tfstate env_metadata/aws
+    tags:
+        - cm-official-docker-executor
+    artifacts:
+        paths:
+            - env_metadata/aws
+        when: always
+        expire_in: 1 month
+
+# run functional tests: aws
+test_functional_execute:
+    stage: test_functional_execute
+    retry:
+        max: 1
+    script:
+        # install packages
+        - pip install -r requirements.txt
+        - pip install .
+        # copying artifacts inherited from functional_test_init target to deployment root directory
+        - cp -a env_metadata/aws/. .
+        # run function tests
+        - make functional_test
+        # run linter
+        - make lint
+    tags:
+        - cm-official-docker-executor
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == "master"
+            - $CI_COMMIT_REF_NAME == "develop"
+            - $RUN_FUNCTIONAL_TESTS == "true"
+            - $CI_COMMIT_MESSAGE =~ /smart:run_functional_tests/
+
+test_functional_cleanup:
+    stage: test_functional_cleanup
+    retry:
+        max: 1
+    when: always
+    script:
+        # install jq
+        - apt-get update
+        - apt-get install -y jq
+        # install terraform
+        - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
+        # copying artifacts inherited from functional_test_init target to root directory
+        - cp -a env_metadata/aws/. .
+        # teardown enviroment
+        - bash ./tests/deployment/deploy.sh aws delete    
+    tags:
+        - cm-official-docker-executor
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == "master"
+            - $CI_COMMIT_REF_NAME == "develop"
+            - $RUN_FUNCTIONAL_TESTS == "true"
+            - $CI_COMMIT_MESSAGE =~ /smart:run_functional_tests/
 
 # generate code coverage docs
 docs_code_coverage:

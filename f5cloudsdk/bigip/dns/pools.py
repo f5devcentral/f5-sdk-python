@@ -2,7 +2,7 @@
 
 from f5cloudsdk.base_clients import BaseFeatureClient
 
-BASE_URI = '/mgmt/tm/gtm/pool/'
+BASE_URI = '/mgmt/tm/gtm/pool'
 
 
 class PoolsClient(BaseFeatureClient):
@@ -44,9 +44,8 @@ class PoolsClient(BaseFeatureClient):
         None
 
         """
-
         super(PoolsClient, self).__init__(
             client,
             logger_name=__name__,
-            uri=BASE_URI
+            uri=BASE_URI+kwargs.pop('record_type', '')
         )
