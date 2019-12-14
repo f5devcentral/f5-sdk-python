@@ -101,6 +101,12 @@ test_functional_execute:
         - make lint
     tags:
         - cm-official-docker-executor
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == "master"
+            - $CI_COMMIT_REF_NAME == "develop"
+            - $RUN_FUNCTIONAL_TESTS == "true"
+            - $CI_COMMIT_MESSAGE =~ /smart:run_functional_tests/
 
 test_functional_cleanup:
     stage: test_functional_cleanup
@@ -119,6 +125,12 @@ test_functional_cleanup:
         - bash ./tests/deployment/deploy.sh aws delete    
     tags:
         - cm-official-docker-executor
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == "master"
+            - $CI_COMMIT_REF_NAME == "develop"
+            - $RUN_FUNCTIONAL_TESTS == "true"
+            - $CI_COMMIT_MESSAGE =~ /smart:run_functional_tests/
 
 # generate code coverage docs
 docs_code_coverage:
