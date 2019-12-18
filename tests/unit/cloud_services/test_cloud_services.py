@@ -1,7 +1,7 @@
 """ Test module """
 
-from f5cloudsdk.cloud_services import ManagementClient
-from f5cloudsdk import constants as project_constants
+from f5sdk.cloud_services import ManagementClient
+from f5sdk import constants as project_constants
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants

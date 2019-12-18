@@ -2,7 +2,7 @@
 [run]
 branch = True
 source =
-    f5cloudsdk/
+    f5sdk/
 
 [report]
 # Regexes for lines to exclude from consideration

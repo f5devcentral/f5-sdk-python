@@ -1,20 +1,20 @@
-:mod:`f5cloudsdk.bigip`
+:mod:`f5sdk.bigip`
 =======================
 
-.. automodule:: f5cloudsdk.bigip
+.. automodule:: f5sdk.bigip
 
-:mod:`f5cloudsdk.bigip.toolchain`
+:mod:`f5sdk.bigip.toolchain`
 =================================
 
-.. automodule:: f5cloudsdk.bigip.toolchain
+.. automodule:: f5sdk.bigip.toolchain
 
-:mod:`f5cloudsdk.bigip.toolchain.package`
+:mod:`f5sdk.bigip.toolchain.package`
 =========================================
 
-.. automodule:: f5cloudsdk.bigip.toolchain.package
+.. automodule:: f5sdk.bigip.toolchain.package
 
-:mod:`f5cloudsdk.bigip.toolchain.service`
+:mod:`f5sdk.bigip.toolchain.service`
 =========================================
 
-.. automodule:: f5cloudsdk.bigip.toolchain.service
+.. automodule:: f5sdk.bigip.toolchain.service
 

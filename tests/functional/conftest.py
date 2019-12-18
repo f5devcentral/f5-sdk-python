@@ -3,7 +3,7 @@
 import json
 import pytest
 
-from f5cloudsdk.bigip import ManagementClient
+from f5sdk.bigip import ManagementClient
 
 
 @pytest.fixture(scope="session")

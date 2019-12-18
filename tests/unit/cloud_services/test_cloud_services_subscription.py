@@ -3,8 +3,8 @@
 
 import json
 
-from f5cloudsdk.cloud_services import ManagementClient
-from f5cloudsdk.cloud_services.subscriptions import SubscriptionClient
+from f5sdk.cloud_services import ManagementClient
+from f5sdk.cloud_services.subscriptions import SubscriptionClient
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants
@@ -52,7 +52,7 @@ class TestSubscription(object):
             'configuration': {}
         }
         mocker.patch(REQ).return_value.json = Mock(side_effect=[LOGIN_RESPONSE, update_response])
-        mocker.patch('f5cloudsdk.utils.file_utils.open', mocker.mock_open(read_data=json.dumps({})))
+        mocker.patch('f5sdk.utils.file_utils.open', mocker.mock_open(read_data=json.dumps({})))
 
         mgmt_client = ManagementClient(user=USER, password=USER_PWD)
         sub_client = SubscriptionClient(mgmt_client)

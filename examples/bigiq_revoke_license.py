@@ -14,10 +14,10 @@ Set local environment variables first
 
 import os
 
-from f5cloudsdk.bigiq import ManagementClient
-from f5cloudsdk.bigiq.licensing import AssignmentClient
-from f5cloudsdk.bigiq.licensing.pools import MemberManagementClient
-from f5cloudsdk.logger import Logger
+from f5sdk.bigiq import ManagementClient
+from f5sdk.bigiq.licensing import AssignmentClient
+from f5sdk.bigiq.licensing.pools import MemberManagementClient
+from f5sdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()
 

@@ -4,8 +4,8 @@ import base64
 import socket
 import os
 from paramiko import ssh_exception
-from f5cloudsdk import exceptions
-from f5cloudsdk import constants as project_constants
+from f5sdk import exceptions
+from f5sdk import constants as project_constants
 
 from ...global_test_imports import pytest, Mock, PropertyMock, call
 

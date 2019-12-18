@@ -1,7 +1,7 @@
 """Utility module for bigip test cases """
 
 # project imports
-from f5cloudsdk.bigip import ManagementClient
+from f5sdk.bigip import ManagementClient
 
 # local test imports
 from ...shared import constants

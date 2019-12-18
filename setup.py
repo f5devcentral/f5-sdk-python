@@ -13,10 +13,10 @@ DEPENDENCIES = [
 ]
 
 setup(
-    name='f5-cloud-sdk',
+    name='f5-sdk-python',
     version='0.9.0',
     description='F5 SDK',
-    url='https://***REMOVED***/cloudsolutions/f5-cloud-sdk',
+    url='https://***REMOVED***/automation-sdk/f5-sdk-python',
     author='F5 Ecosystems Group',
     author_email='solutionsfeedback@f5.com',
     license='Apache License 2.0',

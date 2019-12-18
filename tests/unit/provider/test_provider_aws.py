@@ -1,7 +1,7 @@
 """ Test provider module """
 
 # project imports
-from f5cloudsdk import provider
+from f5sdk import provider
 # unittest imports
 from ...global_test_imports import Mock
 
@@ -23,7 +23,7 @@ class TestProviderAws(object):
         - virtual_machines.list() response should equal expected value(s)
         """
 
-        mock_session = mocker.patch('f5cloudsdk.provider.aws.Session')
+        mock_session = mocker.patch('f5sdk.provider.aws.Session')
 
         _response = {
             'Reservations': [

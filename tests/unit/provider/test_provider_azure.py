@@ -1,7 +1,7 @@
 """ Test provider module """
 
 # project imports
-from f5cloudsdk import provider
+from f5sdk import provider
 # unittest imports
 from ...global_test_imports import Mock
 
@@ -33,11 +33,11 @@ class TestProviderAzure(object):
         - virtual_machines.list() response should equal expected value(s)
         """
 
-        mocker.patch('f5cloudsdk.provider.azure.ServicePrincipalCredentials')
+        mocker.patch('f5sdk.provider.azure.ServicePrincipalCredentials')
         mock_compute_client = mocker.patch(
-            'f5cloudsdk.provider.azure.virtual_machines.ComputeManagementClient')
+            'f5sdk.provider.azure.virtual_machines.ComputeManagementClient')
         mock_network_client = mocker.patch(
-            'f5cloudsdk.provider.azure.virtual_machines.NetworkManagementClient')
+            'f5sdk.provider.azure.virtual_machines.NetworkManagementClient')
 
         # compute client response
         _response = [

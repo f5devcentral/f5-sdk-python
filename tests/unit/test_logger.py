@@ -1,7 +1,7 @@
 """ Test logger module """
 
 # project imports
-from f5cloudsdk.logger import Logger
+from f5sdk.logger import Logger
 # unittest imports
 from ..global_test_imports import Mock
 

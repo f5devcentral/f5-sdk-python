@@ -78,6 +78,12 @@ test_functional_init:
         - cp *.tfstate env_metadata/aws
     tags:
         - cm-official-docker-executor
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == "master"
+            - $CI_COMMIT_REF_NAME == "develop"
+            - $RUN_FUNCTIONAL_TESTS == "true"
+            - $CI_COMMIT_MESSAGE =~ /smart:run_functional_tests/
     artifacts:
         paths:
             - env_metadata/aws
@@ -185,7 +191,7 @@ publish_egg_to_artifactory:
         - make build
         - EGG_FILE=$(ls dist/*.gz)
         - EGG_NAME=$(basename $EGG_FILE)
-        - URL=${ARTIFACTORY_BASE_URL}/f5-cloud-solutions-pypi/f5-cloud-sdk/${EGG_NAME}
+        - URL=${ARTIFACTORY_BASE_URL}/f5-cloud-solutions-pypi/f5-sdk-python/${EGG_NAME}
         - echo ${URL}
         - >-
           UPLOAD_RESULT=$(curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -X PUT --data-binary @${EGG_FILE} ${URL})
@@ -201,6 +207,7 @@ pages:
     tags:
         - cm-official-docker-executor
     script:
+        - echo "URL https://${CI_PROJECT_NAMESPACE}.${PAGES_DOMAIN}/${CI_PROJECT_NAME}"
         - PUBLIC_DIR='./public'
         - mkdir -p ${PUBLIC_DIR}
         # place index.html in public dir
@@ -223,7 +230,7 @@ publish_test_internal_install:
     stage: publish_test
     script:
         # install packages - first wait until it is available after a recent publish
-        - bash scripts/wait_for_resp.sh ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-cloud-sdk/
-        - pip install f5-cloud-sdk --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple
+        - bash scripts/wait_for_resp.sh ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-sdk-python/
+        - pip install f5-sdk-python --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple
     tags:
         - cm-official-docker-executor

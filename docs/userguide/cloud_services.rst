@@ -1,4 +1,4 @@
-:mod:`f5cloudsdk.cloud_services`
+:mod:`f5sdk.cloud_services`
 ================================
 
-.. automodule:: f5cloudsdk.cloud_services
+.. automodule:: f5sdk.cloud_services
