@@ -1,7 +1,7 @@
 """ Test BIG-IQ licensing assignment """
 
-from f5cloudsdk.bigiq.licensing import AssignmentClient
-from f5cloudsdk.exceptions import MethodNotAllowed
+from f5sdk.bigiq.licensing import AssignmentClient
+from f5sdk.exceptions import MethodNotAllowed
 
 from ....global_test_imports import pytest
 from ....shared import constants

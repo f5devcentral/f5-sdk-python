@@ -1,7 +1,7 @@
 """ Test provider module """
 
 # project imports
-from f5cloudsdk import provider
+from f5sdk import provider
 
 CREDS_RESPONSE = 'foo'
 
@@ -19,7 +19,7 @@ class TestProvider(object):
         """
 
         mocker.patch(
-            'f5cloudsdk.provider.azure.ServicePrincipalCredentials',
+            'f5sdk.provider.azure.ServicePrincipalCredentials',
             return_value=CREDS_RESPONSE
         )
 
@@ -41,7 +41,7 @@ class TestProvider(object):
         - Provider client session attribute equals mocked return
         """
 
-        mocker.patch('f5cloudsdk.provider.aws.Session', return_value=CREDS_RESPONSE)
+        mocker.patch('f5sdk.provider.aws.Session', return_value=CREDS_RESPONSE)
 
         provider_client = provider.aws.ProviderClient(
             access_key='id',

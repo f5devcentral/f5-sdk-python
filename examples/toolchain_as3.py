@@ -13,9 +13,9 @@ Set local environment variables first
 
 import os
 
-from f5cloudsdk.bigip import ManagementClient
-from f5cloudsdk.bigip.toolchain import ToolChainClient
-from f5cloudsdk.logger import Logger
+from f5sdk.bigip import ManagementClient
+from f5sdk.bigip.toolchain import ToolChainClient
+from f5sdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()
 

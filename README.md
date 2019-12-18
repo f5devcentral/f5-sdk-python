@@ -14,7 +14,7 @@ This project provides a use case focused python SDK for interacting with F5 prod
 
 ## Documentation
 
-See the [user documentation](https://cloudsolutions.pages.***REMOVED***/f5-cloud-sdk/code-docs) for details on installation, usage and much more.
+See the [user documentation](https://automation-sdk.pages.***REMOVED***/f5-sdk-python/code-docs) for details on installation, usage and much more.
 
 ## Developer Setup
 
@@ -44,7 +44,6 @@ This project uses `Make` as a build automation tool... check out the Makefile fo
 
 ## Artifacts
 
-- Index: https://cloudsolutions.pages.***REMOVED***/f5-cloud-sdk
-- Code coverage report: https://cloudsolutions.pages.***REMOVED***/f5-cloud-sdk/coverage/
-- Code documentation: https://cloudsolutions.pages.***REMOVED***/f5-cloud-sdk/code-docs/
-
+- Index: https://automation-sdk.pages.***REMOVED***/f5-sdk-python
+- Code coverage report: https://automation-sdk..pages.***REMOVED***/f5-sdk-python/coverage/
+- Code documentation: https://automation-sdk..pages.***REMOVED***/f5-sdk-python/code-docs/

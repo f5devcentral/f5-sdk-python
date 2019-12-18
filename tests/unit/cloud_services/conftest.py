@@ -1,6 +1,6 @@
 """ Test fixtures """
 
-from f5cloudsdk.cloud_services import ManagementClient
+from f5sdk.cloud_services import ManagementClient
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants

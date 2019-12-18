@@ -1,7 +1,7 @@
 """ Test BIG-IQ licensing pool member management """
 
-from f5cloudsdk.bigiq.licensing.pools import MemberManagementClient
-from f5cloudsdk.exceptions import MethodNotAllowed
+from f5sdk.bigiq.licensing.pools import MemberManagementClient
+from f5sdk.exceptions import MethodNotAllowed
 
 from ....global_test_imports import pytest, Mock, PropertyMock
 from ....shared import constants

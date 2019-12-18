@@ -14,7 +14,7 @@ Installation
 
 ::
 
-    pip install f5-cloud-sdk --extra-index-url https://***REMOVED***/artifactory/api/pypi/f5-cloud-solutions-pypi/simple
+    pip install f5-sdk-python --extra-index-url https://***REMOVED***/artifactory/api/pypi/f5-cloud-solutions-pypi/simple
 
 
 .. note::
@@ -22,7 +22,7 @@ Installation
 
     ::
 
-        docker run --rm -it -v $(pwd):/f5cloudsdk python:3.7 /bin/bash
+        docker run --rm -it -v $(pwd):/f5sdk python:3.7 /bin/bash
 
 Usage
 -----

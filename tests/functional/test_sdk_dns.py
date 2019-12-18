@@ -3,9 +3,9 @@
 import os
 import re
 
-from f5cloudsdk.bigip.toolchain import ToolChainClient
-from f5cloudsdk.logger import Logger
-from f5cloudsdk.bigip.dns import DataCentersClient, ServersClient, PoolsClient
+from f5sdk.bigip.toolchain import ToolChainClient
+from f5sdk.logger import Logger
+from f5sdk.bigip.dns import DataCentersClient, ServersClient, PoolsClient
 
 LOGGER = Logger(__name__).get_logger()
 

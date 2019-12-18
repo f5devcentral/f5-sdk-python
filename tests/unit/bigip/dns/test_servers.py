@@ -1,6 +1,6 @@
 """ Test BIG-IP DNS servers client """
 
-from f5cloudsdk.bigip.dns import ServersClient
+from f5sdk.bigip.dns import ServersClient
 
 from ....global_test_imports import pytest
 from ....shared import constants

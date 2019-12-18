@@ -4,9 +4,9 @@ CODE_DOCS_DIR := ./code_docs
 COVERAGE_DIR := ./code_coverage
 COVERAGE_FILE := .coverage
 DIST_DIR := dist
-EGG_DIR := f5_cloud_sdk.egg-info
+EGG_DIR := f5_sdk.egg-info
 EXCLUDE_PATTERN := "*/abstract/*"
-PACKAGE_DIR := f5cloudsdk
+PACKAGE_DIR := f5sdk
 TEST_DIR := tests
 UNIT_TEST_DIR := ${TEST_DIR}/unit
 FUNCTIONAL_TEST_DIR := ${TEST_DIR}/functional
@@ -57,4 +57,6 @@ clean:
 	rm -rf ${DIST_DIR}
 	rm -rf ${EGG_DIR}
 	rm -rf ${TEST_CACHE_DIR}
+clean_cache:
+	find . -type d -name __pycache__ -exec rm -r {} \+
 .PHONY: clean

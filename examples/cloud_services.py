@@ -12,9 +12,9 @@ Set local environment variables first
 
 import os
 
-from f5cloudsdk.cloud_services import ManagementClient
-from f5cloudsdk.cloud_services.subscriptions import SubscriptionClient
-from f5cloudsdk.logger import Logger
+from f5sdk.cloud_services import ManagementClient
+from f5sdk.cloud_services.subscriptions import SubscriptionClient
+from f5sdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()
 

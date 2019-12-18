@@ -1,4 +1,4 @@
-:mod:`f5cloudsdk.provider`
+:mod:`f5sdk.provider`
 ==========================
 
-.. automodule:: f5cloudsdk.provider
+.. automodule:: f5sdk.provider

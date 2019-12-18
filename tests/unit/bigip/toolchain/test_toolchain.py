@@ -5,8 +5,8 @@ import tempfile
 import shutil
 from os import path
 
-from f5cloudsdk import exceptions
-from f5cloudsdk.bigip.toolchain import ToolChainClient
+from f5sdk import exceptions
+from f5sdk.bigip.toolchain import ToolChainClient
 
 from ....global_test_imports import pytest, Mock
 
@@ -322,7 +322,7 @@ class TestToolChainService(object):
 
         mock_response = {'foo': 'bar'}
         make_request_mock = mocker.patch(
-            'f5cloudsdk.utils.http_utils.make_request',
+            'f5sdk.utils.http_utils.make_request',
             side_effect=[({'selfLink': 'https://localhost/foo/1234'}, 202), (mock_response, 200)])
 
         toolchain = ToolChainClient(mgmt_client, 'as3')
