@@ -160,6 +160,21 @@ class TestBigIp(object):
         assert device.port == DFL_MGMT_PORT
 
     @staticmethod
+    def test_port_is_int(mocker):
+        """Test: Kwarg port of type string is cast to an int
+
+        Assertions
+        ----------
+        - Mock socket instance 'connect' should be called with port of type int
+        """
+
+        mock_socket = mocker.patch('socket.socket').return_value
+
+        BigIpUtils.get_mgmt_client(token=TOKEN, skip_ready_check=False, port='443')
+
+        mock_socket.connect.assert_called_with((HOST, 443))
+
+    @staticmethod
     def test_is_ready(mocker):
         """Test: Device ready check
 
