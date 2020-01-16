@@ -84,7 +84,7 @@ class ManagementClient(object):
         self.logger = Logger(__name__).get_logger()
 
         self.host = host.split(':')[0]  # disallow providing port here
-        self.port = kwargs.pop('port', None) or self._discover_port()
+        self.port = int(kwargs.pop('port', None) or self._discover_port())
         self._user = kwargs.pop('user', None)
         self._password = kwargs.pop('password', None)
         self._private_key_file = kwargs.pop('private_key_file', None)
@@ -178,7 +178,7 @@ class ManagementClient(object):
             boolean true if device is ready
         """
 
-        self.logger.debug('Performing ready check')
+        self.logger.debug('Performing ready check using port %s' % self.port)
 
         if self._test_socket(self.port):
             return True
@@ -332,7 +332,8 @@ class ManagementClient(object):
         None
         """
 
-        self.logger.info('Logging in using user + password')
+        self.logger.debug('Logging in using user + password')
+
         token = self._get_token()
         self.token = token['token']
         self.token_details = token
