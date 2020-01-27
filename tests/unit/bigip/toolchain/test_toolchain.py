@@ -157,7 +157,7 @@ class TestToolChainPackage(object):
         ----------
         - is_installed() response should be a dict {'installed': True,
                                                     'installed_version': '3.9.0',
-                                                    'latest_version': '3.13.0'}
+                                                    'latest_version': '3.16.0'}
         """
 
         mock_resp = {
@@ -175,7 +175,7 @@ class TestToolChainPackage(object):
 
         assert toolchain.package.is_installed() == {'installed': True,
                                                     'installed_version': '3.9.0',
-                                                    'latest_version': '3.13.0'}
+                                                    'latest_version': '3.16.0'}
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
@@ -206,7 +206,7 @@ class TestToolChainPackage(object):
         ----------
         - is_installed() response should be a dict {'installed': False,
                                                     'installed_version': '',
-                                                    'latest_version': '3.13.0'}
+                                                    'latest_version': '3.16.0'}
         """
 
         mock_resp = {
@@ -224,7 +224,7 @@ class TestToolChainPackage(object):
 
         assert toolchain.package.is_installed() == {'installed': False,
                                                     'installed_version': '',
-                                                    'latest_version': '3.13.0'}
+                                                    'latest_version': '3.16.0'}
 
 
 class TestToolChainService(object):
