@@ -329,4 +329,19 @@ class TestBigIp(object):
         mock_request.json = Mock(return_value={'foo': 'bar'})
         type(mock_request).headers = PropertyMock(return_value={'content-length': '0'})
 
-        assert mgmt_client.make_request('/') == {}
+        assert mgmt_client.make_request('/') is None
+
+    @staticmethod
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_make_request_with_204_status_code(mgmt_client, mocker):
+        """Test: make_request with Content-Length header set to '0'
+
+        Assertions
+        ----------
+        - Response should equal empty dict
+        """
+
+        mock_request = mocker.patch(REQ).return_value
+        type(mock_request).status_code = PropertyMock(return_value=204)
+
+        assert mgmt_client.make_request('/') is None

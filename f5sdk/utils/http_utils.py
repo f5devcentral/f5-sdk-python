@@ -123,14 +123,15 @@ def make_request(host, uri, **kwargs):
     # 1) if the content-length header exists and is 0: set to empty dict
     # 2) response is valid JSON: decode JSON to native python object (dict, list)
     headers = response.headers
-    if 'content-length' in headers.keys() and headers['content-length'] == '0':
-        response_body = {}
+    if (status_code == 204) or \
+            ('content-length' in headers.keys() and headers['content-length'] == '0'):
+        response_body = None
     else:
         response_body = response.json()
 
     # helpful debug
     logger.debug('HTTP response: %s %s' % (status_code, status_reason))
-    logger.trace('HTTP response body: %s' % (response_body))
+    logger.trace('HTTP response body: %s' % response_body)
 
     # raise exception on 4xx and 5xx status code(s)
     if str(status_code)[:1] in ['4', '5']:
