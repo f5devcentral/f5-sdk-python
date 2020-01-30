@@ -1,0 +1,54 @@
+{
+    "do": {
+        "repository": "F5Networks/f5-declarative-onboarding",
+        "endpoints": {
+            "configure": {
+                "uri": "/mgmt/shared/declarative-onboarding",
+                "methods": ["GET", "POST"]
+            },
+            "info": {
+                "uri": "/mgmt/shared/declarative-onboarding/info",
+                "methods": ["GET"]
+            }
+        }
+    },
+    "as3": {
+        "repository": "F5Networks/f5-appsvcs-extension",
+        "endpoints": {
+            "configure": {
+                "uri": "/mgmt/shared/appsvcs/declare",
+                "methods": ["GET", "POST", "DELETE"]
+            },
+            "info": {
+                "uri": "/mgmt/shared/appsvcs/info",
+                "methods": ["GET"]
+            }
+        }
+    },
+    "ts": {
+        "repository": "F5Networks/f5-telemetry-streaming",
+        "endpoints": {
+            "configure": {
+                "uri": "/mgmt/shared/telemetry/declare",
+                "methods": ["GET", "POST"]
+            },
+            "info": {
+                "uri": "/mgmt/shared/telemetry/info",
+                "methods": ["GET"]
+            }
+        }
+    },
+    "failover": {
+        "repository": "F5Devcentral/f5-cloud-failover-extension",
+        "endpoints": {
+            "configure": {
+                "uri": "/mgmt/shared/cloud-failover/declare",
+                "methods": ["GET", "POST"]
+            },
+            "info": {
+                "uri": "/mgmt/shared/cloud-failover/info",
+                "methods": ["GET"]
+            }
+        }
+    }
+}

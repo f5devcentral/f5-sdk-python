@@ -21,6 +21,10 @@ class HTTPError(Exception):
     """ Error raised http error occurs """
 
 
+class FileLoadError(Exception):
+    """ Error raised if file load error occurs """
+
+
 class SSHCommandStdError(Exception):
     """ Error raised if ssh client command response contains stderr """
 

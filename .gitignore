@@ -38,3 +38,6 @@ venv/
 
 # deployment info
 deployment_info.json
+
+# extension metadata output artifact
+metadata.json

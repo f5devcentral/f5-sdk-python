@@ -12,6 +12,7 @@ UNIT_TEST_DIR := ${TEST_DIR}/unit
 FUNCTIONAL_TEST_DIR := ${TEST_DIR}/functional
 TEST_CACHE_DIR := .pytest_cache
 EXAMPLES_DIR := examples
+TOOLCHAIN_METADATA_FILE := metadata.json
 
 export SPHINX_APIDOC_OPTIONS = members,undoc-members,inherited-members
 
@@ -20,7 +21,7 @@ build:
 	python3 setup.py sdist bdist_wheel;
 unit_test:
 	echo "Running unit tests";
-	pytest ${UNIT_TEST_DIR} --cov=${PACKAGE_DIR} --full-trace -v;
+	pytest ${UNIT_TEST_DIR} --cov=${PACKAGE_DIR} --full-trace -vv;
 create_environment:
 	echo "Creating environment for functional tests";	
 	bash ./tests/deployment/deploy.sh aws create;
@@ -47,6 +48,9 @@ code_docs_doxygen:
 delete_environment:
 	echo "Deleting environment";	
 	bash ./tests/deployment/deploy.sh aws delete;
+generate_toolchain_metadata:
+	python3 -m "f5sdk.scripts.toolchain.generate_metadata";
+	cp ${TOOLCHAIN_METADATA_FILE} f5sdk/bigip/toolchain/toolchain_metadata.json
 clean:
 	echo "Removing artifacts"
 	rm -rf ${API_DOCS_SOURCE}
