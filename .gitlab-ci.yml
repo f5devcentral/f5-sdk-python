@@ -12,6 +12,7 @@ stages:
 variables:
     TERRAFORM_PKG_URL: 'https://releases.hashicorp.com/terraform/0.12.6/terraform_0.12.6_linux_386.zip'
     ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
+    EXTENSION_METADATA_FILE: "metadata.json"
     # aws vars
     AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
     AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
@@ -47,7 +48,7 @@ test_unit_python_2_x:
     tags:
         - cm-official-docker-executor
 
-# depndency security check
+# dependency security check
 test_security_check:
     stage: test
     script:
@@ -58,6 +59,34 @@ test_security_check:
         - safety check -r requirements.txt
     tags:
         - cm-official-docker-executor
+
+# test toolchain metadata file is current
+# note: the file is checked into the repo
+# to enable all toolchain client scenarios
+test_toolchain_metadata_current:
+    stage: test
+    script:
+        # install packages
+        - pip install -r requirements.txt
+        - pip install .
+        # generate metadata file
+        - make generate_toolchain_metadata
+        # check if file is out of date
+        - changed_files_count=$(git diff --name-only | wc -l)
+        - echo ${changed_files_count}
+        - if [[ $changed_files_count -ne 0 ]]; then echo "Toolchain metadata is out of date, please update"; exit 1; else echo "Metadata file is unchanged"; fi
+    tags:
+        - cm-official-docker-executor
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == "master"
+            - $CI_COMMIT_REF_NAME == "develop"
+            - $PUBLISH_TOOLCHAIN_METADATA == "true"
+    artifacts:
+        name: ${CI_COMMIT_REF_NAME}_toolchain_metadata
+        paths:
+            - ${EXTENSION_METADATA_FILE}
+        expire_in: 1 month
 
 test_functional_init:
     stage: test_functional_init
@@ -175,12 +204,34 @@ docs_code:
             - code_docs
         expire_in: 1 month
 
+# Generate and publish toolchain metadata to CDN
+# note: assumes metadata generator has been run
+# in a previous stage and set as an artifact
+publish_toolchain_metadata:
+    stage: publish
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == "master"
+            - $CI_COMMIT_REF_NAME == "develop"
+            - $PUBLISH_TOOLCHAIN_METADATA == "true"
+    tags:
+        - docker-executor
+    script:
+        # publish toolchain metadata to F5 CDN
+        - CDN_FOLDER="f5-extension-metadata"
+        - svn co ${F5_CDN_SVN_ROOT}/cloudsolutions/${CDN_FOLDER} --username ${CDN_SVC_ACCOUNT_USER} --password ${CDN_SVC_ACCOUNT_PWD} --non-interactive
+        - cp ${EXTENSION_METADATA_FILE} ${CDN_FOLDER}/latest/
+        - cd ${CDN_FOLDER}
+        - svn diff
+        - changed_files_count=$(svn diff --summarize | wc -l)
+        - echo ${changed_files_count}
+        - if [[ $changed_files_count -eq 1 ]]; then svn add --force latest/${EXTENSION_METADATA_FILE}; svn commit -m "F5 SDK project automation - ${CI_COMMIT_REF_NAME}"; else echo "Metadata file is unchanged"; fi
+
 # Publish to internal artifactory
 # Note: Will build and push eggs when new tags are pushed with the assumption being the package
 # version has been updated. However even if it hasn't it will simply update the existing version
 publish_egg_to_artifactory:
     stage: publish
-    # for now publish on develop and master as well (instead of just tags)
     only:
         - tags
         - master
@@ -228,6 +279,10 @@ pages:
 # publish test: test internal (artifactory) install
 publish_test_internal_install:
     stage: publish_test
+    only:
+        - tags
+        - master
+        - develop
     script:
         # install packages - first wait until it is available after a recent publish
         - bash scripts/wait_for_resp.sh ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-sdk-python/

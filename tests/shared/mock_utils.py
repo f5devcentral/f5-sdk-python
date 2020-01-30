@@ -9,7 +9,7 @@ class MockRequestsResponse:
     def __init__(self, body):
         """ Init """
         self.body = body
-        self.status_code = None
+        self.status_code = 200
         self.reason = None
 
         self.headers = {}
@@ -79,7 +79,10 @@ def create_response(response_body, **kwargs):
 
     def _func(*a, **k):  # pylint: disable=unused-argument
         """ Function """
-        url = a[1]
+        if len(a) == 2:
+            url = a[1]
+        else:
+            url = a[0]
 
         if c_response:
             # future format types: 'type': 'method', ...
