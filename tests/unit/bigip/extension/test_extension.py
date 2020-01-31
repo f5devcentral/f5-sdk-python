@@ -264,6 +264,33 @@ class TestExtensionPackage(object):
         pytest.raises(Exception, extension_client.package.is_installed)
 
     @staticmethod
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_is_installed_two_digit_version(mgmt_client, mocker):
+        """Test: is_installed where package name major version contains two digits
+
+        Assertions
+        ----------
+        - is_installed() installed_version response should be correctly parsed
+        """
+
+        mock_resp = {
+            'id': 'xxxx',
+            'status': 'FINISHED',
+            'queryResponse': [
+                {
+                    'packageName': 'f5-appsvcs-1.10.0-0.noarch'
+                }
+            ]
+        }
+        mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
+
+        extension_client = ExtensionClient(
+            mgmt_client, 'as3', use_latest_metadata=False)
+
+        is_installed = extension_client.package.is_installed()
+        assert is_installed['installed_version'] == '1.10.0'
+
+    @staticmethod
     @pytest.mark.usefixtures("extension_client")
     def test_is_not_installed(extension_client, mocker):
         """Test: is_not_installed
