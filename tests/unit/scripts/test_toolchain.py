@@ -1,18 +1,18 @@
-""" Test toolchain metadata generator module """
+""" Test extension metadata generator module """
 
 # project imports
-from f5sdk.scripts.toolchain.generate_metadata import ToolChainScraperClient
+from f5sdk.scripts.extension.generate_metadata import ExtensionScraperClient
 # unittest imports
 from ...shared import mock_utils
 
 
-class TestToolChainMetadataGenerator(object):
-    """Test Class: toolchain generate metadata module """
+class TestExtensionMetadataGenerator(object):
+    """Test Class: extension generate metadata module """
 
     @classmethod
     def setup_class(cls):
         """" Setup func """
-        cls.components = ['as3', 'do', 'ts', 'failover'].sort()
+        cls.components = ['as3', 'do', 'ts', 'cf'].sort()
         cls.mock_conditions = [
             {
                 'type': 'url',
@@ -58,8 +58,8 @@ class TestToolChainMetadataGenerator(object):
             }
         ]
 
-    def test_toolchain_metadata_components(self, mocker):
-        """Test: Toolchain generator generates metadata components
+    def test_extension_metadata_components(self, mocker):
+        """Test: Extension generator generates metadata components
 
         Assertions
         ----------
@@ -69,13 +69,13 @@ class TestToolChainMetadataGenerator(object):
         mocker.patch('requests.get').side_effect = mock_utils.create_response(
             {}, conditional=self.mock_conditions)
 
-        toolchain_scraper = ToolChainScraperClient()
-        toolchain_metadata = toolchain_scraper.generate_metadata(write_file=False)
+        extension_scraper = ExtensionScraperClient()
+        extension_metadata = extension_scraper.generate_metadata(write_file=False)
 
-        assert list(toolchain_metadata['components'].keys()).sort() == self.components
+        assert list(extension_metadata['components'].keys()).sort() == self.components
 
-    def test_toolchain_metadata_versions(self, mocker):
-        """Test: Toolchain generator generates metadata component versions
+    def test_extension_metadata_versions(self, mocker):
+        """Test: Extension generator generates metadata component versions
 
         Exercises both release assets and dist folder for download
         URL and package name discovery
@@ -88,10 +88,10 @@ class TestToolChainMetadataGenerator(object):
         mocker.patch('requests.get').side_effect = mock_utils.create_response(
             {}, conditional=self.mock_conditions)
 
-        toolchain_scraper = ToolChainScraperClient()
-        toolchain_metadata = toolchain_scraper.generate_metadata(write_file=False)
+        extension_scraper = ExtensionScraperClient()
+        extension_metadata = extension_scraper.generate_metadata(write_file=False)
 
-        assert toolchain_metadata['components']['as3']['versions'] == {
+        assert extension_metadata['components']['as3']['versions'] == {
             '1.1.0': {
                 'downloadUrl': 'https://site.com/pkg-1.1.0.rpm',
                 'packageName': 'pkg-1.1.0',

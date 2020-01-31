@@ -35,5 +35,5 @@ For an example AS3 declaration, see the documentation `here <https://clouddocs.f
 
     python example.py
 
-.. literalinclude:: ../../examples/toolchain_as3.py
+.. literalinclude:: ../../examples/extension_as3.py
    :language: python

@@ -6,7 +6,7 @@ import shutil
 from os import path
 
 from f5sdk import exceptions
-from f5sdk.bigip.toolchain import ToolChainClient
+from f5sdk.bigip.extension import ExtensionClient
 
 from ....global_test_imports import pytest, Mock
 
@@ -17,7 +17,7 @@ TOKEN = constants.TOKEN
 
 REQ = constants.MOCK['requests']
 
-EXAMPLE_TOOLCHAIN_METADATA = {
+EXAMPLE_EXTENSION_METADATA = {
     'components': {
         'as3': {
             'versions': {
@@ -33,13 +33,13 @@ EXAMPLE_TOOLCHAIN_METADATA = {
 }
 
 
-class TestToolChain(object):
-    """Test Class: bigip.toolchain module """
+class TestExtension(object):
+    """Test Class: bigip.extension module """
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_init(toolchain_client):
-        """Test: Initialize toolchain client
+    @pytest.mark.usefixtures("extension_client")
+    def test_init(extension_client):
+        """Test: Initialize extension client
 
         Assertions
         ----------
@@ -47,8 +47,8 @@ class TestToolChain(object):
         - 'service' attribute exists
         """
 
-        assert toolchain_client.package
-        assert toolchain_client.service
+        assert extension_client.package
+        assert extension_client.service
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
@@ -62,7 +62,7 @@ class TestToolChain(object):
 
         pytest.raises(
             exceptions.InvalidComponentError,
-            ToolChainClient,
+            ExtensionClient,
             mgmt_client,
             'foo',
             use_latest_metadata=False
@@ -80,7 +80,7 @@ class TestToolChain(object):
 
         pytest.raises(
             exceptions.InvalidComponentVersionError,
-            ToolChainClient,
+            ExtensionClient,
             mgmt_client,
             'as3',
             version='0.0.0',
@@ -95,7 +95,7 @@ class TestToolChain(object):
 
         Assertions
         ----------
-        - instantiating a toolchain client should download metadata
+        - instantiating a extension client should download metadata
         """
 
         mock_conditions = [
@@ -103,16 +103,16 @@ class TestToolChain(object):
                 'type': 'url',
                 'value': 'cdn.f5.com',
                 'response': {
-                    'body': EXAMPLE_TOOLCHAIN_METADATA
+                    'body': EXAMPLE_EXTENSION_METADATA
                 }
             }
         ]
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        toolchain_client = ToolChainClient(mgmt_client, 'as3')
+        extension_client = ExtensionClient(mgmt_client, 'as3')
 
-        assert toolchain_client.version == 'x.x.x'
+        assert extension_client.version == 'x.x.x'
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
@@ -129,15 +129,15 @@ class TestToolChain(object):
         mock_logger = Mock()
         mocker.patch('f5sdk.logger.Logger.get_logger').return_value = mock_logger
 
-        ToolChainClient(mgmt_client, 'as3', use_latest_metadata=True)
+        ExtensionClient(mgmt_client, 'as3', use_latest_metadata=True)
 
         assert mock_logger.warning.call_count == 1
         error_message = 'Error downloading metadata file'
         assert error_message in mock_logger.warning.call_args_list[0][0][0]
 
 
-class TestToolChainPackage(object):
-    """Test Class: bigip.toolchain.package module """
+class TestExtensionPackage(object):
+    """Test Class: bigip.extension.package module """
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
@@ -173,9 +173,9 @@ class TestToolChainPackage(object):
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0', use_latest_metadata=False)
+        extension = ExtensionClient(mgmt_client, 'as3', version='3.9.0', use_latest_metadata=False)
 
-        assert toolchain.package.install() == {
+        assert extension.package.install() == {
             'component': 'as3',
             'version': '3.9.0'
         }
@@ -209,9 +209,9 @@ class TestToolChainPackage(object):
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        toolchain = ToolChainClient(mgmt_client, 'as3', version='3.9.0', use_latest_metadata=False)
+        extension = ExtensionClient(mgmt_client, 'as3', version='3.9.0', use_latest_metadata=False)
 
-        assert toolchain.package.uninstall() == {
+        assert extension.package.uninstall() == {
             'component': 'as3',
             'version': '3.9.0'
         }
@@ -237,17 +237,17 @@ class TestToolChainPackage(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
 
-        toolchain_client = ToolChainClient(
+        extension_client = ExtensionClient(
             mgmt_client, 'as3', version='3.9.0', use_latest_metadata=False)
 
-        is_installed = toolchain_client.package.is_installed()
+        is_installed = extension_client.package.is_installed()
         assert is_installed['installed']
         assert is_installed['installed_version'] == '3.9.0'
         assert is_installed['latest_version'] != ''
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_failed_task_status(toolchain_client, mocker):
+    @pytest.mark.usefixtures("extension_client")
+    def test_failed_task_status(extension_client, mocker):
         """Test: is_installed with failed RPM task status
 
         Assertions
@@ -261,11 +261,11 @@ class TestToolChainPackage(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
 
-        pytest.raises(Exception, toolchain_client.package.is_installed)
+        pytest.raises(Exception, extension_client.package.is_installed)
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_is_not_installed(toolchain_client, mocker):
+    @pytest.mark.usefixtures("extension_client")
+    def test_is_not_installed(extension_client, mocker):
         """Test: is_not_installed
 
         Assertions
@@ -284,14 +284,14 @@ class TestToolChainPackage(object):
         }
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
 
-        is_installed = toolchain_client.package.is_installed()
+        is_installed = extension_client.package.is_installed()
         assert not is_installed['installed']
         assert is_installed['installed_version'] == ''
         assert is_installed['latest_version'] != ''
 
 
-class TestToolChainService(object):
-    """Test Class: bigip.toolchain.service module """
+class TestExtensionService(object):
+    """Test Class: bigip.extension.service module """
 
     @classmethod
     def setup_class(cls):
@@ -304,8 +304,8 @@ class TestToolChainService(object):
         shutil.rmtree(cls.test_tmp_dir)
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_show(toolchain_client, mocker):
+    @pytest.mark.usefixtures("extension_client")
+    def test_show(extension_client, mocker):
         """Test: show
 
         Assertions
@@ -316,11 +316,11 @@ class TestToolChainService(object):
         mock_response = {'message': 'success'}
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        assert toolchain_client.service.show() == mock_response
+        assert extension_client.service.show() == mock_response
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_create(toolchain_client, mocker):
+    @pytest.mark.usefixtures("extension_client")
+    def test_create(extension_client, mocker):
         """Test: create
 
         Assertions
@@ -331,10 +331,10 @@ class TestToolChainService(object):
         mock_response = {'message': 'success'}
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        assert toolchain_client.service.create(config={'config': 'foo'}) == mock_response
+        assert extension_client.service.create(config={'config': 'foo'}) == mock_response
 
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_create_config_file(self, toolchain_client, mocker):
+    @pytest.mark.usefixtures("extension_client")
+    def test_create_config_file(self, extension_client, mocker):
         """Test: create with config file
 
         Assertions
@@ -349,11 +349,11 @@ class TestToolChainService(object):
         with open(config_file, 'w') as _f:
             _f.write(json.dumps({'config': 'foo'}))
 
-        assert toolchain_client.service.create(config_file=config_file) == mock_response
+        assert extension_client.service.create(config_file=config_file) == mock_response
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_create_no_config(toolchain_client):
+    @pytest.mark.usefixtures("extension_client")
+    def test_create_no_config(extension_client):
         """Test: create with no config provided
 
         Assertions
@@ -361,11 +361,11 @@ class TestToolChainService(object):
         - InputRequiredError exception should be raised
         """
 
-        pytest.raises(exceptions.InputRequiredError, toolchain_client.service.create)
+        pytest.raises(exceptions.InputRequiredError, extension_client.service.create)
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_create_async(toolchain_client, mocker):
+    @pytest.mark.usefixtures("extension_client")
+    def test_create_async(extension_client, mocker):
         """Test: create async response
 
         Assertions
@@ -380,7 +380,7 @@ class TestToolChainService(object):
             'f5sdk.utils.http_utils.make_request',
             side_effect=[({'selfLink': 'https://localhost/foo/1234'}, 202), (mock_response, 200)])
 
-        response = toolchain_client.service.create(config={'foo': 'bar', 'async': True})
+        response = extension_client.service.create(config={'foo': 'bar', 'async': True})
 
         assert response == mock_response
         assert make_request_mock.call_count == 2
@@ -388,8 +388,8 @@ class TestToolChainService(object):
         assert args[1] == '/foo/1234'
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_delete(toolchain_client, mocker):
+    @pytest.mark.usefixtures("extension_client")
+    def test_delete(extension_client, mocker):
         """Test: delete
 
         Assertions
@@ -400,12 +400,12 @@ class TestToolChainService(object):
         mock_response = {'message': 'success'}
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_response)
 
-        assert toolchain_client.service.delete() == mock_response
+        assert extension_client.service.delete() == mock_response
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
     def test_delete_method_exception(mgmt_client):
-        """Test: delete - against invalid toolchain component
+        """Test: delete - against invalid extension component
 
         For example, DO does not support the 'DELETE' method
 
@@ -414,13 +414,13 @@ class TestToolChainService(object):
         - Exception should be raised
         """
 
-        toolchain_client = ToolChainClient(mgmt_client, 'do', use_latest_metadata=False)
+        extension_client = ExtensionClient(mgmt_client, 'do', use_latest_metadata=False)
 
-        pytest.raises(Exception, toolchain_client.service.delete)
+        pytest.raises(Exception, extension_client.service.delete)
 
     @staticmethod
-    @pytest.mark.usefixtures("toolchain_client")
-    def test_is_available(toolchain_client, mocker):
+    @pytest.mark.usefixtures("extension_client")
+    def test_is_available(extension_client, mocker):
         """Test: is_available
 
         Assertions
@@ -430,4 +430,4 @@ class TestToolChainService(object):
 
         mocker.patch(REQ).return_value.json = Mock(return_value={'message': 'success'})
 
-        assert toolchain_client.service.is_available()
+        assert extension_client.service.is_available()

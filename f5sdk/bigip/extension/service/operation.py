@@ -1,4 +1,4 @@
-"""Module for BIG-IP toolchain component service configuration"""
+"""Module for BIG-IP extension component service configuration"""
 
 import time
 import requests
@@ -9,14 +9,14 @@ from f5sdk.utils import misc_utils
 
 
 class OperationClient(object):
-    """A class used as a toolchain service operation client for BIG-IP
+    """A class used as a extension service operation client for BIG-IP
 
     Attributes
     ----------
     component : str
-        the component in the toolchain
+        the extension component
     version : str
-        the component version in the toolchain
+        the extension component version
 
     Methods
     -------
@@ -38,11 +38,11 @@ class OperationClient(object):
         client : object
             the management client object
         component : str
-            the component in the toolchain
+            the extension component
         version : str
-            the component version in the toolchain
+            the extension component version
         metadata_client : object
-            the toolchain metadata client
+            the extension metadata client
 
         Returns
         -------
@@ -75,7 +75,7 @@ class OperationClient(object):
 
         Notes
         -----
-        Certain toolchain components support async task behavior,
+        Certain extension components support async task behavior,
         where a 202 response on the initial POST is returned along
         with a self link to query.  The self link will return 202 until
         the task is complete, at which time it will return 200.
@@ -100,7 +100,7 @@ class OperationClient(object):
         return response
 
     def is_available(self):
-        """Checks toolchain component service is available
+        """Checks extension component service is available
 
         Notes
         -----
@@ -130,7 +130,7 @@ class OperationClient(object):
         return ret
 
     def create(self, **kwargs):
-        """Creates (or updates) toolchain component service
+        """Creates (or updates) extension component service
 
         Parameters
         ----------
@@ -166,7 +166,7 @@ class OperationClient(object):
         return response
 
     def show(self):
-        """Gets (shows) the toolchain component service
+        """Gets (shows) the extension component service
 
         Parameters
         ----------
@@ -182,7 +182,7 @@ class OperationClient(object):
         return self._client.make_request(uri)
 
     def delete(self):
-        """Deletes toolchain component service
+        """Deletes extension component service
 
         Parameters
         ----------
@@ -197,7 +197,7 @@ class OperationClient(object):
         methods = self._get_configure_endpoint()['methods']
 
         if 'DELETE' not in methods:
-            raise Exception('Delete is not supported for this toolchain component')
+            raise Exception('Delete is not supported for this extension component')
 
         uri = self._get_configure_endpoint()['uri']
         return self._client.make_request(uri, method='DELETE')

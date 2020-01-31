@@ -6,7 +6,7 @@ Introduction
 
 This project provides a use case focused python SDK for interacting with F5 products.  The UX closely mirrors established, successful SDK's such as the Azure, AWS, and Google SDK's.
 
-You can interact with BIG-IP and F5 Cloud Services to perform actions such as install/configure the toolchain components (AS3, TS and DO), configure an F5 cloud services subscription and much more.
+You can interact with BIG-IP and F5 Cloud Services to perform actions such as install/configure the extension components (AS3, TS, DO, etc.), configure an F5 cloud services subscription and much more.
 
 .. image:: ../images/basic_demo.gif
   :width: 800

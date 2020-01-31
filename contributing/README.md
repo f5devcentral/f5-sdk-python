@@ -71,7 +71,7 @@ Given URI: `/device/pools/a_pool/members/a_member`
 
 ## Scope
 
-- BIG-IP toolchain components
+- BIG-IP extension components
 - BIG-IQ licensing API's
 - F5 Cloud Services
 

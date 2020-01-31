@@ -1,4 +1,4 @@
-"""Python module for BIG-IP toolchain metadata client"""
+"""Python module for BIG-IP extension metadata client"""
 
 import os
 import json
@@ -8,8 +8,8 @@ from f5sdk.logger import Logger
 from f5sdk.utils import http_utils
 from f5sdk.exceptions import InvalidComponentError, InvalidComponentVersionError, FileLoadError
 
-TOOLCHAIN_METADATA = {
-    'FILE': 'toolchain_metadata.json',
+EXTENSION_METADATA = {
+    'FILE': 'extension_metadata.json',
     'URL': 'https://cdn.f5.com/product/cloudsolutions/f5-extension-metadata/latest/metadata.json'
 }
 
@@ -20,11 +20,11 @@ class MetadataClient(object):
     Attributes
     ----------
     component : str
-        the component in the toolchain
+        the extension component
     version : str
-        the component version in the toolchain
-    toolchain_metadata : dict
-        the toolchain metadata
+        the extension component version
+    extension_metadata : dict
+        the extension metadata
 
     Methods
     -------
@@ -42,9 +42,9 @@ class MetadataClient(object):
         Parameters
         ----------
         component : str
-            the component in the toolchain
+            the extension component
         version : str
-            the component version in the toolchain
+            the extension component version
         **kwargs :
             optional keyword arguments
 
@@ -61,7 +61,7 @@ class MetadataClient(object):
         self.logger = Logger(__name__).get_logger()
 
         self.use_latest_metadata = kwargs.pop('use_latest_metadata', True)
-        self.toolchain_metadata = self._load_metadata()
+        self.extension_metadata = self._load_metadata()
         self.component = self._validate_component(component)
         self.version = self._validate_component_version(
             self.component,
@@ -69,7 +69,7 @@ class MetadataClient(object):
         )
 
     def _load_metadata(self):
-        """Load toolchain metadata
+        """Load extension metadata
 
         Load metadata using the follow order:
         - metadata from CDN (unless use_latest_metadata=False)
@@ -89,7 +89,7 @@ class MetadataClient(object):
 
         # retrieve metadata from URL - unless opted out
         if self.use_latest_metadata:
-            parsed_url = http_utils.parse_url(TOOLCHAIN_METADATA['URL'])
+            parsed_url = http_utils.parse_url(EXTENSION_METADATA['URL'])
             try:
                 metadata = http_utils.make_request(parsed_url['host'], parsed_url['path'])
             except Exception as err:  # pylint: disable=broad-except
@@ -97,7 +97,7 @@ class MetadataClient(object):
 
         # fallback to local metadata file
         if metadata is None:
-            local_file = os.path.join(os.path.dirname(__file__), TOOLCHAIN_METADATA['FILE'])
+            local_file = os.path.join(os.path.dirname(__file__), EXTENSION_METADATA['FILE'])
             try:
                 with open(local_file) as m_file:
                     metadata = json.loads(m_file.read())
@@ -107,51 +107,51 @@ class MetadataClient(object):
         return metadata
 
     def _validate_component(self, component):
-        """Validates the toolchain component exists in metadata
+        """Validates the extension component exists in metadata
 
         Parameters
         ----------
         component : str
-            a toolchain component to check
+            a extension component to check
 
         Returns
         -------
         str
-            the toolchain component provided if it exists (see Raises)
+            the extension component provided if it exists (see Raises)
 
         Raises
         ------
         Exception
-            if the toolchain component does not exist in metadata
+            if the extension component does not exist in metadata
         """
 
-        components = list(self.toolchain_metadata['components'].keys())
+        components = list(self.extension_metadata['components'].keys())
         if not [i for i in components if i == component]:
             raise InvalidComponentError('Valid component must be provided: %s' % (components))
         return component
 
     def _validate_component_version(self, component, version):
-        """Validates the toolchain component version exists in metadata
+        """Validates the extension component version exists in metadata
 
         Parameters
         ----------
         component : str
-            a toolchain component to check
+            a extension component to check
         version : str
-            a toolchain component version to check
+            a extension component version to check
 
         Returns
         -------
         str
-            the toolchain component version provided if it exists (see Raises)
+            the extension component version provided if it exists (see Raises)
 
         Raises
         ------
         Exception
-            if the toolchain component version does not exist in metadata
+            if the extension component version does not exist in metadata
         """
 
-        versions = list(self.toolchain_metadata['components'][component]['versions'].keys())
+        versions = list(self.extension_metadata['components'][component]['versions'].keys())
         if not [i for i in versions if i == version]:
             raise InvalidComponentVersionError(
                 'Valid component version must be provided: %s' % (versions)
@@ -159,7 +159,7 @@ class MetadataClient(object):
         return version
 
     def _get_component_metadata(self):
-        """Gets the metadata for a specific component from the toolchain metadata
+        """Gets the metadata for a specific component from the extension metadata
 
         Parameters
         ----------
@@ -171,10 +171,10 @@ class MetadataClient(object):
             a dictionary containing the metadata
         """
 
-        return self.toolchain_metadata['components'][self.component]
+        return self.extension_metadata['components'][self.component]
 
     def _get_version_metadata(self):
-        """Gets the metadata for a specific component version from the toolchain metadata
+        """Gets the metadata for a specific component version from the extension metadata
 
         Parameters
         ----------
@@ -186,10 +186,10 @@ class MetadataClient(object):
             a dictionary containing the metadata
         """
 
-        return self.toolchain_metadata['components'][self.component]['versions'][self.version]
+        return self.extension_metadata['components'][self.component]['versions'][self.version]
 
     def get_latest_version(self):
-        """Gets the latest component version from the toolchain metadata
+        """Gets the latest component version from the extension metadata
 
         Parameters
         ----------
@@ -201,12 +201,12 @@ class MetadataClient(object):
             a string containing the latest version
         """
 
-        c_v_metadata = self.toolchain_metadata['components'][self.component]['versions']
+        c_v_metadata = self.extension_metadata['components'][self.component]['versions']
         latest = {k: v for (k, v) in c_v_metadata.items() if v['latest']}
         return list(latest.keys())[0]  # we should only have one
 
     def get_download_url(self):
-        """Gets the component versions download url from toolchain metadata
+        """Gets the component versions download url from extension metadata
 
         Parameters
         ----------
@@ -221,7 +221,7 @@ class MetadataClient(object):
         return self._get_version_metadata()['downloadUrl']
 
     def get_package_name(self):
-        """Gets the component versions package name from toolchain metadata
+        """Gets the component versions package name from extension metadata
 
         Parameters
         ----------
@@ -236,7 +236,7 @@ class MetadataClient(object):
         return self._get_version_metadata()['packageName']
 
     def get_component_package_name(self):
-        """Gets the component's package name from toolchain metadata
+        """Gets the component's package name from extension metadata
 
         Parameters
         ----------
@@ -252,7 +252,7 @@ class MetadataClient(object):
                         re.split('f5-?', self._get_version_metadata()['packageName'])[1])[0]
 
     def get_endpoints(self):
-        """Gets the component endpoints from toolchain metadata
+        """Gets the component endpoints from extension metadata
 
         Parameters
         ----------

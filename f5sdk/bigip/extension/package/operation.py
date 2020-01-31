@@ -1,4 +1,4 @@
-"""Module for BIG-IP toolchain component package configuration"""
+"""Module for BIG-IP extension component package configuration"""
 
 import os
 import re
@@ -11,14 +11,14 @@ PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 
 
 class OperationClient(object):
-    """A class used as a toolchain package operation client for BIG-IP
+    """A class used as a extension package operation client for BIG-IP
 
     Attributes
     ----------
     component : str
-        the component in the toolchain
+        the extension component
     version : str
-        the component version in the toolchain
+        the extension component version
 
     Methods
     -------
@@ -38,11 +38,11 @@ class OperationClient(object):
         client : object
             the management client object
         component : str
-            the component in the toolchain
+            the extension component
         version : str
-            the component version in the toolchain
+            the extension component version
         metadata_client : object
-            the toolchain metadata client
+            the extension metadata client
 
         Returns
         -------
@@ -166,7 +166,7 @@ class OperationClient(object):
         self._check_rpm_task_status(response['id'])
 
     def install(self):
-        """Installs toolchain package component on a remote device
+        """Installs extension package component on a remote device
 
         Parameters
         ----------
@@ -218,7 +218,7 @@ class OperationClient(object):
         self._check_rpm_task_status(response['id'])
 
     def uninstall(self):
-        """Uninstalls toolchain package component on a remote device
+        """Uninstalls extension package component on a remote device
 
         Parameters
         ----------
@@ -276,7 +276,7 @@ class OperationClient(object):
         return package_name[version_index.start():version_index.end()]
 
     def is_installed(self):
-        """Checks if the toolchain component package is installed on a remote device
+        """Checks if the extension component package is installed on a remote device
 
         Parameters
         ----------

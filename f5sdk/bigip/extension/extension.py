@@ -1,12 +1,12 @@
-"""Python module for BIG-IP toolchain component configuration, including AS3, DO and TS
+"""Python module for BIG-IP extension component configuration, including AS3, DO and TS
 
     Example - Basic::
 
         from f5sdk.bigip import ManagementClient
-        from f5sdk.bigip.toolchain import ToolChainClient
+        from f5sdk.bigip.extension import ExtensionClient
         device = ManagementClient('192.0.2.10', user='admin', password='admin')
 
-        as3 = ToolChainClient(device, 'as3')
+        as3 = ExtensionClient(device, 'as3')
         # install AS3 package
         as3.package.install()
         # check service is available
@@ -16,28 +16,28 @@
 
     Example - Specify Component Type::
 
-        do = ToolChainClient(device, 'do')
-        ts = ToolChainClient(device, 'ts')
+        do = ExtensionClient(device, 'do')
+        ts = ExtensionClient(device, 'ts')
 
     Example - Specify Component Version::
 
-        as3 = ToolChainClient(device, 'as3', version='3.9.0')
+        as3 = ExtensionClient(device, 'as3', version='3.9.0')
 """
 
-from .toolchain_metadata import MetadataClient
+from .extension_metadata import MetadataClient
 from .package import OperationClient as PackageClient
 from .service import OperationClient as ServiceClient
 
 
-class ToolChainClient(object):
-    """A class used as a toolchain client for BIG-IP
+class ExtensionClient(object):
+    """A class used as a extension client for BIG-IP
 
     Attributes
     ----------
     component : str
-        the component in the toolchain
+        the extension component
     version : str
-        the component version in the toolchain
+        the extension component version
     """
 
     def __init__(self, client, component, **kwargs):
@@ -48,7 +48,7 @@ class ToolChainClient(object):
         client : object
             the management client object
         component : str
-            the component in the toolchain
+            the extension component
         **kwargs :
             optional keyword arguments
 
