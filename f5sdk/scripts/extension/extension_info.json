@@ -38,7 +38,7 @@
             }
         }
     },
-    "failover": {
+    "cf": {
         "repository": "F5Devcentral/f5-cloud-failover-extension",
         "endpoints": {
             "configure": {

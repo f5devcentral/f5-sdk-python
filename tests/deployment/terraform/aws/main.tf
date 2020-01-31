@@ -329,7 +329,7 @@ resource "null_resource" "login0" {
 
 resource "null_resource" "onboard0" {
   provisioner "local-exec" {
-    command = "f5 bigip toolchain service create --install-component --component do --declaration ${path.module}/temp_do0.json"
+    command = "f5 bigip extension service create --install-component --component do --declaration ${path.module}/temp_do0.json"
   }
   triggers = {
     always_run = fileexists("${path.module}/../../declarations/do/aws_do_template.json")

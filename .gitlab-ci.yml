@@ -60,30 +60,30 @@ test_security_check:
     tags:
         - cm-official-docker-executor
 
-# test toolchain metadata file is current
+# test extension metadata file is current
 # note: the file is checked into the repo
-# to enable all toolchain client scenarios
-test_toolchain_metadata_current:
+# to enable all extension client scenarios
+test_extension_metadata_current:
     stage: test
     script:
         # install packages
         - pip install -r requirements.txt
         - pip install .
         # generate metadata file
-        - make generate_toolchain_metadata
+        - make generate_extension_metadata
         # check if file is out of date
         - changed_files_count=$(git diff --name-only | wc -l)
         - echo ${changed_files_count}
-        - if [[ $changed_files_count -ne 0 ]]; then echo "Toolchain metadata is out of date, please update"; exit 1; else echo "Metadata file is unchanged"; fi
+        - if [[ $changed_files_count -ne 0 ]]; then echo "Extension metadata is out of date, please update"; exit 1; else echo "Metadata file is unchanged"; fi
     tags:
         - cm-official-docker-executor
     only:
         variables:
             - $CI_COMMIT_REF_NAME == "master"
             - $CI_COMMIT_REF_NAME == "develop"
-            - $PUBLISH_TOOLCHAIN_METADATA == "true"
+            - $PUBLISH_EXTENSION_METADATA == "true"
     artifacts:
-        name: ${CI_COMMIT_REF_NAME}_toolchain_metadata
+        name: ${CI_COMMIT_REF_NAME}_extension_metadata
         paths:
             - ${EXTENSION_METADATA_FILE}
         expire_in: 1 month
@@ -204,28 +204,28 @@ docs_code:
             - code_docs
         expire_in: 1 month
 
-# Generate and publish toolchain metadata to CDN
+# Generate and publish extension metadata to CDN
 # note: assumes metadata generator has been run
 # in a previous stage and set as an artifact
-publish_toolchain_metadata:
+publish_extension_metadata:
     stage: publish
     only:
         variables:
             - $CI_COMMIT_REF_NAME == "master"
             - $CI_COMMIT_REF_NAME == "develop"
-            - $PUBLISH_TOOLCHAIN_METADATA == "true"
+            - $PUBLISH_EXTENSION_METADATA == "true"
     tags:
         - docker-executor
     script:
-        # publish toolchain metadata to F5 CDN
+        # publish extension metadata to F5 CDN
         - CDN_FOLDER="f5-extension-metadata"
-        - svn co ${F5_CDN_SVN_ROOT}/cloudsolutions/${CDN_FOLDER} --username ${CDN_SVC_ACCOUNT_USER} --password ${CDN_SVC_ACCOUNT_PWD} --non-interactive
+        - AUTH_OPTS="--username ${CDN_SVC_ACCOUNT_USER} --password ${CDN_SVC_ACCOUNT_PWD} --non-interactive"
+        - svn co ${F5_CDN_SVN_ROOT}/cloudsolutions/${CDN_FOLDER} ${AUTH_OPTS}
         - cp ${EXTENSION_METADATA_FILE} ${CDN_FOLDER}/latest/
         - cd ${CDN_FOLDER}
         - svn diff
         - changed_files_count=$(svn diff --summarize | wc -l)
-        - echo ${changed_files_count}
-        - if [[ $changed_files_count -eq 1 ]]; then svn add --force latest/${EXTENSION_METADATA_FILE}; svn commit -m "F5 SDK project automation - ${CI_COMMIT_REF_NAME}"; else echo "Metadata file is unchanged"; fi
+        - if [[ $changed_files_count -eq 1 ]]; then svn add --force latest/${EXTENSION_METADATA_FILE}; svn commit -m "F5 SDK project automation - ${CI_COMMIT_REF_NAME}" ${AUTH_OPTS}; else echo "Metadata file is unchanged"; fi
 
 # Publish to internal artifactory
 # Note: Will build and push eggs when new tags are pushed with the assumption being the package

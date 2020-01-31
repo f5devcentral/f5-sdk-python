@@ -268,7 +268,7 @@
                 }
             }
         },
-        "failover": {
+        "cf": {
             "endpoints": {
                 "configure": {
                     "uri": "/mgmt/shared/cloud-failover/declare",

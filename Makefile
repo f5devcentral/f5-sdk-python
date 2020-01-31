@@ -1,6 +1,7 @@
 API_DOCS_SOURCE := ./docs/apidocs/source
-BUILD_DIR := build
+PKG_BUILD_DIR := f5_sdk_python.egg-info
 CODE_DOCS_DIR := ./code_docs
+CODE_DOCS_BUILD_DIR := docs/_build
 COVERAGE_DIR := ./code_coverage
 COVERAGE_FILE := .coverage
 DIST_DIR := dist
@@ -12,7 +13,7 @@ UNIT_TEST_DIR := ${TEST_DIR}/unit
 FUNCTIONAL_TEST_DIR := ${TEST_DIR}/functional
 TEST_CACHE_DIR := .pytest_cache
 EXAMPLES_DIR := examples
-TOOLCHAIN_METADATA_FILE := metadata.json
+EXTENSION_METADATA_FILE := metadata.json
 
 export SPHINX_APIDOC_OPTIONS = members,undoc-members,inherited-members
 
@@ -48,14 +49,15 @@ code_docs_doxygen:
 delete_environment:
 	echo "Deleting environment";	
 	bash ./tests/deployment/deploy.sh aws delete;
-generate_toolchain_metadata:
-	python3 -m "f5sdk.scripts.toolchain.generate_metadata";
-	cp ${TOOLCHAIN_METADATA_FILE} f5sdk/bigip/toolchain/toolchain_metadata.json
+generate_extension_metadata:
+	python3 -m "f5sdk.scripts.extension.generate_metadata";
+	cp ${EXTENSION_METADATA_FILE} f5sdk/bigip/extension/extension_metadata.json
 clean:
 	echo "Removing artifacts"
 	rm -rf ${API_DOCS_SOURCE}
-	rm -rf ${BUILD_DIR}
+	rm -rf ${PKG_BUILD_DIR}
 	rm -rf ${CODE_DOCS_DIR}
+	rm -rf ${CODE_DOCS_BUILD_DIR}
 	rm -rf ${COVERAGE_DIR}
 	rm -rf ${COVERAGE_FILE}
 	rm -rf ${DIST_DIR}

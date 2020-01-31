@@ -24,7 +24,7 @@ This script uses the SDK to update BIG-IP L4-L7 configuration using AS3, provide
 
     python example.py
 
-.. literalinclude:: ../../examples/toolchain_as3.py
+.. literalinclude:: ../../examples/extension_as3.py
    :language: python
 
 Get F5 Cloud Services Configuration

@@ -3,7 +3,7 @@
 import os
 import re
 
-from f5sdk.bigip.toolchain import ToolChainClient
+from f5sdk.bigip.extension import ExtensionClient
 from f5sdk.logger import Logger
 from f5sdk.bigip.dns import DataCentersClient, ServersClient, PoolsClient
 
@@ -30,16 +30,16 @@ def test_management_client(management_client):
     assert re.search('[0-9].[0-9]+', version_info['version']), 'Validate managemennt client failed'
 
 
-def test_toolchain_as3(management_client):
-    """Validate toolchain client and create the following DNS objects using AS3
+def test_extension_as3(management_client):
+    """Validate extension client and create the following DNS objects using AS3
     . A data center named SDKDataCenter
     . A server named SDKServer with one device
     . VirtualServerDiscoveryMode set to allow Service Discovery
     . ExposeRouteDomainsEnabled set to true
     . A pool named SDKPool and set resourceRecordType to "A"
     """
-    # Validate toolchain client created and installed
-    as3_client = ToolChainClient(management_client, 'as3')
+    # Validate extension client created and installed
+    as3_client = ExtensionClient(management_client, 'as3')
     version_info = as3_client.package.is_installed()
     if not version_info['installed']:
         as3_client.package.install()

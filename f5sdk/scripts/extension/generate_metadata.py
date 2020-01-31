@@ -1,4 +1,4 @@
-"""Generate toolchain metadata file
+"""Generate extension metadata file
 
 Example output:
 {
@@ -50,8 +50,8 @@ def log(message):
     print(message)
 
 
-class ToolChainScraperClient():
-    """Toolchain scraper client
+class ExtensionScraperClient():
+    """Extension scraper client
 
     Parameters
     ----------
@@ -67,7 +67,7 @@ class ToolChainScraperClient():
 
         try:
             with open(os.path.join(os.path.dirname(__file__), EXTENSION_INFO)) as m_file:
-                self.toolchain_components = json.loads(m_file.read())
+                self.extension_components = json.loads(m_file.read())
         except Exception as err:  # pylint: disable=broad-except
             raise FileLoadError(err)
 
@@ -277,7 +277,7 @@ class ToolChainScraperClient():
             'components': {}
         }
 
-        for component, info in self.toolchain_components.items():
+        for component, info in self.extension_components.items():
             metadata['components'][component] = {
                 'endpoints': info['endpoints'],
                 'versions': self._get_component_versions(info)
@@ -292,5 +292,5 @@ class ToolChainScraperClient():
 
 
 if __name__ == "__main__":
-    TCS_CLIENT = ToolChainScraperClient()
+    TCS_CLIENT = ExtensionScraperClient()
     TCS_CLIENT.generate_metadata()
