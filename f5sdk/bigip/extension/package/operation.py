@@ -249,8 +249,8 @@ class OperationClient(object):
 
         Returns
         -------
-        bool
-            a boolean based on RPM existence
+        str
+            RPM version, or empty string if it does not exist
         """
 
         uri = PKG_MGMT_URI
@@ -270,7 +270,7 @@ class OperationClient(object):
 
     @staticmethod
     def _get_version_number_from_package_name(package_name):
-        version_number_pattern = '[0-9].[0-9].[0-9]'
+        version_number_pattern = '[0-9]+.[0-9]+.[0-9]+'
         compiled_pattern = re.compile(version_number_pattern)
         version_index = compiled_pattern.search(package_name)
         return package_name[version_index.start():version_index.end()]
