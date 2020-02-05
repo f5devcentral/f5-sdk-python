@@ -67,7 +67,8 @@
                     "packageName": "f5-declarative-onboarding-1.1.0-2.noarch",
                     "latest": false
                 }
-            }
+            },
+            "componentDependencies": {}
         },
         "as3": {
             "endpoints": {
@@ -202,6 +203,18 @@
                     "packageName": "f5-appsvcs-3.0.0-34.noarch",
                     "latest": false
                 }
+            },
+            "componentDependencies": {
+                "f5-service-discovery": {
+                    "dependencyType": "LX",
+                    "versions": [
+                        {
+                            "operation": "greaterThanOrEqual",
+                            "version": "3.3.0"
+                        }
+                    ],
+                    "uninstallDocumentation": "https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/installation.html#uninstalling-as3"
+                }
             }
         },
         "ts": {
@@ -266,7 +279,8 @@
                     "packageName": "f5-telemetry-1.1.0-1.noarch",
                     "latest": false
                 }
-            }
+            },
+            "componentDependencies": {}
         },
         "cf": {
             "endpoints": {
@@ -295,7 +309,8 @@
                     "packageName": "f5-cloud-failover-0.9.1-1.noarch",
                     "latest": false
                 }
-            }
+            },
+            "componentDependencies": {}
         }
     }
 }

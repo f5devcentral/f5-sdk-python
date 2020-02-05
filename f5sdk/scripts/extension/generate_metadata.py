@@ -280,7 +280,8 @@ class ExtensionScraperClient():
         for component, info in self.extension_components.items():
             metadata['components'][component] = {
                 'endpoints': info['endpoints'],
-                'versions': self._get_component_versions(info)
+                'versions': self._get_component_versions(info),
+                'componentDependencies': info['componentDependencies']
             }
 
         if write_file:

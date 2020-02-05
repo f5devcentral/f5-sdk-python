@@ -2,6 +2,7 @@
 
 import logging
 import tempfile
+import operator
 
 VERSION = '0.9.0'  # should consolidate with setup version
 USER_AGENT = 'f5sdk/%s' % (VERSION)
@@ -23,6 +24,11 @@ RETRIES = {
     'DEFAULT': 60,
     'LONG': 300,
     'DELAY_IN_SECS': 1
+}
+
+COMPARISON_OPERATORS = {
+    'greaterThanOrEqual': operator.ge,
+    'lessThanOrEqual': operator.le
 }
 
 BIGIP_CMDS = {

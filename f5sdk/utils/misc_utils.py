@@ -1,5 +1,6 @@
 """Python module containing helper utility functions """
 
+from f5sdk.constants import COMPARISON_OPERATORS
 from f5sdk.exceptions import InputRequiredError
 from . import file_utils
 
@@ -30,3 +31,29 @@ def resolve_config(config, config_file, **kwargs):
     if config_file:
         config = file_utils.load_file(config_file)
     return config
+
+
+def compare_versions(version1, version2, operator):
+    """Compare versions
+
+    Parameters
+    ----------
+    version1 : str
+        first version to compare
+    config_file : str
+        second version to compare
+    operator : str
+        operator such as greaterThanOrEqual, lessThanOrEqual
+
+    Returns
+    -------
+    boolean
+        boolean dependent on version comparison pass/fail
+    """
+
+    compare_pass = True
+    for v_1, v_2 in zip(version1.split('.'), version2.split('.')):
+        if not COMPARISON_OPERATORS[operator](int(v_1), int(v_2)):
+            compare_pass = False
+
+    return compare_pass

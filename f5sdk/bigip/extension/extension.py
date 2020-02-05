@@ -24,6 +24,8 @@
         as3 = ExtensionClient(device, 'as3', version='3.9.0')
 """
 
+from f5sdk.logger import Logger
+
 from .extension_metadata import MetadataClient
 from .package import OperationClient as PackageClient
 from .service import OperationClient as ServiceClient
@@ -64,6 +66,8 @@ class ExtensionClient(object):
         None
         """
 
+        self.logger = Logger(__name__).get_logger()
+
         self._client = client
         self._metadata_client = MetadataClient(
             component,
@@ -76,9 +80,21 @@ class ExtensionClient(object):
     @property
     def package(self):
         """ Package (see PackageClient for more details) """
-        return PackageClient(self._client, self.component, self.version, self._metadata_client)
+        return PackageClient(
+            self._client,
+            self.component,
+            self.version,
+            self._metadata_client,
+            logger=self.logger
+        )
 
     @property
     def service(self):
         """ Service (see ServiceClient for more details)  """
-        return ServiceClient(self._client, self.component, self.version, self._metadata_client)
+        return ServiceClient(
+            self._client,
+            self.component,
+            self.version,
+            self._metadata_client,
+            logger=self.logger
+        )
