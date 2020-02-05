@@ -251,6 +251,21 @@ class MetadataClient(object):
         return re.split('-[0-9]',
                         re.split('f5-?', self._get_version_metadata()['packageName'])[1])[0]
 
+    def get_component_dependencies(self):
+        """Gets the component dependencies
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            describes the component dependencies
+        """
+
+        return self._get_component_metadata()['componentDependencies']
+
     def get_endpoints(self):
         """Gets the component endpoints from extension metadata
 

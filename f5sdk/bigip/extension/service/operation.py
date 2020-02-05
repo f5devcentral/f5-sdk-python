@@ -30,24 +30,33 @@ class OperationClient(object):
         Refer to method documentation
     """
 
-    def __init__(self, client, component, version, metadata_client):
+    def __init__(self, client, component, version, metadata_client, **kwargs):
         """Class initialization
 
         Parameters
         ----------
-        client : object
-            the management client object
+        client : instance
+            the management client instance
         component : str
             the extension component
         version : str
             the extension component version
-        metadata_client : object
-            the extension metadata client
+        metadata_client : instance
+            the extension metadata client instance
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        logger : instance
+            the logger instance to use
 
         Returns
         -------
         None
         """
+
+        self.logger = kwargs.pop('logger', None)
 
         self._client = client
         self._metadata_client = metadata_client

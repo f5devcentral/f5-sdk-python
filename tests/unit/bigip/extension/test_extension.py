@@ -218,6 +218,41 @@ class TestExtensionPackage(object):
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
+    def test_uninstall_with_dependency(mgmt_client, mocker):
+        """Test: uninstall with existing dependency
+
+        Assertions
+        ----------
+        - uninstall() should log a warning about existing dependency
+        """
+
+        mock_conditions = [
+            {
+                'type': 'url',
+                'value': '/mgmt/shared/file-transfer/uploads',
+                'response': {'body': {'id': 'xxxx'}}
+            },
+            {
+                'type': 'url',
+                'value': '/mgmt/shared/iapp/package-management-tasks',
+                'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
+            }
+        ]
+        mocker.patch(REQ).side_effect = mock_utils.create_response(
+            {}, conditional=mock_conditions)
+        mock_logger = Mock()
+        mocker.patch('f5sdk.logger.Logger.get_logger').return_value = mock_logger
+
+        extension = ExtensionClient(mgmt_client, 'as3', version='3.10.0', use_latest_metadata=False)
+        extension.package.uninstall()
+
+        assert mock_logger.warning.call_count == 1
+        logged_message = mock_logger.warning.call_args_list[0][0][0]
+        assert 'A component package dependency has not been removed' in logged_message
+        assert 'See documentation for more details' in logged_message
+
+    @staticmethod
+    @pytest.mark.usefixtures("mgmt_client")
     def test_is_installed(mgmt_client, mocker):
         """Test: is_installed
 

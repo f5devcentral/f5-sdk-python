@@ -10,7 +10,8 @@
                 "uri": "/mgmt/shared/declarative-onboarding/info",
                 "methods": ["GET"]
             }
-        }
+        },
+        "componentDependencies": {}
     },
     "as3": {
         "repository": "F5Networks/f5-appsvcs-extension",
@@ -22,6 +23,18 @@
             "info": {
                 "uri": "/mgmt/shared/appsvcs/info",
                 "methods": ["GET"]
+            }
+        },
+        "componentDependencies": {
+            "f5-service-discovery": {
+                "dependencyType": "LX",
+                "versions": [
+                    {
+                        "operation": "greaterThanOrEqual",
+                        "version": "3.3.0"
+                    }
+                ],
+                "uninstallDocumentation": "https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/installation.html#uninstalling-as3"
             }
         }
     },
@@ -36,7 +49,8 @@
                 "uri": "/mgmt/shared/telemetry/info",
                 "methods": ["GET"]
             }
-        }
+        },
+        "componentDependencies": {}
     },
     "cf": {
         "repository": "F5Devcentral/f5-cloud-failover-extension",
@@ -49,6 +63,7 @@
                 "uri": "/mgmt/shared/cloud-failover/info",
                 "methods": ["GET"]
             }
-        }
+        },
+        "componentDependencies": {}
     }
 }

@@ -5,7 +5,7 @@ import re
 import time
 
 from f5sdk import constants
-from f5sdk.utils import http_utils
+from f5sdk.utils import http_utils, misc_utils
 
 PKG_MGMT_URI = '/mgmt/shared/iapp/package-management-tasks'
 
@@ -30,26 +30,34 @@ class OperationClient(object):
         Refer to method documentation
     """
 
-    def __init__(self, client, component, version, metadata_client):
+    def __init__(self, client, component, version, metadata_client, **kwargs):
         """Class initialization
 
         Parameters
         ----------
-        client : object
-            the management client object
+        client : instance
+            the management client instance
         component : str
             the extension component
         version : str
             the extension component version
-        metadata_client : object
-            the extension metadata client
+        metadata_client : instance
+            the extension metadata client instance
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        logger : instance
+            the logger instance to use
 
         Returns
         -------
         None
         """
 
-        # init properties
+        self.logger = kwargs.pop('logger', None)
+
         self._client = client
         self._metadata_client = metadata_client
         self.component = component
@@ -217,6 +225,40 @@ class OperationClient(object):
         # now check for task status completion
         self._check_rpm_task_status(response['id'])
 
+    def _check_for_dependency(self):
+        """Check for (existing) dependencies
+
+        Notes
+        -----
+
+        Log a warning message for any dependencies
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        # check for component dependencies, if they exist validate dependency
+        # exists for the current component version
+        component_dependencies = self._metadata_client.get_component_dependencies()
+        for name, dependency in component_dependencies.items():
+            versions = dependency['versions']
+            matches = [i for i in versions if misc_utils.compare_versions(
+                self.version,
+                i['version'],
+                i['operation']
+            )]
+            # log warning if matching dependency is found
+            if len(matches) == len(versions):
+                msg = ('A component package dependency has not been removed: {}'
+                       ' See documentation for more details: {}'
+                       ).format(name, dependency['uninstallDocumentation'])
+                self.logger.warning(msg)
+
     def uninstall(self):
         """Uninstalls extension package component on a remote device
 
@@ -237,6 +279,10 @@ class OperationClient(object):
         # uninstall from BIG-IP
         package_name = self._metadata_client.get_package_name()
         self._uninstall_rpm(package_name)
+
+        # check for any component dependencies, log warning as needed
+        self._check_for_dependency()
+
         return {'component': self.component, 'version': self.version}
 
     def _check_rpm_exists(self, component_package_name):
@@ -287,7 +333,7 @@ class OperationClient(object):
         dict
             a dictionary containing version info
             {
-              'is_installed': 'true',
+              'installed': 'true',
               'installed_version': 'x.x.x',
               'latest_version': 'y.y.y'
             }

@@ -103,3 +103,20 @@ class TestExtensionMetadataGenerator(object):
                 'latest': False
             }
         }
+
+    def test_extension_metadata_component_dependencies(self, mocker):
+        """Test: Extension generator generates metadata component dependencies
+
+        Assertions
+        ----------
+        - Metadata file should provide component dependencies for 'as3'
+        """
+
+        mocker.patch('requests.get').side_effect = mock_utils.create_response(
+            {}, conditional=self.mock_conditions)
+
+        extension_scraper = ExtensionScraperClient()
+        extension_metadata = extension_scraper.generate_metadata(write_file=False)
+
+        deps = list(extension_metadata['components']['as3']['componentDependencies'].keys())
+        assert 'f5-service-discovery' in deps
