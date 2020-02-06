@@ -21,6 +21,10 @@
     Example - Is Available::
 
         as3.service.is_available()
+
+    Example - Show Info::
+
+        as3.service.show_info()
 """
 
 from .operation import OperationClient

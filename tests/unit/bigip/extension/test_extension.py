@@ -493,3 +493,17 @@ class TestExtensionService(object):
         mocker.patch(REQ).return_value.json = Mock(return_value={'message': 'success'})
 
         assert extension_client.service.is_available()
+
+    @staticmethod
+    @pytest.mark.usefixtures("extension_client")
+    def test_show_info(extension_client, mocker):
+        """Test: show_info
+
+        Assertions
+        ----------
+        - show_info() response should be info endpoint API reesponse
+        """
+
+        mocker.patch(REQ).return_value.json = Mock(return_value={'version': 'x.x.x.x'})
+
+        assert extension_client.service.show_info() == {'version': 'x.x.x.x'}
