@@ -28,6 +28,8 @@ class OperationClient(object):
         Refer to method documentation
     is_available()
         Refer to method documentation
+    show_info()
+        Refer to method documentation
     """
 
     def __init__(self, client, component, version, metadata_client, **kwargs):
@@ -77,6 +79,21 @@ class OperationClient(object):
         """
 
         return self._metadata_client.get_endpoints()['configure']
+
+    def _get_info_endpoint(self):
+        """Get info endpoint
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the info endpoint details
+        """
+
+        return self._metadata_client.get_endpoints()['info']
 
     @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _wait_for_task(self, task_url):
@@ -210,3 +227,18 @@ class OperationClient(object):
 
         uri = self._get_configure_endpoint()['uri']
         return self._client.make_request(uri, method='DELETE')
+
+    def show_info(self):
+        """Show component extension info
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the API response to a service info get
+        """
+
+        return self._client.make_request(self._get_info_endpoint()['uri'])
