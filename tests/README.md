@@ -20,9 +20,8 @@ Best practices:
 - Monitor and enforce coverage, but avoid writing tests simply to increase coverage when there is no other perceived value.
 - With that being said, **enforce coverage** in automated test.
 
-## Functional
 
-TODO: Implement functional tests when ready...
+## Functional
 
 All functional tests reside inside the `functional` folder and are run using `make functional_test`.
 
@@ -35,4 +34,10 @@ Best Practices:
 
 ### Environment
 
-It is somewhat implied that running the functional tests requires a runtime (BIG-IP, cloud resources, etc.) to perform testing against.  The current methodology is to deploy and subsequently teardown the runtime every time functional tests are run, with the understanding that functional tests will be run less frequently than unit tests.
+It is somewhat implied that running the functional tests requires a runtime (BIG-IP, container, etc.) to deploy the iLX extension, consumers, etc.  The current methodology is to deploy and subsequently teardown the runtime every time functional tests are run, with the understanding that functional tests will be run less frequently than unit tests.
+
+To do automated environment creation this project makes use of `automation-sdk/deployment-tool`, please see that repository for more information.
+
+#### Manual Environment Setup
+
+Creating an environment manually using the same methodology as automated tests is entirely acceptable, in fact it is anticipated for development.  For more information, including usage, please see the `automation-sdk/deployment-tool` repository.

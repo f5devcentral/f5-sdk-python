@@ -10,9 +10,9 @@ stages:
     - publish_test
 
 variables:
-    TERRAFORM_PKG_URL: 'https://releases.hashicorp.com/terraform/0.12.6/terraform_0.12.6_linux_386.zip'
     ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
     EXTENSION_METADATA_FILE: "metadata.json"
+    DEPLOYMENT_PLAN: aws_standalone
     # aws vars
     AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
     AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
@@ -88,23 +88,14 @@ test_extension_metadata_current:
             - ${EXTENSION_METADATA_FILE}
         expire_in: 1 month
 
+# deploy function test environment
 test_functional_init:
     stage: test_functional_init
+    image: ${ARTIFACTORY_SERVER}/ecosystems-cloudsolutions-docker-dev/deployment-tool:latest
     retry:
         max: 1
     script:
-        # install jq
-        - apt-get update
-        - apt-get install -y jq
-        # install terraform
-        - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
-        # deploy aws enviroment
-        - set -e
-        - bash ./tests/deployment/deploy.sh aws create
-        - mkdir -p env_metadata/aws
-        - chmod -R +wr env_metadata/aws
-        - cp deployment_info.json env_metadata/aws
-        - cp *.tfstate env_metadata/aws
+        - /deployment-tool/deploy.sh --deployment-plan ${DEPLOYMENT_PLAN} --action create --output-folder env_metadata/${DEPLOYMENT_PLAN}
     tags:
         - cm-official-docker-executor
     only:
@@ -115,11 +106,11 @@ test_functional_init:
             - $CI_COMMIT_MESSAGE =~ /smart:run_functional_tests/
     artifacts:
         paths:
-            - env_metadata/aws
+            - env_metadata/${DEPLOYMENT_PLAN}
         when: always
         expire_in: 1 month
 
-# run functional tests: aws
+# run functional tests
 test_functional_execute:
     stage: test_functional_execute
     retry:
@@ -129,7 +120,7 @@ test_functional_execute:
         - pip install -r requirements.txt
         - pip install .
         # copying artifacts inherited from functional_test_init target to deployment root directory
-        - cp -a env_metadata/aws/. .
+        - cp -a env_metadata/${DEPLOYMENT_PLAN}/. .
         # run function tests
         - make functional_test
         # run linter
@@ -145,19 +136,15 @@ test_functional_execute:
 
 test_functional_cleanup:
     stage: test_functional_cleanup
+    image: ${ARTIFACTORY_SERVER}/ecosystems-cloudsolutions-docker-dev/deployment-tool:latest
     retry:
         max: 1
     when: always
     script:
-        # install jq
-        - apt-get update
-        - apt-get install -y jq
-        # install terraform
-        - curl ${TERRAFORM_PKG_URL} -o terraform.zip -vvv && unzip terraform.zip && export PATH="$PATH:$(pwd)"
         # copying artifacts inherited from functional_test_init target to root directory
-        - cp -a env_metadata/aws/. .
+        - cp -a env_metadata/${DEPLOYMENT_PLAN}/. .
         # teardown enviroment
-        - bash ./tests/deployment/deploy.sh aws delete    
+        - /deployment-tool/deploy.sh --deployment-plan ${DEPLOYMENT_PLAN} --action delete   
     tags:
         - cm-official-docker-executor
     only:
