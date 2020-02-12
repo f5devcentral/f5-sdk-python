@@ -1,9 +1,7 @@
 """Functional test for SDK BIG-IP DNS"""
 
-import os
 import re
 
-from f5sdk.bigip.extension import ExtensionClient
 from f5sdk.logger import Logger
 from f5sdk.bigip.dns import DataCentersClient, ServersClient, PoolsClient
 
@@ -28,33 +26,6 @@ def test_management_client(management_client):
     """Validate management client connection by check version on a BIG-IP"""
     version_info = management_client.get_info()
     assert re.search('[0-9].[0-9]+', version_info['version']), 'Validate managemennt client failed'
-
-
-def test_extension_as3(management_client):
-    """Validate extension client and create the following DNS objects using AS3
-    . A data center named SDKDataCenter
-    . A server named SDKServer with one device
-    . VirtualServerDiscoveryMode set to allow Service Discovery
-    . ExposeRouteDomainsEnabled set to true
-    . A pool named SDKPool and set resourceRecordType to "A"
-    """
-    # Validate extension client created and installed
-    as3_client = ExtensionClient(management_client, 'as3')
-    version_info = as3_client.package.is_installed()
-    if not version_info['installed']:
-        as3_client.package.install()
-    # Validate service is available
-    assert as3_client.service.is_available(), 'Validate AS3 service available failed'
-
-    # Configure DNS objects using AS3 extension
-    as3_client.service.create(config_file=os.path.join(os.path.dirname(__file__),
-                                                       "dns_declaration.json"))
-    # Validate DNS objects created by AS3 extension
-    datac = {'name': 'SDKDataCenter', 'object': DataCentersClient(management_client)}
-    server = {'name': 'SDKServer', 'object': ServersClient(management_client)}
-    pool = {'name': 'SDKPool', 'object': PoolsClient(management_client, record_type='/a')}
-    for obj in (datac, server, pool):
-        validate_list(obj)
 
 
 def validate_create(dicts):
