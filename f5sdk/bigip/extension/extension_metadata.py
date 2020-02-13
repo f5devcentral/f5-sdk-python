@@ -60,7 +60,7 @@ class MetadataClient(object):
 
         self.logger = Logger(__name__).get_logger()
 
-        self.use_latest_metadata = kwargs.pop('use_latest_metadata', True)
+        self.use_latest_metadata = kwargs.pop('use_latest_metadata', False)
         self.extension_metadata = self._load_metadata()
         self.component = self._validate_component(component)
         self.version = self._validate_component_version(

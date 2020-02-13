@@ -345,5 +345,6 @@ class OperationClient(object):
         version_data = {
             'installed': retrieve_rpm_version != '',
             'installed_version': retrieve_rpm_version,
-            'latest_version': self._metadata_client.get_latest_version()}
+            'latest_version': self._metadata_client.get_latest_version()
+        }
         return version_data

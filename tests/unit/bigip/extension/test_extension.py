@@ -110,7 +110,7 @@ class TestExtension(object):
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        extension_client = ExtensionClient(mgmt_client, 'as3')
+        extension_client = ExtensionClient(mgmt_client, 'as3', use_latest_metadata=True)
 
         assert extension_client.version == 'x.x.x'
 
@@ -173,7 +173,7 @@ class TestExtensionPackage(object):
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        extension = ExtensionClient(mgmt_client, 'as3', version='3.9.0', use_latest_metadata=False)
+        extension = ExtensionClient(mgmt_client, 'as3', version='3.9.0')
 
         assert extension.package.install() == {
             'component': 'as3',
@@ -209,7 +209,7 @@ class TestExtensionPackage(object):
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        extension = ExtensionClient(mgmt_client, 'as3', version='3.9.0', use_latest_metadata=False)
+        extension = ExtensionClient(mgmt_client, 'as3', version='3.9.0')
 
         assert extension.package.uninstall() == {
             'component': 'as3',
@@ -243,7 +243,7 @@ class TestExtensionPackage(object):
         mock_logger = Mock()
         mocker.patch('f5sdk.logger.Logger.get_logger').return_value = mock_logger
 
-        extension = ExtensionClient(mgmt_client, 'as3', version='3.10.0', use_latest_metadata=False)
+        extension = ExtensionClient(mgmt_client, 'as3', version='3.10.0')
         extension.package.uninstall()
 
         assert mock_logger.warning.call_count == 1
@@ -273,7 +273,7 @@ class TestExtensionPackage(object):
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
 
         extension_client = ExtensionClient(
-            mgmt_client, 'as3', version='3.9.0', use_latest_metadata=False)
+            mgmt_client, 'as3', version='3.9.0')
 
         is_installed = extension_client.package.is_installed()
         assert is_installed['installed']
@@ -320,7 +320,7 @@ class TestExtensionPackage(object):
         mocker.patch(REQ).return_value.json = Mock(return_value=mock_resp)
 
         extension_client = ExtensionClient(
-            mgmt_client, 'as3', use_latest_metadata=False)
+            mgmt_client, 'as3')
 
         is_installed = extension_client.package.is_installed()
         assert is_installed['installed_version'] == '1.10.0'
@@ -476,7 +476,7 @@ class TestExtensionService(object):
         - Exception should be raised
         """
 
-        extension_client = ExtensionClient(mgmt_client, 'do', use_latest_metadata=False)
+        extension_client = ExtensionClient(mgmt_client, 'do')
 
         pytest.raises(Exception, extension_client.service.delete)
 

@@ -72,7 +72,7 @@ class ExtensionClient(object):
         self._metadata_client = MetadataClient(
             component,
             kwargs.pop('version', None),
-            use_latest_metadata=kwargs.pop('use_latest_metadata', True)
+            use_latest_metadata=kwargs.pop('use_latest_metadata', False)
         )
         self.component = self._metadata_client.component
         self.version = self._metadata_client.version
