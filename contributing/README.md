@@ -130,4 +130,4 @@ Cons:
 
 - Testing happens, see the [Test Readme](../tests/README.md) for more details.
 - Code coverage is checked, and enforced: `coverage.py`
-- Coding standards are enforced, using linters: `pylint`, `flake8`
+- Coding standards are enforced, using standard linter: `pylint`

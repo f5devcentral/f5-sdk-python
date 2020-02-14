@@ -37,7 +37,7 @@ Note: This project prefers Python 3.x, however if testing against python 2.x you
 
 This project uses `Make` as a build automation tool... check out the Makefile for the full set of recipes.
 
-- Run unit tests: ```make unit_test```
+- Run unit tests: ```make test```
 - Run linter: ```make lint```
 - Build code coverage documentation: ```make coverage```
 - Build code documentation: ```make code_docs```

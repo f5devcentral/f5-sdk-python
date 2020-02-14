@@ -10,9 +10,9 @@ paramiko==2.6.0
 pytest==4.3.1
 pytest-mock==1.10.4
 pytest-cov==2.6.1
-flake8==3.7.9
 pylint==2.3.1 ; python_version > '3.0'
 safety==1.8.5
+behave==1.2.6
 # unittest.mock built in to python 3.3+
 mock==2.0.0 ; python_version < '3.3'
 ## required doc packages

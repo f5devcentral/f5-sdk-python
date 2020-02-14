@@ -6,7 +6,7 @@ Tests reside inside the `tests` directory, but you know that... since you found 
 
 ## Unit
 
-All unit tests are written using the [pytest](https://docs.pytest.org/en/latest/) framework, and run using `make unit_test` during automated test.
+All unit tests are written using the [pytest](https://docs.pytest.org/en/latest/) framework, and run using `make test` during automated test.
 
 Triggered: Every commit pushed to central repository.
 
@@ -23,12 +23,13 @@ Best practices:
 
 ## Functional
 
-All functional tests reside inside the `functional` folder and are run using `make functional_test`.
+All functional tests reside inside the `functional` folder and are run using `make functional-test`.
 
-Triggered: Recurring schedule, nightly - This could be extended in the future to commits pushed to stable branches such as develop.
+Triggered: On commit to `master`, `develop`, if smart commit contains `smart:run_functional_tests` or if environment variable `RUN_FUNCTIONAL_TESTS` has a value of true.
 
 Best Practices:
 
+- Functional testing uses [behave](https://github.com/behave/behave), read the [documentation](https://behave.readthedocs.io/en/latest/) for more information on usage.
 - Clean up after yourself - although it is a fairly safe assumption to make that this is a fresh environment consider if it were multi-use when writing tests
 - Consider carefully before testing things in functional test that should or could be tested via unit test - those are run more frequently
 

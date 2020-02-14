@@ -21,17 +21,16 @@ export SPHINX_APIDOC_OPTIONS = members,undoc-members,inherited-members
 build:
 	echo "Creating package artifacts";
 	python3 setup.py sdist bdist_wheel;
-unit_test:
+test:
 	echo "Running unit tests";
 	pytest ${UNIT_TEST_DIR} --cov=${PACKAGE_DIR} --full-trace -vv;
-functional_test:
-	echo "Running functional tests";
-	pytest ${FUNCTIONAL_TEST_DIR} --full-trace -v;
+functional-test:
+	echo "Running functional tests (behave.ini file for settings)";
+	behave
 lint:
 	echo "Running linter (any error will result in non-zero exit code)";
-	flake8 ${PACKAGE_DIR}/ ${EXAMPLES_DIR}/ ${TEST_DIR}/;
 	pylint -j 0 ${PACKAGE_DIR}/ ${EXAMPLES_DIR}/ ${TEST_DIR}/;
-coverage: unit_test
+coverage: test
 	echo "Generating code coverage documentation";
 	coverage html;
 code_docs:
