@@ -29,7 +29,7 @@ test_unit:
         - pip install -r requirements.txt
         - pip install .
         # run unit tests
-        - make unit_test
+        - make test
         # run linter
         - make lint
     tags:
@@ -44,7 +44,7 @@ test_unit_python_2_x:
         - pip install -r requirements.txt
         - pip install .
         # run unit tests
-        - make unit_test
+        - make test
     tags:
         - cm-official-docker-executor
 
@@ -122,9 +122,7 @@ test_functional_execute:
         # copying artifacts inherited from functional_test_init target to deployment root directory
         - cp -a env_metadata/${DEPLOYMENT_PLAN}/. .
         # run function tests
-        - make functional_test
-        # run linter
-        - make lint
+        - make functional-test
     tags:
         - cm-official-docker-executor
     only:
