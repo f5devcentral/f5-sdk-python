@@ -67,3 +67,10 @@ def step_impl(context, virtual_address):
              if i['destination'].split('/')[-1].split(':')[0] == virtual_address
             ]
     assert len(match) == 1, virtual_servers
+
+
+@then('a success message is returned by {component}')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    body = context.extension_client.service.show()
+    assert body.get('message') == 'success'

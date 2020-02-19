@@ -64,3 +64,34 @@ Feature: BIG-IP Extension Client
       }
       """
      Then a virtual server will be created with address 10.0.1.100
+
+  Scenario: Sending a declaration to TS
+    Given we have a BIG-IP available
+    and ts is installed
+    When we configure ts with a declaration
+      """
+      {
+          "class": "Telemetry",
+          "My_System": {
+              "class": "Telemetry_System",
+              "systemPoller": {
+                  "interval": 60
+              }
+          },
+          "My_Listener": {
+              "class": "Telemetry_Listener",
+              "port": 6514
+          },
+          "My_Consumer": {
+              "class": "Telemetry_Consumer",
+              "type": "Splunk",
+              "host": "192.0.2.1",
+              "protocol": "https",
+              "port": 8088,
+              "passphrase": {
+                  "cipherText": "apikey"
+              }
+          }
+      }
+      """
+    Then a success message is returned by ts
