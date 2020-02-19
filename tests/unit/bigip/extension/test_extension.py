@@ -501,9 +501,29 @@ class TestExtensionService(object):
 
         Assertions
         ----------
-        - show_info() response should be info endpoint API reesponse
+        - show_info() response should be info endpoint API response
         """
 
         mocker.patch(REQ).return_value.json = Mock(return_value={'version': 'x.x.x.x'})
 
         assert extension_client.service.show_info() == {'version': 'x.x.x.x'}
+
+    @staticmethod
+    @pytest.mark.usefixtures("ts_extension_client")
+    def test_ts_show_info(ts_extension_client, mocker):
+        """Test: show_info
+
+        Assertions
+        ----------
+        - show_info() response should be info endpoint API response
+        """
+        sample_return_value = {
+            "nodeVersion": "v8.11.1",
+            "version": "1.9.0",
+            "release": "1",
+            "schemaCurrent": "0.9.0",
+            "schemaMinimum": "1.9.0"
+        }
+        mocker.patch(REQ).return_value.json = Mock(return_value=sample_return_value)
+
+        assert ts_extension_client.service.show_info() == sample_return_value
