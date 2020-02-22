@@ -95,6 +95,51 @@ class OperationClient(object):
 
         return self._metadata_client.get_endpoints()['info']
 
+    def _get_inspect_endpoint(self):
+        """Get info endpoint
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the inspect endpoint details
+        """
+
+        return self._metadata_client.get_endpoints()['inspect']
+
+    def _get_trigger_endpoint(self):
+        """Get info endpoint
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the trigger endpoint details
+        """
+
+        return self._metadata_client.get_endpoints()['trigger']
+
+    def _get_reset_endpoint(self):
+        """Get info endpoint
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the reset endpoint details
+        """
+
+        return self._metadata_client.get_endpoints()['reset']
+
     @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _wait_for_task(self, task_url):
         """Wait for task to complete - async 'accepted' task
@@ -228,6 +273,61 @@ class OperationClient(object):
         uri = self._get_configure_endpoint()['uri']
         return self._client.make_request(uri, method='DELETE')
 
+    def reset(self, **kwargs):
+        """Show component extension inspect
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the API response to a service reset
+        """
+
+        content = {"resetStateFile": True} if len(kwargs) == 0 else kwargs.pop()
+        # content = {"resetStateFile": True}
+
+        uri = self._get_reset_endpoint()['uri']
+        response, status_code = self._client.make_request(
+            uri, method='POST', body=content, advanced_return=True)
+        print("[DEBUG] response: {}".format(response))
+        print("[DEBUG] status code: {}".format(status_code))
+
+        # check for async task pattern response
+        if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
+            return self._wait_for_task(response['selfLink'])
+        # return response data
+        return response
+
+    def trigger(self, **kwargs):
+        """Show component extension inspect
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the API response to a service reset
+        """
+
+        content = {"action": "execute"}
+
+        uri = self._get_trigger_endpoint()['uri']
+        response, status_code = self._client.make_request(
+            uri, method='POST', body=content, advanced_return=True)
+        print("[DEBUG] response: {}".format(response))
+        print("[DEBUG] status code: {}".format(status_code))
+
+        # check for async task pattern response
+        if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
+            return self._wait_for_task(response['selfLink'])
+        # return response data
+        return response
+
     def show_info(self):
         """Show component extension info
 
@@ -242,3 +342,33 @@ class OperationClient(object):
         """
 
         return self._client.make_request(self._get_info_endpoint()['uri'])
+
+    def show_inspect(self):
+        """Show component extension inspect
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the API response to a service inspect get
+        """
+
+        return self._client.make_request(self._get_inspect_endpoint()['uri'])
+
+    def show_failover(self):
+        """Show component extension inspect
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the API response to a service inspect get
+        """
+
+        return self._client.make_request(self._get_trigger_endpoint()['uri'])

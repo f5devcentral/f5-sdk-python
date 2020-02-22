@@ -301,6 +301,25 @@
                     "methods": [
                         "GET"
                     ]
+                },
+                "inspect": {
+                    "uri": "/mgmt/shared/cloud-failover/inspect",
+                    "methods": [
+                        "GET"
+                    ]
+                },
+                "trigger": {
+                    "uri": "/mgmt/shared/cloud-failover/trigger",
+                    "methods": [
+                        "GET",
+                        "POST"
+                    ]
+                },
+                "reset": {
+                    "uri": "/mgmt/shared/cloud-failover/reset",
+                    "methods": [
+                        "POST"
+                    ]
                 }
             },
             "versions": {
