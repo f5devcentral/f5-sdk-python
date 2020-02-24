@@ -286,14 +286,18 @@ class OperationClient(object):
             the API response to a service reset
         """
 
-        content = {"resetStateFile": True} if len(kwargs) == 0 else kwargs.pop()
-        # content = {"resetStateFile": True}
+        declaration = kwargs.pop('content', None)
+
+        # check if declaration is a json file. If so, parse it accordingly and get the content
+        if declaration and declaration.split('.').pop() == 'json':
+            declaration = misc_utils.resolve_config(None, declaration)
+
+        # set default if no declaration is provided
+        content = declaration if declaration is not None else {"resetStateFile": True}
 
         uri = self._get_reset_endpoint()['uri']
         response, status_code = self._client.make_request(
             uri, method='POST', body=content, advanced_return=True)
-        print("[DEBUG] response: {}".format(response))
-        print("[DEBUG] status code: {}".format(status_code))
 
         # check for async task pattern response
         if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
@@ -314,13 +318,18 @@ class OperationClient(object):
             the API response to a service reset
         """
 
-        content = {"action": "execute"}
+        declaration = kwargs.pop('content', None)
+
+        # check if declaration is a json file. If so, parse it accordingly and get the content
+        if declaration and declaration.split('.').pop() == 'json':
+            declaration = misc_utils.resolve_config(None, declaration)
+
+        # set default if no declaration is provided
+        content = declaration if declaration is not None else '{}'
 
         uri = self._get_trigger_endpoint()['uri']
         response, status_code = self._client.make_request(
             uri, method='POST', body=content, advanced_return=True)
-        print("[DEBUG] response: {}".format(response))
-        print("[DEBUG] status code: {}".format(status_code))
 
         # check for async task pattern response
         if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
