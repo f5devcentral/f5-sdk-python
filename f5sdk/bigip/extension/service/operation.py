@@ -368,7 +368,7 @@ class OperationClient(object):
         return self._client.make_request(self._get_inspect_endpoint()['uri'])
 
     def show_failover(self):
-        """Show component extension inspect
+        """Show component extension trigger
 
         Parameters
         ----------
@@ -377,7 +377,7 @@ class OperationClient(object):
         Returns
         -------
         dict
-            the API response to a service inspect get
+            the API response to a service trigger get
         """
 
         return self._client.make_request(self._get_trigger_endpoint()['uri'])
