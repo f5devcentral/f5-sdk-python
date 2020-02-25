@@ -634,7 +634,7 @@ class TestExtensionService(object):
 
         mocker.patch(REQ).return_value.json = Mock(return_value=sample_return_value)
 
-        assert cf_extension_client.service.info() == sample_return_value
+        assert cf_extension_client.service.show_info() == sample_return_value
 
     @staticmethod
     @pytest.mark.usefixtures("cf_extension_client")
