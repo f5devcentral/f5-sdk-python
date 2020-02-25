@@ -96,7 +96,7 @@ class OperationClient(object):
         return self._metadata_client.get_endpoints()['info']
 
     def _get_inspect_endpoint(self):
-        """Get info endpoint
+        """Get inspect endpoint
 
         Parameters
         ----------
@@ -111,7 +111,7 @@ class OperationClient(object):
         return self._metadata_client.get_endpoints()['inspect']
 
     def _get_trigger_endpoint(self):
-        """Get info endpoint
+        """Get trigger endpoint
 
         Parameters
         ----------
@@ -126,7 +126,7 @@ class OperationClient(object):
         return self._metadata_client.get_endpoints()['trigger']
 
     def _get_reset_endpoint(self):
-        """Get info endpoint
+        """Get reset endpoint
 
         Parameters
         ----------

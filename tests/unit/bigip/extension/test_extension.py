@@ -496,7 +496,7 @@ class TestExtensionService(object):
 
     @staticmethod
     @pytest.mark.usefixtures("extension_client")
-    def test_show_info(extension_client, mocker):
+    def test_show_inspect(extension_client, mocker):
         """Test: show_info
 
         Assertions
@@ -507,6 +507,62 @@ class TestExtensionService(object):
         mocker.patch(REQ).return_value.json = Mock(return_value={'version': 'x.x.x.x'})
 
         assert extension_client.service.show_info() == {'version': 'x.x.x.x'}
+
+    @staticmethod
+    @pytest.mark.usefixtures("cf_extension_client")
+    def test_show_failover(cf_extension_client, mocker):
+        """Test: show_failover
+
+        Assertions
+        ----------
+        - show_failover() response should be trigger endpoint API response
+        """
+
+        mocker.patch(REQ).return_value.json = Mock(return_value={'foo': 'bar'})
+
+        assert cf_extension_client.service.show_failover() == {'foo': 'bar'}
+
+    @staticmethod
+    @pytest.mark.usefixtures("cf_extension_client")
+    def test_show_inspect(cf_extension_client, mocker):
+        """Test: show_inspect
+
+        Assertions
+        ----------
+        - show_inspecto() response should be inspect endpoint API response
+        """
+
+        mocker.patch(REQ).return_value.json = Mock(return_value={'foo': 'bar'})
+
+        assert cf_extension_client.service.show_info() == {'foo': 'bar'}
+
+    @staticmethod
+    @pytest.mark.usefixtures("cf_extension_client")
+    def test_trigger_failover(cf_extension_client, mocker):
+        """Test: show_inspect
+
+        Assertions
+        ----------
+        - trigger() response should be trigger endpoint API response
+        """
+
+        mocker.patch(REQ).return_value.json = Mock(return_value={'foo': 'bar'})
+
+        assert cf_extension_client.service.trigger() == {'foo': 'bar'}
+
+    @staticmethod
+    @pytest.mark.usefixtures("cf_extension_client")
+    def test_reset(cf_extension_client, mocker):
+        """Test: reset
+
+        Assertions
+        ----------
+        - reset() response should be reset endpoint API response
+        """
+
+        mocker.patch(REQ).return_value.json = Mock(return_value={'foo': 'bar'})
+
+        assert cf_extension_client.service.reset() == {'foo': 'bar'}
 
     @staticmethod
     @pytest.mark.usefixtures("ts_extension_client")
