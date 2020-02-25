@@ -76,6 +76,8 @@ def make_request(host, uri, **kwargs):
     -------
     dict
         a dictionary containing the JSON response
+        :param uri:
+        :param host:
     """
 
     port = kwargs.pop('port', 443)
@@ -129,7 +131,7 @@ def make_request(host, uri, **kwargs):
     else:
         try:
             response_body = response.json()
-        except ValueError as _e:
+        except ValueError:
             response_body = {"body": response.content}
 
 
