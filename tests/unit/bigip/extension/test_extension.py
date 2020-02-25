@@ -496,7 +496,7 @@ class TestExtensionService(object):
 
     @staticmethod
     @pytest.mark.usefixtures("extension_client")
-    def test_show_inspect(extension_client, mocker):
+    def test_show_info(extension_client, mocker):
         """Test: show_info
 
         Assertions

@@ -76,8 +76,6 @@ def make_request(host, uri, **kwargs):
     -------
     dict
         a dictionary containing the JSON response
-        :param uri:
-        :param host:
     """
 
     port = kwargs.pop('port', 443)
