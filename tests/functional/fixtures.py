@@ -23,10 +23,7 @@ def bigip_management_client(context):
                                               )
 
         context.deployment_info = deployment_info
-        # context.deployment_id = deployment_info['deployment_id']
-        # context.environment = deployment_info['environment']
 
-    # return context.mgmt_client
     return context
 
 @fixture
@@ -34,9 +31,4 @@ def bigip_extension_client(context, **kwargs):
     """Return BIG-IP extension client"""
 
     component = kwargs.pop('component', None)
-    deployment_id = kwargs.pop('deployment_id', None)
-    environment = kwargs.pop('environment', None)
-
     context.extension_client = ExtensionClient(context.mgmt_client, component)
-    context.deployment_id = deployment_id
-    context.environment = environment
