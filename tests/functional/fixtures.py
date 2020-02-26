@@ -15,15 +15,17 @@ def bigip_management_client(context):
         deployment_info = json.load(json_file)
 
         # get instance info on active (primary) device
-        instance_info = deployment_info['instances'][0] if deployment_info['instances'][0]['primary'] \
-            else deployment_info['instances'][1]
+        if deployment_info['instances'][0]['primary']:
+            instance_info = deployment_info['instances'][0]
+        else:
+            instance_info = deployment_info['instances'][1]
 
         context.mgmt_client = ManagementClient(instance_info['mgmt_address'],
                                                user=instance_info['admin_username'],
                                                password=instance_info['admin_password']
                                               )
 
-        context.deploymentId = deployment_info['deploymentId']
+        context.deployment_id = deployment_info['deployment_id']
         context.environment = deployment_info['environment']
 
     # return context.mgmt_client
@@ -34,9 +36,9 @@ def bigip_extension_client(context, **kwargs):
     """Return BIG-IP extension client"""
 
     component = kwargs.pop('component', None)
-    deploymentId = kwargs.pop('deploymentId', None)
+    deployment_id = kwargs.pop('deployment_id', None)
     environment = kwargs.pop('environment', None)
 
     context.extension_client = ExtensionClient(context.mgmt_client, component)
-    context.deploymentId = deploymentId
+    context.deployment_id = deployment_id
     context.environment = environment
