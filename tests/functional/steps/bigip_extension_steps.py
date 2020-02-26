@@ -67,7 +67,7 @@ def step_impl(context, **_kwargs):
 @when('we call get trigger from {component}')
 def step_impl(context, **_kwargs):
     """ step impl """
-    context.extension_client.service.trigger()
+    context.extension_client.service.show_trigger()
 
 @then('{component} will be installed')
 def step_impl(context, **_kwargs):

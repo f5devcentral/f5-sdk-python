@@ -274,11 +274,12 @@ class OperationClient(object):
         return self._client.make_request(uri, method='DELETE')
 
     def reset(self, **kwargs):
-        """Show component extension inspect
+        """Reset the state file states in CF extension component.
 
         Parameters
         ----------
-        None
+        **kwargs :
+            optional keyword arguments
 
         Returns
         -------
@@ -306,16 +307,17 @@ class OperationClient(object):
         return response
 
     def trigger(self, **kwargs):
-        """Show component extension inspect
+        """Trigger a failover for CF component extension
 
         Parameters
         ----------
-        None
+        **kwargs :
+            optional keyword arguments
 
         Returns
         -------
         dict
-            the API response to a service reset
+            the API response to a service trigger
         """
 
         declaration = kwargs.pop('content', None)
@@ -367,8 +369,8 @@ class OperationClient(object):
 
         return self._client.make_request(self._get_inspect_endpoint()['uri'])
 
-    def show_failover(self):
-        """Show component extension trigger
+    def show_trigger(self):
+        """Show CF component extension trigger failover status
 
         Parameters
         ----------
