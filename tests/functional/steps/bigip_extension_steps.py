@@ -4,14 +4,10 @@
 import json
 from test_imports import given, when, then, fixtures, use_fixture
 
-DEPLOYMENT_INFO = {}
 @given('we have a BIG-IP available')
 def step_impl(context):
     """ step impl """
     use_fixture(fixtures.bigip_management_client, context)
-    global DEPLOYMENT_INFO
-    DEPLOYMENT_INFO["environment"] = context.environment
-    DEPLOYMENT_INFO["deployment_id"] = context.deployment_id
     assert context.mgmt_client
 
 
@@ -48,13 +44,13 @@ def step_impl(context, component, **_kwargs):
     config = json.loads(context.text)
 
     if component == 'cf':
-        config["environment"] = DEPLOYMENT_INFO["environment"]
-        config["externalStorage"]["scopingTags"]["f5_cloud_failover_label"] \
-            = DEPLOYMENT_INFO["deployment_id"]
+        config['environment'] = context.deployment_info['environment']
+        config['externalStorage']['scopingTags']['f5_cloud_failover_label'] \
+            = context.deployment_info['deploymentId']
         config["failoverAddresses"]["scopingTags"]["f5_cloud_failover_label"] \
-            = DEPLOYMENT_INFO["deployment_id"]
+            = context.deployment_info['deploymentId']
         config["failoverRoutes"]["scopingTags"]["f5_cloud_failover_label"] \
-            = DEPLOYMENT_INFO["deployment_id"]
+            = context.deployment_info['deploymentId']
 
     context.extension_client.service.create(config=config)
 
