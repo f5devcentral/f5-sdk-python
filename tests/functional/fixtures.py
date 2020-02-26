@@ -24,7 +24,7 @@ def bigip_management_client(context):
 
         context.deployment_info = deployment_info
 
-    return context
+    return context.mgmt_client
 
 @fixture
 def bigip_extension_client(context, **kwargs):
