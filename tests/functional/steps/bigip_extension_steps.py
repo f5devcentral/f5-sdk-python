@@ -2,7 +2,6 @@
 
 # pylint: disable=function-redefined, import-error
 import json
-import copy
 from test_imports import given, when, then, fixtures, use_fixture
 
 deployment_info = {}
