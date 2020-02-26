@@ -10,7 +10,7 @@ import paramiko
 import f5sdk.constants as constants
 from f5sdk.logger import Logger
 from f5sdk.utils import http_utils
-from f5sdk.exceptions import SSHCommandStdError, DeviceReadyError
+from f5sdk.exceptions import SSHCommandStdError, DeviceReadyError, RetryInterruptedError, HTTPError
 from f5sdk.decorators import check_auth, add_auth_header
 
 DFL_PORT = 443
@@ -268,7 +268,9 @@ class ManagementClient(object):
         self._make_ssh_request(constants.BIGIP_CMDS['AUTH_MODIFY'] % (tmsh, self._user, password))
         self._password = password
 
-    @retry(tries=constants.RETRIES['DEFAULT'], delay=constants.RETRIES['DELAY_IN_SECS'])
+    @retry(exceptions=HTTPError,
+           tries=constants.RETRIES['DEFAULT'],
+           delay=constants.RETRIES['DELAY_IN_SECS'])
     def _get_token(self):
         """Gets authentication token
 
@@ -297,18 +299,23 @@ class ManagementClient(object):
             'loginProviderName': 'tmos'
         }
         # get token
-        response = http_utils.make_request(
-            self.host,
-            uri,
-            port=self.port,
-            method='POST',
-            body=body,
-            basic_auth={'user': self._user, 'password': self._password}
-        )
-        token = response['token']['token']
+        try:
+            response = http_utils.make_request(
+                self.host,
+                uri,
+                port=self.port,
+                method='POST',
+                body=body,
+                basic_auth={'user': self._user, 'password': self._password}
+            )
+        except HTTPError as error:
+            if constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
+                raise RetryInterruptedError(error)
 
+        token = response['token']['token']
         # now extend token lifetime
-        token_uri = '/mgmt/shared/authz/tokens/%s' % (token)
+        token_uri = '/mgmt/shared/authz/tokens/%s' % token
+
         http_utils.make_request(
             self.host,
             token_uri,
@@ -317,7 +324,6 @@ class ManagementClient(object):
             body={'timeout': timeout},
             basic_auth={'user': self._user, 'password': self._password}
         )
-
         return {'token': token, 'expirationDate': expiration_date, 'expirationIn': timeout}
 
     def _login_using_credentials(self):
