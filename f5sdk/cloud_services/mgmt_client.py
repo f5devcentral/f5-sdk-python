@@ -5,7 +5,7 @@ from retry import retry
 import f5sdk.constants as constants
 from f5sdk.logger import Logger
 from f5sdk.utils import http_utils
-from f5sdk.exceptions import InputRequiredError
+from f5sdk.exceptions import InputRequiredError, RetryInterruptedError, HTTPError
 
 API_ENDPOINT = constants.F5_CLOUD_SERVICES['API_ENDPOINT']
 AUTH_TOKEN_HEADER = constants.F5_CLOUD_SERVICES['AUTH_TOKEN_HEADER']
@@ -68,7 +68,9 @@ class ManagementClient(object):
         else:
             raise InputRequiredError('user|password required')
 
-    @retry(tries=constants.RETRIES['DEFAULT'], delay=constants.RETRIES['DELAY_IN_SECS'])
+    @retry(exceptions=HTTPError,
+           tries=constants.RETRIES['DEFAULT'],
+           delay=constants.RETRIES['DELAY_IN_SECS'])
     def _get_token(self):
         """Gets access token
 
@@ -89,13 +91,17 @@ class ManagementClient(object):
             'username': self._user,
             'password': self._password
         }
-
-        response = http_utils.make_request(
-            self._api_endpoint,
-            '/v1/svc-auth/login',
-            method='POST',
-            body=body
-        )
+        try:
+            response = http_utils.make_request(
+                self._api_endpoint,
+                '/v1/svc-auth/login',
+                method='POST',
+                body=body
+            )
+        except HTTPError as error:
+            if constants.HTTP_STATUS_CODE['BAD_REQUEST_BODY'] in str(error) or \
+                    constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
+                raise RetryInterruptedError(error)
         return {'accessToken': response['access_token'], 'expirationIn': response['expires_at']}
 
     def _login_using_credentials(self):
