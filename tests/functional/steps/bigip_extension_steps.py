@@ -52,22 +52,22 @@ def step_impl(context, component, **_kwargs):
         config["failoverRoutes"]["scopingTags"]["f5_cloud_failover_label"] \
             = context.deployment_info['deploymentId']
 
-    context.extension_client.service.create(config=config)
+    assert context.extension_client.service.create(config=config)
 
 @when('we post reset to {component}')
 def step_impl(context, **_kwargs):
     """ step impl """
-    context.extension_client.service.reset()
+    assert context.extension_client.service.reset()
 
 @when('we post trigger to {component}')
 def step_impl(context, **_kwargs):
     """ step impl """
-    context.extension_client.service.trigger()
+    assert context.extension_client.service.trigger()
 
 @when('we call get trigger from {component}')
 def step_impl(context, **_kwargs):
     """ step impl """
-    context.extension_client.service.show_trigger()
+    assert context.extension_client.service.show_trigger()
 
 @then('{component} will be installed')
 def step_impl(context, **_kwargs):
@@ -100,8 +100,7 @@ def step_impl(context, component):
         inspect = context.extension_client.service.show_inspect()[0]
         assert inspect.get('result')['code'] == 200, inspect
     elif component == 'cf':
-        inspect = context.extension_client.service.show_inspect()
-        assert inspect
+        assert context.extension_client.service.show_inspect()
 
 @then('a success message is returned by {component}')
 def step_impl(context, **_kwargs):
