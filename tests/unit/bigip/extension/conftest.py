@@ -23,6 +23,6 @@ def ts_extension_client(mgmt_client):
 @pytest.fixture
 @pytest.mark.usefixtures("mgmt_client")
 def cf_extension_client(mgmt_client):
-    """ Test fixture: create as3 extension client """
+    """ Test fixture: create cf extension client """
 
     return ExtensionClient(mgmt_client, 'cf')

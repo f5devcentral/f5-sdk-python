@@ -289,6 +289,9 @@ class OperationClient(object):
 
         declaration = kwargs.pop('content', None)
 
+        config = kwargs.pop('config', None)
+        config_file = kwargs.pop('config_file', None)
+
         # check if declaration is a json file. If so, parse it accordingly and get the content
         if declaration and declaration.split('.').pop() == 'json':
             declaration = misc_utils.resolve_config(None, declaration)

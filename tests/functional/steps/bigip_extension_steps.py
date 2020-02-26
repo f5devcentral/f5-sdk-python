@@ -90,7 +90,6 @@ def step_impl(context, virtual_address):
             ]
     assert len(match) == 1, virtual_servers
 
-SAVE_DO = {}
 @then('{component} will return inspect info')
 def step_impl(context, component):
     """ step impl """
