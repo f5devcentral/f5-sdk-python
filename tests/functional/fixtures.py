@@ -13,12 +13,17 @@ def bigip_management_client(context):
 
     with open(DEPLOYMENT_FILE) as json_file:
         deployment_info = json.load(json_file)
-        instance_info = deployment_info['instances'][0]
+
+        # get instance info on active (primary) device
+        instance_info = [i for i in deployment_info['instances'] if i['primary']][0]
 
         context.mgmt_client = ManagementClient(instance_info['mgmt_address'],
                                                user=instance_info['admin_username'],
                                                password=instance_info['admin_password']
                                               )
+
+        context.deployment_info = deployment_info
+
     return context.mgmt_client
 
 @fixture
@@ -26,5 +31,4 @@ def bigip_extension_client(context, **kwargs):
     """Return BIG-IP extension client"""
 
     component = kwargs.pop('component', None)
-
     context.extension_client = ExtensionClient(context.mgmt_client, component)

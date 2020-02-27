@@ -127,7 +127,11 @@ def make_request(host, uri, **kwargs):
             ('content-length' in headers.keys() and headers['content-length'] == '0'):
         response_body = None
     else:
-        response_body = response.json()
+        try:
+            response_body = response.json()
+        except ValueError:
+            response_body = {"body": response.content}
+
 
     # helpful debug
     logger.debug('HTTP response: %s %s' % (status_code, status_reason))

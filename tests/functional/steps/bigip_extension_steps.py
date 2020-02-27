@@ -4,7 +4,6 @@
 import json
 from test_imports import given, when, then, fixtures, use_fixture
 
-
 @given('we have a BIG-IP available')
 def step_impl(context):
     """ step impl """
@@ -40,16 +39,40 @@ def step_impl(context, **_kwargs):
 
 
 @when('we configure {component} with a declaration')
+def step_impl(context, component, **_kwargs):
+    """ step impl """
+    config = json.loads(context.text)
+
+    if component == 'cf':
+        config['environment'] = context.deployment_info['environment']
+        config['externalStorage']['scopingTags']['f5_cloud_failover_label'] \
+            = context.deployment_info['deploymentId']
+        config["failoverAddresses"]["scopingTags"]["f5_cloud_failover_label"] \
+            = context.deployment_info['deploymentId']
+        config["failoverRoutes"]["scopingTags"]["f5_cloud_failover_label"] \
+            = context.deployment_info['deploymentId']
+
+    context.extension_client.service.create(config=config)
+
+@when('we post reset to {component}')
 def step_impl(context, **_kwargs):
     """ step impl """
-    context.extension_client.service.create(config=json.loads(context.text))
+    context.response = context.extension_client.service.reset()
 
+@when('we post trigger to {component}')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    context.response = context.extension_client.service.trigger()
+
+@when('we call get trigger from {component}')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    context.response = context.extension_client.service.show_trigger()
 
 @then('{component} will be installed')
 def step_impl(context, **_kwargs):
     """ step impl """
-    assert context.extension_client.package.is_installed()['installed']
-
+    context.response = context.extension_client.package.is_installed()['installed']
 
 @then('{component} will return a version')
 def step_impl(context, **_kwargs):
@@ -57,7 +80,6 @@ def step_impl(context, **_kwargs):
     if isinstance(context.exentension_client_info, list):
         context.exentension_client_info = context.exentension_client_info[0]
     assert context.exentension_client_info['version'] != ''
-
 
 @then('a virtual server will be created with address {virtual_address}')
 def step_impl(context, virtual_address):
@@ -68,6 +90,21 @@ def step_impl(context, virtual_address):
             ]
     assert len(match) == 1, virtual_servers
 
+@then('{component} will return inspect info')
+def step_impl(context, component):
+    """ step impl """
+    if component == 'do':
+        do_dict = context.mgmt_client.make_request('/mgmt/shared/declarative-onboarding')
+        SAVE_DO = do_dict.get('declaration')['Common']  # pylint: disable=W0621, C0103, W0612
+        inspect = context.extension_client.service.show_inspect()[0]
+        assert inspect.get('result')['code'] == 200, inspect
+    elif component == 'cf':
+        assert context.extension_client.service.show_inspect()
+
+@then('cf will validate and return response')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    assert context.response.get('message')
 
 @then('a success message is returned by {component}')
 def step_impl(context, **_kwargs):

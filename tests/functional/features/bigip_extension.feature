@@ -95,3 +95,71 @@ Feature: BIG-IP Extension Client
       }
       """
     Then a success message is returned by ts
+
+  Scenario Outline: Getting inspect from <component> on BIG-IP
+    Given we have a BIG-IP available
+    and <component> is installed
+    When we get info from <component>
+    Then <component> will return inspect info
+
+    Examples: Extension Components
+      | component |
+      | cf        |
+
+  Scenario: Sending a declaration to CF
+    Given we have a BIG-IP available
+    and cf is installed
+    When we configure cf with a declaration
+      """
+      {
+        "class": "Cloud_Failover",
+        "environment": "{environment}",
+        "externalStorage": {
+            "scopingTags": {
+                "f5_cloud_failover_label": "{deploymentId}"
+            }
+        },
+        "failoverAddresses": {
+            "scopingTags": {
+                "f5_cloud_failover_label": "{deploymentId}"
+            }
+        },
+        "failoverRoutes": {
+            "scopingTags": {
+                "f5_cloud_failover_label": "{deploymentId}"
+            },
+            "scopingAddressRanges": [
+                {
+                    "range": "192.168.1.0/24"
+                }
+            ],
+            "defaultNextHopAddresses": {
+                "discoveryType": "static",
+                "items": [
+                    "192.0.2.10",
+                    "192.0.2.11"
+                ]
+            }
+        }
+      }
+      """
+    Then a success message is returned by cf
+
+  Scenario: Sending a reset to CF
+    Given we have a BIG-IP available
+    and cf is installed
+    When we post reset to cf
+    Then cf will validate and return response
+
+  Scenario: Sending a trigger to CF
+    Given we have a BIG-IP available
+    and cf is installed
+    When we post trigger to cf
+    Then cf will validate and return response
+
+  Scenario: Getting the state file status from CF
+    Given we have a BIG-IP available
+    and cf is installed
+    When we call get trigger from cf
+    Then cf will validate and return response
+
