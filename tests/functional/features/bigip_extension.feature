@@ -149,17 +149,17 @@ Feature: BIG-IP Extension Client
     Given we have a BIG-IP available
     and cf is installed
     When we post reset to cf
-    Then a success message is returned by cf
+    Then cf will validate and return response
 
   Scenario: Sending a trigger to CF
     Given we have a BIG-IP available
     and cf is installed
     When we post trigger to cf
-    Then a success message is returned by cf
+    Then cf will validate and return response
 
   Scenario: Getting the state file status from CF
     Given we have a BIG-IP available
     and cf is installed
     When we call get trigger from cf
-    Then a success message is returned by cf
+    Then cf will validate and return response
 

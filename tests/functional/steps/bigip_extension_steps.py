@@ -52,27 +52,27 @@ def step_impl(context, component, **_kwargs):
         config["failoverRoutes"]["scopingTags"]["f5_cloud_failover_label"] \
             = context.deployment_info['deploymentId']
 
-    assert context.extension_client.service.create(config=config)
+    context.extension_client.service.create(config=config)
 
 @when('we post reset to {component}')
 def step_impl(context, **_kwargs):
     """ step impl """
-    assert context.extension_client.service.reset()
+    context.response = context.extension_client.service.reset()
 
 @when('we post trigger to {component}')
 def step_impl(context, **_kwargs):
     """ step impl """
-    assert context.extension_client.service.trigger()
+    context.response = context.extension_client.service.trigger()
 
 @when('we call get trigger from {component}')
 def step_impl(context, **_kwargs):
     """ step impl """
-    assert context.extension_client.service.show_trigger()
+    context.response = context.extension_client.service.show_trigger()
 
 @then('{component} will be installed')
 def step_impl(context, **_kwargs):
     """ step impl """
-    assert context.extension_client.package.is_installed()['installed']
+    context.response = context.extension_client.package.is_installed()['installed']
 
 @then('{component} will return a version')
 def step_impl(context, **_kwargs):
@@ -100,6 +100,11 @@ def step_impl(context, component):
         assert inspect.get('result')['code'] == 200, inspect
     elif component == 'cf':
         assert context.extension_client.service.show_inspect()
+
+@then('cf will validate and return response')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    assert context.response.get('message')
 
 @then('a success message is returned by {component}')
 def step_impl(context, **_kwargs):
