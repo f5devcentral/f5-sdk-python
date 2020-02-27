@@ -2,6 +2,7 @@
 
 from f5sdk.cloud_services import ManagementClient
 from f5sdk import constants as project_constants
+from f5sdk.exceptions import RetryInterruptedError, HTTPError
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants
@@ -32,6 +33,18 @@ class TestCloudServices(object):
         """
 
         assert mgmt_client.access_token == TOKEN
+
+    @staticmethod
+    def test_mgmt_client_with_incorrect_creds(mocker):
+        """Test: Initialize mgmt client with wrong credentials
+
+        Assertions
+        ----------
+        - Mgmt client throws RetryInterruptedException
+        """
+        mocker.patch(REQ).side_effect = HTTPError(constants.BAD_REQUEST_BODY)
+        with pytest.raises(RetryInterruptedError):
+            ManagementClient(user=USER, password=USER_PWD)
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")

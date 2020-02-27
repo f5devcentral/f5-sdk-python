@@ -17,7 +17,9 @@ HTTP_TIMEOUT = {
 HTTP_VERIFY = False
 HTTP_STATUS_CODE = {
     'OK': 200,
-    'ACCEPTED': 202
+    'ACCEPTED': 202,
+    'BAD_REQUEST_BODY': 'code: 400',
+    'FAILED_AUTHENTICATION': 'code: 401'
 }
 
 RETRIES = {

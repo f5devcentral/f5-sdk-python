@@ -35,3 +35,7 @@ class DeviceReadyError(Exception):
 
 class MethodNotAllowed(Exception):
     """ Error raised if method is not allowed """
+
+
+class RetryInterruptedError(Exception):
+    """ Error raised if method retry is intentionally interrupted """

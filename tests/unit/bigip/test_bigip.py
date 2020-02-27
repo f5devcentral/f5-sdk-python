@@ -57,6 +57,18 @@ class TestBigIp(object):
 
         assert mgmt_client.token == TOKEN
 
+    @staticmethod
+    def test_mgmt_client_with_incorrect_creds(mocker):
+        """Test: Initialize mgmt client with wrong credentials
+
+        Assertions
+        ----------
+        - Mgmt client throws RetryInterruptedException
+        """
+        mocker.patch(REQ).side_effect = exceptions.HTTPError(constants.FAILED_AUTHENTICATION)
+        with pytest.raises(exceptions.RetryInterruptedError):
+            BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
+
     def test_mgmt_client_key_auth(self, mocker):
         """Test: Initialize mgmt client using key-based auth
 

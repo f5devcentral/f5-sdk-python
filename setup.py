@@ -3,10 +3,6 @@ from setuptools import setup, find_packages
 
 # This should be a list of dependencies required for production use only
 DEPENDENCIES = [
-    'azure-mgmt-compute',
-    'azure-mgmt-network',
-    'boto3',
-    'google-cloud',
     'requests',
     'retry',
     'paramiko'
