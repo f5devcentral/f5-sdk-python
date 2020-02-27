@@ -115,8 +115,8 @@ class OperationClient(object):
         dict
             the inspect endpoint details
         """
-
         return self._metadata_client.get_endpoints()['inspect']
+
 
     def _get_trigger_endpoint(self):
         """Get trigger endpoint
@@ -302,6 +302,11 @@ class OperationClient(object):
             the API response to a service reset
         """
 
+        methods = self._get_configure_endpoint()['methods']
+
+        if 'RESET' not in methods:
+            raise Exception('Reset is not supported for this extension component')
+
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
 
@@ -342,6 +347,11 @@ class OperationClient(object):
             the API response to a service trigger
         """
 
+        methods = self._get_configure_endpoint()['methods']
+
+        if 'TRIGGER' not in methods:
+            raise Exception('Reset is not supported for this extension component')
+
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
 
@@ -374,6 +384,11 @@ class OperationClient(object):
             the API response to a service info get
         """
 
+        methods = self._get_configure_endpoint()['methods']
+
+        if 'INFO' not in methods:
+            raise Exception('Info is not supported for this extension component')
+
         return self._client.make_request(self._get_info_endpoint()['uri'])
 
     def show_inspect(self):
@@ -389,6 +404,11 @@ class OperationClient(object):
             the API response to a service inspect get
         """
 
+        methods = self._get_configure_endpoint()['methods']
+
+        if 'INSPECT' not in methods:
+            raise Exception('Inspect is not supported for this extension component')
+
         return self._client.make_request(self._get_inspect_endpoint()['uri'])
 
     def show_trigger(self):
@@ -403,5 +423,10 @@ class OperationClient(object):
         dict
             the API response to a service trigger get
         """
+
+        methods = self._get_configure_endpoint()['methods']
+
+        if 'TRIGGER' not in methods:
+            raise Exception('Trigger is not supported for this extension component')
 
         return self._client.make_request(self._get_trigger_endpoint()['uri'])
