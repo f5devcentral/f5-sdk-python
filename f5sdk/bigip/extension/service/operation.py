@@ -26,9 +26,17 @@ class OperationClient(object):
         Refer to method documentation
     delete()
         Refer to method documentation
+    reset()
+        Refer to method documentation
+    trigger()
+        Refer to method documentation
     is_available()
         Refer to method documentation
     show_info()
+        Refer to method documentation
+    show_inspect()
+        Refer to method documentation
+    show_trigger()
         Refer to method documentation
     """
 
@@ -281,6 +289,13 @@ class OperationClient(object):
         **kwargs :
             optional keyword arguments
 
+        Keyword Arguments
+        -----------------
+        config : dict
+            a dictionary containing configuration
+        config_file : str
+            a local file containing configuration to load
+
         Returns
         -------
         dict
@@ -322,6 +337,13 @@ class OperationClient(object):
         ----------
         **kwargs :
             optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        config : dict
+            a dictionary containing configuration
+        config_file : str
+            a local file containing configuration to load
 
         Returns
         -------
