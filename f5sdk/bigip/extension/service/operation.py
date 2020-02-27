@@ -307,7 +307,7 @@ class OperationClient(object):
 
         # set default if no declaration is provided
         if config is None and config_file is None:
-            config = constants.DEFAULT_BODY["RESET"]
+            config = self._get_reset_endpoint()["defaultPostBody"]
         else:
             config = misc_utils.resolve_config(config, config_file)
 
@@ -347,7 +347,7 @@ class OperationClient(object):
 
         # set default if no declaration is provided
         if config is None and config_file is None:
-            config = constants.DEFAULT_BODY["TRIGGER"]
+            config = self._get_trigger_endpoint()["defaultPostBody"]
         else:
             config = misc_utils.resolve_config(config, config_file)
 

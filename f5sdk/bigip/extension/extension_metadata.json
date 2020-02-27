@@ -313,13 +313,17 @@
                     "methods": [
                         "GET",
                         "POST"
-                    ]
+                    ],
+                    "defaultPostBody": "{}"
                 },
                 "reset": {
                     "uri": "/mgmt/shared/cloud-failover/reset",
                     "methods": [
                         "POST"
-                    ]
+                    ],
+                    "defaultPostBody": {
+                        "resetStateFile": true
+                    }
                 }
             },
             "versions": {
