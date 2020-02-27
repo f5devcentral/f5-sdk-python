@@ -42,3 +42,8 @@ F5_CLOUD_SERVICES = {
     'API_ENDPOINT': 'api.cloudservices.f5.com',
     'AUTH_TOKEN_HEADER': 'Authorization'
 }
+
+DEFAULT_BODY = {
+    'RESET': {"resetStateFile": True},
+    'TRIGGER': '{}'
+}

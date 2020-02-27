@@ -307,18 +307,9 @@ class OperationClient(object):
 
         # set default if no declaration is provided
         if config is None and config_file is None:
-            config = {"resetStateFile": True}
+            config = constants.DEFAULT_BODY["RESET"]
         else:
             config = misc_utils.resolve_config(config, config_file)
-
-        # check if declaration is a json file. If so, parse it accordingly and get the content
-        # if declaration and declaration.split('.').pop() == 'json':
-        #     declaration = misc_utils.resolve_config(None, declaration)
-
-        # content = declaration if declaration is not None else {"resetStateFile": True}
-        # if config is None:
-        #     config = {"resetStateFile": True}
-        # content = config if config is not None else {"resetStateFile": True}
 
         uri = self._get_reset_endpoint()['uri']
         response, status_code = self._client.make_request(
@@ -356,7 +347,7 @@ class OperationClient(object):
 
         # set default if no declaration is provided
         if config is None and config_file is None:
-            config = '{}'
+            config = constants.DEFAULT_BODY["TRIGGER"]
         else:
             config = misc_utils.resolve_config(config, config_file)
 
