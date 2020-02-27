@@ -287,21 +287,27 @@ class OperationClient(object):
             the API response to a service reset
         """
 
-        declaration = kwargs.pop('content', None)
-
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
 
-        # check if declaration is a json file. If so, parse it accordingly and get the content
-        if declaration and declaration.split('.').pop() == 'json':
-            declaration = misc_utils.resolve_config(None, declaration)
-
         # set default if no declaration is provided
-        content = declaration if declaration is not None else {"resetStateFile": True}
+        if config is None and config_file is None:
+            config = {"resetStateFile": True}
+        else:
+            config = misc_utils.resolve_config(config, config_file)
+
+        # check if declaration is a json file. If so, parse it accordingly and get the content
+        # if declaration and declaration.split('.').pop() == 'json':
+        #     declaration = misc_utils.resolve_config(None, declaration)
+
+        # content = declaration if declaration is not None else {"resetStateFile": True}
+        # if config is None:
+        #     config = {"resetStateFile": True}
+        # content = config if config is not None else {"resetStateFile": True}
 
         uri = self._get_reset_endpoint()['uri']
         response, status_code = self._client.make_request(
-            uri, method='POST', body=content, advanced_return=True)
+            uri, method='POST', body=config, advanced_return=True)
 
         # check for async task pattern response
         if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
@@ -323,18 +329,18 @@ class OperationClient(object):
             the API response to a service trigger
         """
 
-        declaration = kwargs.pop('content', None)
-
-        # check if declaration is a json file. If so, parse it accordingly and get the content
-        if declaration and declaration.split('.').pop() == 'json':
-            declaration = misc_utils.resolve_config(None, declaration)
+        config = kwargs.pop('config', None)
+        config_file = kwargs.pop('config_file', None)
 
         # set default if no declaration is provided
-        content = declaration if declaration is not None else '{}'
+        if config is None and config_file is None:
+            config = '{}'
+        else:
+            config = misc_utils.resolve_config(config, config_file)
 
         uri = self._get_trigger_endpoint()['uri']
         response, status_code = self._client.make_request(
-            uri, method='POST', body=content, advanced_return=True)
+            uri, method='POST', body=config, advanced_return=True)
 
         # check for async task pattern response
         if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
