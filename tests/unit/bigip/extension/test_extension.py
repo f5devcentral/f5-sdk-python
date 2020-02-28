@@ -7,8 +7,9 @@ from os import path
 
 from f5sdk import exceptions
 from f5sdk.bigip.extension import ExtensionClient
+from f5sdk.utils import http_utils
 
-from ....global_test_imports import pytest, Mock
+from ....global_test_imports import pytest, Mock, PropertyMock
 
 from ....shared import constants
 from ....shared import mock_utils
@@ -443,7 +444,6 @@ class TestExtensionService(object):
             side_effect=[({'selfLink': 'https://localhost/foo/1234'}, 202), (mock_response, 200)])
 
         response = extension_client.service.create(config={'foo': 'bar', 'async': True})
-
         assert response == mock_response
         assert make_request_mock.call_count == 2
         args, _ = make_request_mock.call_args_list[1]
@@ -508,151 +508,6 @@ class TestExtensionService(object):
 
         assert extension_client.service.show_info() == {'version': 'x.x.x.x'}
 
-    @staticmethod
-    @pytest.mark.usefixtures("cf_extension_client")
-    def test_cf_show_failover(cf_extension_client, mocker):
-        """Test: show_failover
-
-        Assertions
-        ----------
-        - show_failover() response should be trigger endpoint API response
-        """
-        sample_return_value = {
-            "code": 200,
-            "failoverOperations": {},
-            "instance": "A",
-            "message": "Failover state file was reset",
-            "taskState": "SUCCEEDED",
-            "timestamp": "XYZ"
-        }
-
-
-        mocker.patch(REQ).return_value.json = Mock(return_value=sample_return_value)
-
-        assert cf_extension_client.service.show_trigger() == sample_return_value
-
-    @staticmethod
-    @pytest.mark.usefixtures("cf_extension_client")
-    def test_cf_show_inspect(cf_extension_client, mocker):
-        """Test: show_inspect
-
-        Assertions
-        ----------
-        - show_inspect() response should be inspect endpoint API response
-        """
-
-        sample_return_value = {
-            "addresses": [
-                {
-                    "networkInterfaceId": "nic0",
-                    "privateIpAddress": "x.x.x.x",
-                    "publicIpAddress": "y.y.y.y"
-                },
-                {
-                    "networkInterfaceId": "nic1",
-                    "privateIpAddress": "x.x.x.x",
-                    "publicIpAddress": "y.y.y.y"
-                },
-                {
-                    "networkInterfaceId": "nic2",
-                    "privateIpAddress": "x.x.x.x",
-                    "publicIpAddress": "null"
-                }
-            ],
-            "deviceStatus": "active",
-            "hostName": "test",
-            "instance": "test-i",
-            "routes": [
-                {
-                    "networkId": "int-net-test",
-                    "routeTableId": "1",
-                    "routeTableName": "test-i"
-                }
-            ],
-            "trafficGroup": [
-                {
-                    "name": "/Common/traffic-group-1"
-                }
-            ]
-        }
-
-        mocker.patch(REQ).return_value.json = Mock(return_value=sample_return_value)
-
-        assert cf_extension_client.service.show_inspect() == sample_return_value
-
-    @staticmethod
-    @pytest.mark.usefixtures("cf_extension_client")
-    def test_cf_trigger_failover(cf_extension_client, mocker):
-        """Test: show_inspect
-
-        Assertions
-        ----------
-        - trigger() response should be trigger endpoint API response
-        """
-
-        sample_return_value = {
-            "failoverOperations": {
-                "addresses": {
-                    "fwdRules": {
-                        "operations": []
-                    },
-                    "nics": {
-                        "associate": [],
-                        "disassociate": []
-                    }
-                },
-                "routes": {
-                    "operations": []
-                }
-            },
-            "instance": "test-i",
-            "message": "Failover Completed Successfully",
-            "taskState": "SUCCEEDED",
-            "timestamp": "XYZ"
-        }
-
-        mocker.patch(REQ).return_value.json = Mock(return_value=sample_return_value)
-
-        assert cf_extension_client.service.trigger() == sample_return_value
-
-    @staticmethod
-    @pytest.mark.usefixtures("cf_extension_client")
-    def test_cf_show_info(cf_extension_client, mocker):
-        """Test: reset
-
-        Assertions
-        ----------
-        - reset() response should be reset endpoint API response
-        """
-
-        sample_return_value = {
-            "version": "0",
-            "schemaCurrent": "0.9.1",
-            "schemaMinimum": "1.0.0",
-            "release": "1"
-        }
-
-        mocker.patch(REQ).return_value.json = Mock(return_value=sample_return_value)
-
-        assert cf_extension_client.service.show_info() == sample_return_value
-
-    @staticmethod
-    @pytest.mark.usefixtures("cf_extension_client")
-    def test_cf_reset(cf_extension_client, mocker):
-        """Test: reset
-
-        Assertions
-        ----------
-        - reset() response should be reset endpoint API response
-        """
-
-        sample_return_value = {
-            "message": "success"
-        }
-
-        mocker.patch(REQ).return_value.json = Mock(return_value=sample_return_value)
-
-        assert cf_extension_client.service.reset() == sample_return_value
 
     @staticmethod
     @pytest.mark.usefixtures("ts_extension_client")
@@ -673,3 +528,98 @@ class TestExtensionService(object):
         mocker.patch(REQ).return_value.json = Mock(return_value=sample_return_value)
 
         assert ts_extension_client.service.show_info() == sample_return_value
+
+
+    @staticmethod
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_inspect_method_exception(mgmt_client):
+        """Test: inspect - against invalid extension component
+
+        For example, AS3 does not support the 'inspect' method
+
+        Assertions
+        ----------
+        - Exception should be raised
+        """
+
+        extension_client = ExtensionClient(mgmt_client, 'as3')
+
+        pytest.raises(Exception, extension_client.service.show_inspect)
+
+
+    @staticmethod
+    @pytest.mark.usefixtures("do_extension_client")
+    def test_do_show_info(do_extension_client, mocker):
+        """Test: show_info
+
+        Assertions
+        ----------
+        - show_info() response should be info endpoint API response
+        """
+        info_return_value = {
+            "version": "1.10.0",
+            "release": "2",
+            "schemaCurrent": "1.9.0",
+            "schemaMinimum": "1.0.0"
+        }
+        mocker.patch(REQ).return_value.json = Mock(return_value=info_return_value)
+
+        assert do_extension_client.service.show_info() == info_return_value
+
+
+    @staticmethod
+    @pytest.mark.usefixtures("do_extension_client")
+    def test_do_show_inspect(do_extension_client, mocker):
+        """Test: show_inspect
+
+        Assertions
+        ----------
+        - show_inspect() response should be inspect endpoint API response
+        """
+
+        inspect_return_value = {
+            "selfLink": "https://localhost/mgmt/shared/declarative-onboarding/inspect",
+            "result": {
+                "class": "Result",
+                "code": 200,
+                "status": "OK"
+            }
+        }
+        mocker.patch(REQ).return_value.json = Mock(return_value=inspect_return_value)
+
+        assert do_extension_client.service.show_inspect() == inspect_return_value
+
+
+    @staticmethod
+    @pytest.mark.usefixtures("do_extension_client")
+    def test_do_show_inspect_query_parameters(do_extension_client, mocker):
+        """Test: show_inspect(**kwargs) query parameters with a GET request to the /inspect endpoint
+
+        For example
+        https://MGMT_IP/mgmt/shared/declarative-onboarding/inspect?targetHost=X.X.X.X
+        &targetPort=443&targetUsername=admin&targetPassword=admin
+
+        Assertions
+        ----------
+        - request HTTP uri should contain the query parameters
+        - show_inspect() response should be inspect endpoint API response
+        """
+
+        inspect_kwargs = {
+            'query_parameters': {
+                'targetHost': '192.0.2.1',
+                'targetPort': 443,
+                'targetUsername': 'admin',
+                'targetPassword': 'admin'
+            }
+        }
+        mock_request = mocker.patch(REQ)
+        mock_request.return_value.json = Mock(return_value={})
+        type(mock_request.return_value).status_code = PropertyMock(return_value=200)
+        inspect_show = do_extension_client.service.show_inspect(**inspect_kwargs)
+        args, _ = mock_request.call_args
+        query_params = http_utils.parse_url(args[1])['query']
+
+        for key in inspect_kwargs['query_parameters']:
+            assert '{}={}'.format(key, inspect_kwargs['query_parameters'][key]) in query_params
+        assert inspect_show == {}
