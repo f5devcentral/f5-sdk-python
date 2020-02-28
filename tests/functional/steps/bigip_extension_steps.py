@@ -2,7 +2,13 @@
 
 # pylint: disable=function-redefined, import-error
 import json
+from retry import retry
 from test_imports import given, when, then, fixtures, use_fixture
+
+RETRIES = {
+    'DEFAULT': 10,
+    'DELAY_IN_SECS': 1
+}
 
 @given('we have a BIG-IP available')
 def step_impl(context):
@@ -52,7 +58,27 @@ def step_impl(context, component, **_kwargs):
         config["failoverRoutes"]["scopingTags"]["f5_cloud_failover_label"] \
             = context.deployment_info['deploymentId']
 
+    elif component == 'do':
+        current_decl = context.mgmt_client.make_request('/mgmt/shared/declarative-onboarding')
+        current_decl = current_decl['declaration']
+        # note: creating/updating "db vars" in "Common"
+        current_decl['Common']['dbVars'].update(config)
+        # note: account for local/remote password being removed from DO (ID: TBD)
+        if 'trust' in current_decl['Common']:
+            password = [
+                i for i in context.deployment_info['instances']
+                if i['primary']][0]['admin_password']
+            current_decl['Common']['trust']['localPassword'] = password
+            current_decl['Common']['trust']['remotePassword'] = password
+        config = current_decl
+
     context.extension_client.service.create(config=config)
+
+
+@when('we get inspect from {component}')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    context.response = context.extension_client.service.show_inspect()
 
 @when('we post reset to {component}')
 def step_impl(context, **_kwargs):
@@ -82,6 +108,7 @@ def step_impl(context, **_kwargs):
     assert context.exentension_client_info['version'] != ''
 
 @then('a virtual server will be created with address {virtual_address}')
+@retry(tries=RETRIES['DEFAULT'], delay=RETRIES['DELAY_IN_SECS'])
 def step_impl(context, virtual_address):
     """ step impl """
     virtual_servers = context.mgmt_client.make_request('/mgmt/tm/ltm/virtual')['items']
@@ -89,17 +116,6 @@ def step_impl(context, virtual_address):
              if i['destination'].split('/')[-1].split(':')[0] == virtual_address
             ]
     assert len(match) == 1, virtual_servers
-
-@then('{component} will return inspect info')
-def step_impl(context, component):
-    """ step impl """
-    if component == 'do':
-        do_dict = context.mgmt_client.make_request('/mgmt/shared/declarative-onboarding')
-        SAVE_DO = do_dict.get('declaration')['Common']  # pylint: disable=W0621, C0103, W0612
-        inspect = context.extension_client.service.show_inspect()[0]
-        assert inspect.get('result')['code'] == 200, inspect
-    elif component == 'cf':
-        assert context.extension_client.service.show_inspect()
 
 @then('cf will validate and return response')
 def step_impl(context, **_kwargs):
@@ -111,3 +127,17 @@ def step_impl(context, **_kwargs):
     """ step impl """
     body = context.extension_client.service.show()
     assert body.get('message') == 'success'
+
+@then('{component} will return inspect info')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    if isinstance(context.response, list):
+        context.response = context.extension_client.service.show_inspect()[0]
+        assert context.response
+
+@then('advisory text will be set to "{text}"')
+def step_impl(context, text):
+    """ step impl """
+    assert context.mgmt_client.make_request(
+        '/mgmt/tm/sys/db/ui.advisory.text'
+    )['value'] == text

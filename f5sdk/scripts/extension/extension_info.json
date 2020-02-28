@@ -9,6 +9,12 @@
             "info": {
                 "uri": "/mgmt/shared/declarative-onboarding/info",
                 "methods": ["GET"]
+            },
+            "inspect": {
+                "uri": "/mgmt/shared/declarative-onboarding/inspect",
+                "methods": [
+                    "GET"
+                ]
             }
         },
         "componentDependencies": {}

@@ -96,15 +96,17 @@ Feature: BIG-IP Extension Client
       """
     Then a success message is returned by ts
 
-  Scenario Outline: Getting inspect from <component> on BIG-IP
+  Scenario: Sending a declaration to DO
     Given we have a BIG-IP available
-    and <component> is installed
-    When we get info from <component>
-    Then <component> will return inspect info
-
-    Examples: Extension Components
-      | component |
-      | cf        |
+     and do is installed
+     When we configure do with a declaration
+      """
+       {
+            "class": "DbVariables",
+            "ui.advisory.text": "test scenario text"
+       }
+      """
+     Then advisory text will be set to "test scenario text"
 
   Scenario: Sending a declaration to CF
     Given we have a BIG-IP available
@@ -145,6 +147,17 @@ Feature: BIG-IP Extension Client
       """
     Then a success message is returned by cf
 
+  Scenario Outline: Getting inspect from <component> on BIG-IP
+    Given we have a BIG-IP available
+    and <component> is installed
+    When we get inspect from <component>
+    Then <component> will return inspect info
+
+    Examples: Extension Components
+      | component |
+      | do        |
+      | cf        |
+
   Scenario: Sending a reset to CF
     Given we have a BIG-IP available
     and cf is installed
@@ -162,4 +175,3 @@ Feature: BIG-IP Extension Client
     and cf is installed
     When we call get trigger from cf
     Then cf will validate and return response
-

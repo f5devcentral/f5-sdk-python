@@ -20,6 +20,15 @@ def ts_extension_client(mgmt_client):
 
     return ExtensionClient(mgmt_client, 'ts')
 
+
+@pytest.fixture
+@pytest.mark.usefixtures("mgmt_client")
+def do_extension_client(mgmt_client):
+    """ Test fixture: create do extension client """
+
+    return ExtensionClient(mgmt_client, 'do')
+
+
 @pytest.fixture
 @pytest.mark.usefixtures("mgmt_client")
 def cf_extension_client(mgmt_client):

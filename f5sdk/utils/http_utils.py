@@ -170,7 +170,8 @@ def parse_url(url):
             {
                 'protocol': 'https',
                 'host': 'test.local',
-                'path': '/foo/bar'
+                'path': '/foo/bar',
+                'query': ''
             }
 
     """
@@ -180,5 +181,6 @@ def parse_url(url):
     return {
         'protocol': parsed_url.scheme,
         'host': parsed_url.netloc,
-        'path': parsed_url.path
+        'path': parsed_url.path,
+        'query': parsed_url.query
     }
