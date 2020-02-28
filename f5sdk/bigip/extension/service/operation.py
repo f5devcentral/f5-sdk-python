@@ -1,11 +1,12 @@
 """Module for BIG-IP extension component service configuration"""
 
+
 import time
+
 import requests
 from retry import retry
 
 from f5sdk import constants
-from f5sdk.exceptions import InvalidComponentMethodError
 from f5sdk.utils import misc_utils
 from f5sdk.exceptions import InvalidComponentMethodError
 
