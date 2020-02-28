@@ -12,7 +12,7 @@ stages:
 variables:
     ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
     EXTENSION_METADATA_FILE: "metadata.json"
-    DEPLOYMENT_PLAN: aws_standalone
+    DEPLOYMENT_PLAN: aws
     # aws vars
     AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
     AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
