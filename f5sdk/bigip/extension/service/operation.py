@@ -115,8 +115,10 @@ class OperationClient(object):
         dict
             the inspect endpoint details
         """
-        return self._metadata_client.get_endpoints()['inspect']
-
+        try:
+            return self._metadata_client.get_endpoints()['inspect']
+        except:
+            raise Exception('inspect endpoint is not available in extension component')
 
     def _get_trigger_endpoint(self):
         """Get trigger endpoint
@@ -131,7 +133,10 @@ class OperationClient(object):
             the trigger endpoint details
         """
 
-        return self._metadata_client.get_endpoints()['trigger']
+        try:
+            return self._metadata_client.get_endpoints()['trigger']
+        except:
+            raise Exception('trigger endpoint is not available in extension component')
 
     def _get_reset_endpoint(self):
         """Get reset endpoint
@@ -146,7 +151,10 @@ class OperationClient(object):
             the reset endpoint details
         """
 
-        return self._metadata_client.get_endpoints()['reset']
+        try:
+            return self._metadata_client.get_endpoints()['reset']
+        except:
+            raise Exception('reset endpoint is not available in extension component')
 
     @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _wait_for_task(self, task_url):
@@ -302,11 +310,6 @@ class OperationClient(object):
             the API response to a service reset
         """
 
-        methods = self._get_configure_endpoint()['methods']
-
-        if 'RESET' not in methods:
-            raise Exception('Reset is not supported for this extension component')
-
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
 
@@ -347,11 +350,6 @@ class OperationClient(object):
             the API response to a service trigger
         """
 
-        methods = self._get_configure_endpoint()['methods']
-
-        if 'TRIGGER' not in methods:
-            raise Exception('Reset is not supported for this extension component')
-
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
 
@@ -384,11 +382,6 @@ class OperationClient(object):
             the API response to a service info get
         """
 
-        methods = self._get_configure_endpoint()['methods']
-
-        if 'INFO' not in methods:
-            raise Exception('Info is not supported for this extension component')
-
         return self._client.make_request(self._get_info_endpoint()['uri'])
 
     def show_inspect(self):
@@ -404,11 +397,6 @@ class OperationClient(object):
             the API response to a service inspect get
         """
 
-        methods = self._get_configure_endpoint()['methods']
-
-        if 'INSPECT' not in methods:
-            raise Exception('Inspect is not supported for this extension component')
-
         return self._client.make_request(self._get_inspect_endpoint()['uri'])
 
     def show_trigger(self):
@@ -423,10 +411,5 @@ class OperationClient(object):
         dict
             the API response to a service trigger get
         """
-
-        methods = self._get_configure_endpoint()['methods']
-
-        if 'TRIGGER' not in methods:
-            raise Exception('Trigger is not supported for this extension component')
 
         return self._client.make_request(self._get_trigger_endpoint()['uri'])
