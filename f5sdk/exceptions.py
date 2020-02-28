@@ -41,3 +41,7 @@ class InvalidComponentMethodError(Exception):
 
 class RetryInterruptedError(Exception):
     """ Error raised if method retry is intentionally interrupted """
+
+
+class InvalidComponentMethodError(Exception):
+    """ Error raised if invalid component method is invoked """
