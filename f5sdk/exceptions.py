@@ -39,6 +39,7 @@ class MethodNotAllowed(Exception):
 class InvalidComponentMethodError(Exception):
     """ Error raised if invalid component method is invoked """
 
+
 class RetryInterruptedError(Exception):
     """ Error raised if method retry is intentionally interrupted """
 
