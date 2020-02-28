@@ -36,13 +36,10 @@ class DeviceReadyError(Exception):
 class MethodNotAllowed(Exception):
     """ Error raised if method is not allowed """
 
+
 class InvalidComponentMethodError(Exception):
     """ Error raised if invalid component method is invoked """
 
 
 class RetryInterruptedError(Exception):
     """ Error raised if method retry is intentionally interrupted """
-
-
-class InvalidComponentMethodError(Exception):
-    """ Error raised if invalid component method is invoked """
