@@ -5,6 +5,7 @@ import requests
 from retry import retry
 
 from f5sdk import constants
+from f5sdk.exceptions import InvalidComponentMethodError
 from f5sdk.utils import misc_utils
 
 
@@ -118,7 +119,7 @@ class OperationClient(object):
         try:
             return self._metadata_client.get_endpoints()['inspect']
         except:
-            raise Exception('inspect endpoint is not available in extension component')
+            raise InvalidComponentMethodError('inspect endpoint is not available in extension component')
 
     def _get_trigger_endpoint(self):
         """Get trigger endpoint
@@ -136,7 +137,7 @@ class OperationClient(object):
         try:
             return self._metadata_client.get_endpoints()['trigger']
         except:
-            raise Exception('trigger endpoint is not available in extension component')
+            raise InvalidComponentMethodError('trigger endpoint is not available in extension component')
 
     def _get_reset_endpoint(self):
         """Get reset endpoint
@@ -154,7 +155,7 @@ class OperationClient(object):
         try:
             return self._metadata_client.get_endpoints()['reset']
         except:
-            raise Exception('reset endpoint is not available in extension component')
+            raise InvalidComponentMethodError('reset endpoint is not available in extension component')
 
     @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _wait_for_task(self, task_url):
