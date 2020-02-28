@@ -6,7 +6,7 @@ from retry import retry
 
 from f5sdk import constants
 from f5sdk.utils import misc_utils
-
+from f5sdk.exceptions import InvalidComponentMethodError
 
 class OperationClient(object):
     """A class used as a extension service operation client for BIG-IP
@@ -376,7 +376,7 @@ class OperationClient(object):
 
         return self._client.make_request(self._get_info_endpoint()['uri'])
 
-    def show_inspect(self):
+    def show_inspect(self, **kwargs):
         """Show component extension inspect
 
         Parameters
@@ -389,7 +389,21 @@ class OperationClient(object):
             the API response to a service inspect get
         """
 
-        return self._client.make_request(self._get_inspect_endpoint()['uri'])
+        query_parameters = kwargs.pop('query_parameters', None)
+
+        endpoints = self._metadata_client.get_endpoints()
+        if 'inspect' not in endpoints and 'do' not in self.component:
+            raise InvalidComponentMethodError('Inspect endpoint is not supported for this '
+                                              'extension %s' % self.component)
+        url = ''
+        if query_parameters:
+            for key in query_parameters:
+                url += ''.join(key + '=' + str(query_parameters[key]) + '&')
+            uri = self._get_inspect_endpoint()['uri'] + '?' + url[:-1]
+        else:
+            uri = self._get_inspect_endpoint()['uri']
+
+        return self._client.make_request(uri)
 
     def show_trigger(self):
         """Show CF component extension trigger failover status
