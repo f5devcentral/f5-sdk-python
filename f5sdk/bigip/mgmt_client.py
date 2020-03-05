@@ -298,6 +298,7 @@ class ManagementClient(object):
             'password': self._password,
             'loginProviderName': 'tmos'
         }
+
         # get token
         try:
             response = http_utils.make_request(
@@ -311,6 +312,7 @@ class ManagementClient(object):
         except HTTPError as error:
             if constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
                 raise RetryInterruptedError(error)
+            raise error
 
         token = response['token']['token']
         # now extend token lifetime
