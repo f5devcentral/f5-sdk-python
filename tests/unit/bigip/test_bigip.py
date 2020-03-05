@@ -69,6 +69,25 @@ class TestBigIp(object):
         with pytest.raises(exceptions.RetryInterruptedError):
             BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
 
+    @staticmethod
+    def test_mgmt_client_with_bad_initial_request(mocker):
+        """Test: Initialize mgmt client with bad request on first call,
+        followed by valid token response and then token refresh should succeed
+
+        Assertions
+        ----------
+        - Mgmt client is initialized successfully
+        """
+
+        mocker.patch(REQ).side_effect = [
+            exceptions.HTTPError(constants.BAD_REQUEST_BODY),
+            mock_utils.MockRequestsResponse(TOKEN_RESPONSE),
+            mock_utils.MockRequestsResponse({})
+        ]
+
+        mgmt_client = BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
+        assert mgmt_client.token == TOKEN
+
     def test_mgmt_client_key_auth(self, mocker):
         """Test: Initialize mgmt client using key-based auth
 
