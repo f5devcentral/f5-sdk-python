@@ -1,8 +1,10 @@
 """Python module containing helper http utility functions """
 
 import json
+import os
+import warnings
 import requests
-from requests.auth import HTTPBasicAuth
+import urllib3
 
 from f5sdk import constants
 from f5sdk.logger import Logger
@@ -43,6 +45,7 @@ def download_to_file(url, file_name):
                 file_object.write(chunk)
 
 
+# pylint: disable=too-many-locals
 def make_request(host, uri, **kwargs):
     """Makes request to device (HTTP/S)
 
@@ -95,23 +98,31 @@ def make_request(host, uri, **kwargs):
     auth = None
     basic_auth = kwargs.pop('basic_auth', None)
     if basic_auth:
-        auth = HTTPBasicAuth(basic_auth['user'], basic_auth['password'])
+        auth = requests.auth.HTTPBasicAuth(basic_auth['user'], basic_auth['password'])
 
     # note: certain requests *may* contain large payloads, do *not* log body
     logger.debug('Making HTTP request: %s %s' % (method.upper(), uri))
 
     url = 'https://%s:%s%s' % (host, port, uri)
-    # make request
-    response = requests.request(
-        method,
-        url,
-        headers=headers,
-        data=body,
-        auth=auth,
-        timeout=constants.HTTP_TIMEOUT['DFL'],
-        verify=constants.HTTP_VERIFY
-    )
 
+    # make request
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        response = requests.request(method,
+                                    url,
+                                    headers=headers,
+                                    data=body,
+                                    auth=auth,
+                                    timeout=constants.HTTP_TIMEOUT['DFL'],
+                                    verify=constants.HTTP_VERIFY)
+        if caught_warnings and \
+                caught_warnings[0].category == urllib3.exceptions.InsecureRequestWarning:
+            if constants.ENV_VARS.get('DISABLE_SSL_WARNINGS') not in os.environ.keys() or (
+                    constants.ENV_VARS.get('DISABLE_SSL_WARNINGS') in os.environ.keys() and
+                    os.environ[constants.ENV_VARS.get('DISABLE_SSL_WARNINGS')].lower() == 'false'):
+                logger.warning('SSL Insecure request, '
+                               'recommend adding a valid certificate to the device')
     # return boolean response, if requested
     if kwargs.pop('bool_response', False):
         return response.ok

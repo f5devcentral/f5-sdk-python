@@ -15,7 +15,7 @@ import logging
 import f5sdk.constants as constants
 
 DFL_LEVEL = constants.DFL_LOG_LEVEL
-LEVEL_ENV_VAR = constants.LOG_LEVEL_ENV_VAR
+LEVEL_ENV_VAR = constants.ENV_VARS.get('LOG_LEVEL_ENV_VAR')
 LEVEL_ENV_VAR_VAL = os.environ[LEVEL_ENV_VAR] if LEVEL_ENV_VAR in os.environ else None
 
 # add custom trace logging level

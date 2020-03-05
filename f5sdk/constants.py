@@ -7,10 +7,9 @@ import operator
 VERSION = '0.9.0'  # should consolidate with setup version
 USER_AGENT = 'f5sdk/%s' % (VERSION)
 TMP_DIR = tempfile.gettempdir()
-DFL_LOG_LEVEL = logging.ERROR
-LOG_LEVEL_ENV_VAR = 'F5_SDK_LOG_LEVEL'
+DFL_LOG_LEVEL = logging.WARNING
 F5_AUTH_TOKEN_HEADER = 'X-F5-Auth-Token'
-
+HTTPS_REQUEST_WARNING_VALUE = 'ignore:Unverified HTTPS request'
 HTTP_TIMEOUT = {
     'DFL': 60
 }
@@ -41,4 +40,9 @@ BIGIP_CMDS = {
 F5_CLOUD_SERVICES = {
     'API_ENDPOINT': 'api.cloudservices.f5.com',
     'AUTH_TOKEN_HEADER': 'Authorization'
+}
+
+ENV_VARS = {
+    'LOG_LEVEL_ENV_VAR': 'F5_SDK_LOG_LEVEL',
+    'DISABLE_SSL_WARNINGS': 'F5_DISABLE_SSL_WARNINGS'
 }
