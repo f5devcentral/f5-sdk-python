@@ -46,6 +46,12 @@ code_docs_doxygen:
 generate_extension_metadata:
 	python3 -m "f5sdk.scripts.extension.generate_metadata";
 	cp ${EXTENSION_METADATA_FILE} f5sdk/bigip/extension/extension_metadata.json
+upload: build
+	echo "Uploading package to PyPI";
+	# set username/password using TWINE_USERNAME/TWINE_PASSWORD
+	# or using keyring for automated scenarios
+	twine check ${DIST_DIR}/*
+	twine upload --skip-existing ${DIST_DIR}/*
 clean:
 	echo "Removing artifacts"
 	rm -rf ${API_DOCS_SOURCE}

@@ -1,4 +1,4 @@
-"""Python module for BIG-IP extension component configuration, including AS3, DO and TS
+"""Module for BIG-IP extension component configuration, including AS3, DO and TS
 
     Example - Basic::
 

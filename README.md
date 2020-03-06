@@ -1,6 +1,6 @@
 # Introduction
 
-The F5 SDK Python provides client libraries to access various F5 products and services. It focuses primarily on facilitating consuming our most popular APIs and services, currently including BIG-IP (via Automation Tool Chain) and F5 Cloud Services.
+The F5 SDK (Python) provides client libraries to access various F5 products and services. It focuses primarily on facilitating consuming our most popular APIs and services, currently including BIG-IP (via Automation Tool Chain) and F5 Cloud Services.
 
 Benefits:
 
@@ -81,4 +81,4 @@ See the [documentation](https://clouddocs.f5.com/sdk/f5-sdk-python/) for details
 
 ## Source Repository
 
-https://github.com/f5devcentral/f5-sdk-python
+See the source repository [here](https://github.com/f5devcentral/f5-sdk-python).

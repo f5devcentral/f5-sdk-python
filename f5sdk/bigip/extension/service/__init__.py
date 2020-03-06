@@ -1,6 +1,7 @@
 """Module for BIG-IP extension component service configuration
 
     Example - Basic::
+
         from f5sdk.bigip import ManagementClient
         from f5sdk.bigip.extension import ExtensionClient
 

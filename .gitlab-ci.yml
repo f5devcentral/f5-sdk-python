@@ -16,6 +16,9 @@ variables:
     GIT_SECRETS_VERSION: '1.3.0'
     GIT_SECRETS_PKG_URL: "https://github.com/awslabs/git-secrets/archive/${GIT_SECRETS_VERSION}.tar.gz"
     DOCS_BUILD_DIR: "code_docs/html"
+    TWINE_USERNAME: "$PYPI_USERNAME"
+    TWINE_PASSWORD: "$PYPI_PASSWORD"
+    TWINE_NON_INTERACTIVE: "true"
     # aws vars
     AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
     AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
@@ -234,14 +237,13 @@ publish_extension_metadata:
         - if [[ $changed_files_count -eq 1 ]]; then svn add --force latest/${EXTENSION_METADATA_FILE}; svn commit -m "F5 SDK project automation - ${CI_COMMIT_REF_NAME}" ${AUTH_OPTS}; else echo "Metadata file is unchanged"; fi
 
 # Publish to internal artifactory
-# Note: Will build and push eggs when new tags are pushed with the assumption being the package
-# version has been updated. However even if it hasn't it will simply update the existing version
+# Note: Will build and push package when new tags are added with
+# the assumption being the package version has been updated.
+# However even if it hasn't it will simply update the existing version
 publish_egg_to_artifactory:
     stage: publish
     only:
         - tags
-        - master
-        - develop
     tags:
         - docker-executor
     script:
@@ -254,6 +256,21 @@ publish_egg_to_artifactory:
           UPLOAD_RESULT=$(curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -X PUT --data-binary @${EGG_FILE} ${URL})
         - if [[ $? -eq 0 ]] && [[ "$UPLOAD_RESULT" == *created* ]]; then echo "Upload complete"; else echo "Upload failed"; exit 1; fi
         - echo $UPLOAD_RESULT
+
+# Publish to PyPI
+# Note: Will build and push package when new tags are added with
+# the assumption being the package version has been updated
+publish_package_to_pypi:
+    stage: publish
+    only:
+        - tags
+    tags:
+        - docker-executor
+    script:
+        # install packages
+        - pip install -r requirements.txt
+        # upload
+        - make upload
 
 # publish docs to internal pages: - this job MUST be named 'pages'
 pages:
@@ -291,7 +308,6 @@ docs_to_staging:
         url: https://clouddocs.f5networks.net/sdk/f5-sdk-python
     only:
         variables:
-            # Currently will only deploy to clouddocs.f5networks.com on commits to develop branch
             - $CI_COMMIT_REF_NAME == "develop"
             - $CI_COMMIT_REF_NAME == "docs_staging"
     tags:
@@ -301,6 +317,27 @@ docs_to_staging:
         - aws configure set aws_secret_access_key $DOCS_AWS_SECRET_ACCESS_KEY --profile=docs
         # Uncomment and set to create desired version format
         - aws s3 sync ${DOCS_BUILD_DIR} s3://clouddocs.f5networks.net/sdk/f5-sdk-python --profile=docs
+        # create invalidation to clear cloudfront cache
+        - aws cloudfront create-invalidation --distribution-id $AWS_DIST_STAGE --paths /sdk/f5-sdk-python --profile=docs
+
+# Publish docs to clouddocs.f5.com
+docs_to_production:
+    image: ${CONTAINTHEDOCS_IMAGE}
+    stage: publish
+    environment:
+        name: stage
+        url: https://clouddocs.f5.com/sdk/f5-sdk-python
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == "master"
+            - $CI_COMMIT_REF_NAME == "docs_production"
+    tags:
+        - cm-official-docker-executor
+    script:
+        - aws configure set aws_access_key_id $DOCS_AWS_ACCESS_KEY_ID --profile=docs
+        - aws configure set aws_secret_access_key $DOCS_AWS_SECRET_ACCESS_KEY --profile=docs
+        # Uncomment and set to create desired version format
+        - aws s3 sync ${DOCS_BUILD_DIR} s3://clouddocs.f5.com/sdk/f5-sdk-python --profile=docs
         # create invalidation to clear cloudfront cache
         - aws cloudfront create-invalidation --distribution-id $AWS_DIST_STAGE --paths /sdk/f5-sdk-python --profile=docs
 
