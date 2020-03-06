@@ -19,7 +19,7 @@ To ignore HTTPS warnings while the SDK is making HTTP requests, set the followin
 
 ::
 
-    export PYTHONWARNINGS="ignore:Unverified HTTPS request"
+    export F5_DISABLE_SSL_WARNINGS='true'
 
 .. note::
     This is not recommended for production use, please configure the BIG-IP with a valid certificate.

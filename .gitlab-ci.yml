@@ -11,8 +11,10 @@ stages:
 
 variables:
     ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
-    EXTENSION_METADATA_FILE: "metadata.json"
     DEPLOYMENT_PLAN: aws
+    EXTENSION_METADATA_FILE: "metadata.json"
+    GIT_SECRETS_VERSION: '1.3.0'
+    GIT_SECRETS_PKG_URL: "https://github.com/awslabs/git-secrets/archive/${GIT_SECRETS_VERSION}.tar.gz"
     DOCS_BUILD_DIR: "code_docs/html"
     # aws vars
     AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
@@ -20,7 +22,7 @@ variables:
     AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
     # debug vars
     F5_SDK_LOG_LEVEL: "INFO"
-    PYTHONWARNINGS: 'ignore:Unverified HTTPS request'
+    F5_DISABLE_SSL_WARNINGS: 'true'
 
 # unit tests: python 3.x (preferred)
 test_unit:
@@ -88,6 +90,24 @@ test_extension_metadata_current:
         paths:
             - ${EXTENSION_METADATA_FILE}
         expire_in: 1 month
+
+# check for disallowed content within any file in source control, this
+# supplements the native pre-receive push rules built into GitLab for secrets
+# note: .gitallowed is used for exceptions
+check_content:
+    image: f5devcentral/containthedocs:rpmbuild
+    stage: test
+    script:
+        # install git-secrets
+        - curl -q -L -o git_secrets.tar.gz ${GIT_SECRETS_PKG_URL}
+        - tar xzf git_secrets.tar.gz
+        - cd git-secrets-${GIT_SECRETS_VERSION} && make install && cd ..
+        # now, add any patterns to disallow
+        - git secrets --add '.*f5.*\.com'
+        # scan
+        - git secrets --scan
+    tags:
+        - cm-official-docker-executor
 
 # deploy function test environment
 test_functional_init:

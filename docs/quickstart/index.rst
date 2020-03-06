@@ -14,7 +14,7 @@ Installation
 
 ::
 
-    pip install f5-sdk-python --extra-index-url https://***REMOVED***/artifactory/api/pypi/f5-cloud-solutions-pypi/simple
+    pip install f5-sdk-python
 
 
 .. note::
