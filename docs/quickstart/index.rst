@@ -18,7 +18,7 @@ Installation
 
 
 .. note::
-    Typically, all that is required to use the SDK is a basic installation.  For certain platforms or system configurations it may be simpler to get started in a container.
+    Typically, all that is required to use the SDK is a basic installation. For certain platforms or system configurations it may be simpler to get started in a container.
 
     ::
 
@@ -37,3 +37,8 @@ For an example AS3 declaration, see the documentation `here <https://clouddocs.f
 
 .. literalinclude:: ../../examples/extension_as3.py
    :language: python
+
+
+|
+
+.. include:: /_static/reuse/feedback.rst
