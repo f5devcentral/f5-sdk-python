@@ -346,11 +346,20 @@ publish_test_internal_install:
     stage: publish_test
     only:
         - tags
-        - master
-        - develop
     script:
-        # install packages - first wait until it is available after a recent publish
+        # install package - first wait until it is available after a recent publish (known artifactory issue)
         - bash scripts/wait_for_resp.sh ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple/f5-sdk-python/
         - pip install f5-sdk-python --extra-index-url ${ARTIFACTORY_BASE_URL}/api/pypi/f5-cloud-solutions-pypi/simple
+    tags:
+        - cm-official-docker-executor
+
+# publish test: test public (pypi) install
+publish_test_public_install:
+    stage: publish_test
+    only:
+        - tags
+    script:
+        # install package
+        - pip install f5-sdk-python
     tags:
         - cm-official-docker-executor
