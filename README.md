@@ -1,3 +1,6 @@
+[![Releases](https://img.shields.io/github/release/f5devcentral/f5-sdk-python.svg)](https://github.com/f5devcentral/f5-sdk-python/releases)
+[![Issues](https://img.shields.io/github/issues/f5devcentral/f5-sdk-python.svg)](https://github.com/f5devcentral/f5-sdk-python/issues)
+
 # Introduction
 
 The F5 SDK (Python) provides client libraries to access various F5 products and services. It focuses primarily on facilitating consuming our most popular APIs and services, currently including BIG-IP (via Automation Tool Chain) and F5 Cloud Services.
