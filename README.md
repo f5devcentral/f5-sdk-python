@@ -8,17 +8,22 @@
 
 ## Introduction
 
-This project provides a use case focused python SDK for interacting with F5 products, specifically around cloud and automation.
+The F5 SDK Python provides client libraries to access various F5 products and services. It will focus primarily on facilitating consuming our most popular APIs and services, currently including BIG-IP (via Automation Tool Chain) and F5 Cloud Services. 
 
-![demo](images/basic_demo.gif)
+Benefits: 
+
+- Provides hand-written or auto-generated client code to make F5’s APIs/services simple and intuitive to use.  
+- Handles the low-level details of communication with the API or service, including authentication sessions, async task handling, protocol handling, large file uploads and more.  
+- Can be installed using familiar package management tools such as pip. 
+
 
 ## Documentation
 
-See the [user documentation](https://automation-sdk.pages.***REMOVED***/f5-sdk-python/code-docs) for details on installation, usage and much more.
+See the [user documentation](https://clouddocs.f5.com/sdk/f5-sdk-python/) for details on installation, usage and much more.
 
 ## Developer Setup
 
-During developement, it is recommended to make use of the specific pinned dependencies, including test dependencies, defined inside of requirements.txt instead of a production installation via `setup.py`.
+During development, F5 recommends using the specific pinned dependencies, including test dependencies, defined inside of requirements.txt instead of a production installation via `setup.py`.
 
 ### Installation
 

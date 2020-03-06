@@ -6,3 +6,9 @@ User Guide
 
    bigip.rst
    cloud_services.rst
+   bigiq.rst
+
+
+|
+
+.. include:: /_static/reuse/feedback.rst

@@ -50,3 +50,7 @@ This script uses the SDK to revoke a licensed BIG-IP (unreachable) from a BIG-IQ
 
 .. literalinclude:: ../../examples/bigiq_revoke_license.py
    :language: python
+
+|
+
+.. include:: /_static/reuse/feedback.rst

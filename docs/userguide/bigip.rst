@@ -18,3 +18,6 @@
 
 .. automodule:: f5sdk.bigip.extension.service
 
+|
+
+.. include:: /_static/reuse/feedback.rst

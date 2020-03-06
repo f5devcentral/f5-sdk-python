@@ -13,6 +13,7 @@ variables:
     ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
     EXTENSION_METADATA_FILE: "metadata.json"
     DEPLOYMENT_PLAN: aws
+    DOCS_BUILD_DIR: "code_docs/html"
     # aws vars
     AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
     AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
@@ -260,6 +261,28 @@ pages:
             - public
     only:
         - develop
+
+# Publish docs to clouddocs.f5networks.com
+docs_to_staging:
+    image: ${CONTAINTHEDOCS_IMAGE}
+    stage: publish
+    environment:
+        name: stage
+        url: https://clouddocs.f5networks.net/sdk/f5-sdk-python
+    only:
+        variables:
+            # Currently will only deploy to clouddocs.f5networks.com on commits to develop branch
+            - $CI_COMMIT_REF_NAME == "develop"
+            - $CI_COMMIT_REF_NAME == "docs_staging"
+    tags:
+        - cm-official-docker-executor
+    script:
+        - aws configure set aws_access_key_id $DOCS_AWS_ACCESS_KEY_ID --profile=docs
+        - aws configure set aws_secret_access_key $DOCS_AWS_SECRET_ACCESS_KEY --profile=docs
+        # Uncomment and set to create desired version format
+        - aws s3 sync ${DOCS_BUILD_DIR} s3://clouddocs.f5networks.net/sdk/f5-sdk-python --profile=docs
+        # create invalidation to clear cloudfront cache
+        - aws cloudfront create-invalidation --distribution-id $AWS_DIST_STAGE --paths /sdk/f5-sdk-python --profile=docs
 
 # publish test: test internal (artifactory) install
 publish_test_internal_install:

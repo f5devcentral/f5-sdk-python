@@ -11,3 +11,7 @@ Index
 
 * :ref:`genindex`
 * :ref:`modindex`
+
+|
+
+.. include:: /_static/reuse/feedback.rst

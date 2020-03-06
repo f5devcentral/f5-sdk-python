@@ -13,4 +13,4 @@ behave==1.2.6
 mock==2.0.0 ; python_version < '3.3'
 ## required doc packages
 sphinx==2.0.1 ; python_version > '3.0'
-f5-sphinx-theme==1.0.9 ; python_version > '3.0'
+f5-sphinx-theme==2.0.5 ; python_version > '3.0'
