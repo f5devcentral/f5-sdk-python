@@ -4,7 +4,7 @@ import logging
 import tempfile
 import operator
 
-VERSION = '0.9.0'  # should consolidate with setup version
+VERSION = '0.9.0'
 USER_AGENT = 'f5sdk/%s' % (VERSION)
 TMP_DIR = tempfile.gettempdir()
 DFL_LOG_LEVEL = logging.WARNING

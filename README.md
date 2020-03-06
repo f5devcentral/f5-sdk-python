@@ -1,54 +1,84 @@
-# F5 SDK
+# Introduction
+
+The F5 SDK Python provides client libraries to access various F5 products and services. It focuses primarily on facilitating consuming our most popular APIs and services, currently including BIG-IP (via Automation Tool Chain) and F5 Cloud Services.
+
+Benefits:
+
+- Provides hand-written or auto-generated client code to make F5’s APIs/services simple and intuitive to use.
+- Handles the low-level details of communication with the API or service, including authentication sessions, async task handling, protocol handling, large file uploads, and more.
+- Can be installed using familiar package management tools such as pip.
 
 ## Table of Contents
-- [Introduction](#introduction)
-- [Documentation](#documentation)
-- [Developer Setup](#developer-setup)
-- [Artifacts](#artifacts)
+- [Usage](#usage)
+- [User Documentation](#user-documentation)
 
-## Introduction
+## Usage
 
-The F5 SDK Python provides client libraries to access various F5 products and services. It will focus primarily on facilitating consuming our most popular APIs and services, currently including BIG-IP (via Automation Tool Chain) and F5 Cloud Services. 
+```python
+""" Update BIG-IP L4-L7 configuration using AS3
 
-Benefits: 
+Notes
+-----
+Set local environment variables first
+"""
 
-- Provides hand-written or auto-generated client code to make F5’s APIs/services simple and intuitive to use.  
-- Handles the low-level details of communication with the API or service, including authentication sessions, async task handling, protocol handling, large file uploads and more.  
-- Can be installed using familiar package management tools such as pip. 
+# export F5_SDK_HOST='192.0.2.10'
+# export F5_SDK_USERNAME='admin'
+# export F5_SDK_PWD='admin'
+# export F5_SDK_AS3_DECL='./my_declaration.json'
+# export F5_SDK_LOG_LEVEL='DEBUG'
+
+import os
+
+from f5sdk.bigip import ManagementClient
+from f5sdk.bigip.extension import ExtensionClient
+from f5sdk.logger import Logger
+
+LOGGER = Logger(__name__).get_logger()
 
 
-## Documentation
+def update_as3_config():
+    """ Update AS3 configuration
 
-See the [user documentation](https://clouddocs.f5.com/sdk/f5-sdk-python/) for details on installation, usage and much more.
+    Notes
+    -----
+    Includes package installation, service check while
+    maintaining idempotency
+    """
+    # create management client
+    mgmt_client = ManagementClient(
+        os.environ['F5_SDK_HOST'],
+        user=os.environ['F5_SDK_USERNAME'],
+        password=os.environ['F5_SDK_PWD'])
 
-## Developer Setup
+    # create extension client
+    as3_client = ExtensionClient(mgmt_client, 'as3')
 
-During development, F5 recommends using the specific pinned dependencies, including test dependencies, defined inside of requirements.txt instead of a production installation via `setup.py`.
+    # Get installed package version info
+    version_info = as3_client.package.is_installed()
+    LOGGER.info(version_info['installed'])
+    LOGGER.info(version_info['installed_version'])
+    LOGGER.info(version_info['latest_version'])
 
-### Installation
+    # install package
+    if not version_info['installed']:
+        as3_client.package.install()
 
-Note: A virtual environment should be created first.  See [python docs](https://docs.python.org/3/library/venv.html) for more details.
+    # ensure service is available
+    as3_client.service.is_available()
 
-```bash
-pip install -r requirements.txt && pip install .
+    # configure AS3
+    return as3_client.service.create(config_file=os.environ['F5_SDK_AS3_DECL'])
+
+
+if __name__ == '__main__':
+    LOGGER.info(update_as3_config())
 ```
 
-Note: This project prefers Python 3.x, however if testing against python 2.x you should use either:
+## User Documentation
 
-- A virtual environment
-- Python 2.7 in a container - `docker run --rm -it -v $(pwd):/usr/dir python:2.7 /bin/bash`
+See the [documentation](https://clouddocs.f5.com/sdk/f5-sdk-python/) for details on installation, usage and much more.
 
-### Testing
+## Source Repository
 
-This project uses `Make` as a build automation tool... check out the Makefile for the full set of recipes.
-
-- Run unit tests: ```make test```
-- Run linter: ```make lint```
-- Build code coverage documentation: ```make coverage```
-- Build code documentation: ```make code_docs```
-
-## Artifacts
-
-- Index: https://automation-sdk.pages.***REMOVED***/f5-sdk-python
-- Code coverage report: https://automation-sdk..pages.***REMOVED***/f5-sdk-python/coverage/
-- Code documentation: https://automation-sdk..pages.***REMOVED***/f5-sdk-python/code-docs/
+https://github.com/f5devcentral/f5-sdk-python
