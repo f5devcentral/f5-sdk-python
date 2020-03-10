@@ -27,6 +27,9 @@ test:
 functional-test:
 	echo "Running functional tests (behave.ini file for settings)";
 	behave
+functional-test-examples:
+	echo "Running examples functional tests";
+	pytest ${FUNCTIONAL_TEST_DIR}/examples --full-trace -vv;
 lint:
 	echo "Running linter (any error will result in non-zero exit code)";
 	pylint -j 0 ${PACKAGE_DIR}/ ${EXAMPLES_DIR}/ ${TEST_DIR}/;
