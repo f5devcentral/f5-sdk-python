@@ -147,6 +147,8 @@ test_functional_execute:
         - cp -a env_metadata/${DEPLOYMENT_PLAN}/. .
         # run function tests
         - make functional-test
+        # run function tests examples
+        - make functional-test-examples
     tags:
         - cm-official-docker-executor
     only:
