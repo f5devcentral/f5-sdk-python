@@ -1,4 +1,4 @@
-""" Functional Test Examples File """
+""" Functional Test AS3 Declaration Example File """
 
 import os
 import json
@@ -20,7 +20,7 @@ def instance_info():
 
 
 # pylint: disable=redefined-outer-name
-def test_extension_as3_example_file(instance_info):
+def test_extension_as3_example(instance_info):
     """ Test update_as3_config() method """
     if not os.path.exists(os.path.join(os.getcwd(), './examples/extension_as3.py')):
         raise FileLoadError('Test example file extension_as3.py not exists')
