@@ -23,7 +23,7 @@ def get_cs_config():
     """ Get Cloud Services configuration """
     # create management client
     cs_client = ManagementClient(
-        user=os.environ['F5_CS_EMAIL'], password=os.environ['F5_SDK_PWD'],
+        user=os.environ['F5_CS_EMAIL'], password=os.environ['F5_CS_PWD'],
         api_endpoint=os.environ.get('F5_CS_API_ENDPOINT', None))  # optional
     # create subscription client
     subscription_client = SubscriptionClient(cs_client)
