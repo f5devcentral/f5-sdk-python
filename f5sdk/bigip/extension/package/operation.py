@@ -262,6 +262,8 @@ class OperationClient(object):
     def uninstall(self):
         """Uninstalls extension package component on a remote device
 
+        Note: This method will uninstall any component version
+
         Parameters
         ----------
         None
@@ -269,21 +271,25 @@ class OperationClient(object):
         Returns
         -------
         dict
-            a dictionary containing component and version:
+            Uninstalled component and version:
             {
-              'component': 'as3',
+              'component': '',
               'version': 'x.x.x'
             }
         """
 
-        # uninstall from BIG-IP
-        package_name = self._metadata_client.get_package_name()
-        self._uninstall_rpm(package_name)
+        installed_component_info = self._get_installed_rpm_info()
 
-        # check for any component dependencies, log warning as needed
-        self._check_for_dependency()
+        # uninstall from BIG-IP (if installed)
+        if installed_component_info['installed']:
+            self._uninstall_rpm(installed_component_info['package_name'])
+             # check for any component dependencies, log warning as needed
+            self._check_for_dependency()
 
-        return {'component': self.component, 'version': self.version}
+        return {
+            'component': self.component,
+            'version': installed_component_info['installed_version']
+        }
 
     def _check_rpm_exists(self, component_package_name):
         """Checks RPM (LX extension) exists on a remote device
@@ -295,31 +301,73 @@ class OperationClient(object):
 
         Returns
         -------
-        str
-            RPM version, or empty string if it does not exist
+        dict
+            RPM version, or empty string if it does not exist:
+            {
+                'exists': True,
+                'version': '',
+                'package_name': ''
+            }
         """
 
-        uri = PKG_MGMT_URI
-        body = {
-            'operation': 'QUERY'
-        }
-        response = self._client.make_request(uri, method='POST', body=body)
-
-        # now check for task status completion
+        # query device for packages
+        response = self._client.make_request(
+            PKG_MGMT_URI,
+            method='POST',
+            body={
+                'operation': 'QUERY'
+            }
+        )
         response = self._check_rpm_task_status(response['id'])
-        # check queryResponse for matching package_name
-        query_response = response['queryResponse']
-        matching_packages = [i for i in query_response
+        # check response for matching package_name
+        matching_packages = [i for i in response['queryResponse']
                              if component_package_name in i['packageName']]
-        return self._get_version_number_from_package_name(matching_packages[0]['packageName']) \
-            if len(matching_packages) == 1 else ''
+        # get matching package name
+        package_name = ''
+        if len(matching_packages) == 1:
+            package_name = matching_packages[0]['packageName']
+
+        return {
+            'exists': package_name != '',
+            'version': self._get_version_number_from_package_name(package_name),
+            'package_name': package_name
+        }
 
     @staticmethod
     def _get_version_number_from_package_name(package_name):
-        version_number_pattern = '[0-9]+.[0-9]+.[0-9]+'
-        compiled_pattern = re.compile(version_number_pattern)
-        version_index = compiled_pattern.search(package_name)
-        return package_name[version_index.start():version_index.end()]
+        if package_name is not None and package_name != '':
+            version_number_pattern = '[0-9]+.[0-9]+.[0-9]+'
+            compiled_pattern = re.compile(version_number_pattern)
+            version_index = compiled_pattern.search(package_name)
+            return package_name[version_index.start():version_index.end()]
+        return ''
+
+    def _get_installed_rpm_info(self):
+        """Retrieve installed RPM information
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            a dictionary containing installed information
+            {
+              'installed': True,
+              'installed_version': 'x.x.x',
+              'package_name': ''
+            }
+        """
+
+        installed_rpm_info = self._check_rpm_exists(
+            self._metadata_client.get_component_package_name()
+        )
+        return {
+            'installed': installed_rpm_info['exists'],
+            'installed_version': installed_rpm_info['version'],
+            'package_name': installed_rpm_info['package_name']
+        }
 
     def is_installed(self):
         """Checks if the extension component package is installed on a remote device
@@ -339,12 +387,9 @@ class OperationClient(object):
             }
         """
 
-        # list installed packages, check if this version's package name is installed
-        component_package_name = self._metadata_client.get_component_package_name()
-        retrieve_rpm_version = self._check_rpm_exists(component_package_name)
-        version_data = {
-            'installed': retrieve_rpm_version != '',
-            'installed_version': retrieve_rpm_version,
+        install_info = self._get_installed_rpm_info()
+        return {
+            'installed': install_info['installed'],
+            'installed_version': install_info['installed_version'],
             'latest_version': self._metadata_client.get_latest_version()
         }
-        return version_data
