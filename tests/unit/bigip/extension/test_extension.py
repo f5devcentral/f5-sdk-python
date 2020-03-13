@@ -198,24 +198,79 @@ class TestExtensionPackage(object):
         mock_conditions = [
             {
                 'type': 'url',
-                'value': '/mgmt/shared/file-transfer/uploads',
-                'response': {'body': {'id': 'xxxx'}}
-            },
-            {
-                'type': 'url',
                 'value': '/mgmt/shared/iapp/package-management-tasks',
-                'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
+                'response': {
+                    'body': {
+                        'id': 'xxxx',
+                        'status': 'FINISHED',
+                        'queryResponse': [
+                            {
+                                'packageName': 'f5-appsvcs-3.9.0-3.noarch'
+                            }
+                        ]
+                    }
+                }
             }
         ]
         mocker.patch(REQ).side_effect = mock_utils.create_response(
             {}, conditional=mock_conditions)
 
-        extension = ExtensionClient(mgmt_client, 'as3', version='3.9.0')
+        extension = ExtensionClient(mgmt_client, 'as3')
 
         assert extension.package.uninstall() == {
             'component': 'as3',
             'version': '3.9.0'
         }
+
+    @staticmethod
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_uninstall_any_version(mgmt_client, mocker):
+        """Test: uninstall (any version)
+
+        Given: Extension client is provided version '3.9.0' which
+        is different than the "installed version"
+
+        Assertions
+        ----------
+        - Package version in uninstall operation should be 3.10.0
+        - uninstall() response should equal:
+            {
+                'component': 'as3',
+                'version': '3.10.0'
+            }
+        """
+
+        mock_request = mocker.patch(REQ)
+        mock_conditions = [
+            {
+                'type': 'url',
+                'value': '/mgmt/shared/iapp/package-management-tasks',
+                'response': {
+                    'body': {
+                        'id': 'xxxx',
+                        'status': 'FINISHED',
+                        'queryResponse': [
+                            {
+                                'packageName': 'f5-appsvcs-3.10.0-0.noarch'
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+        mock_request.side_effect = mock_utils.create_response(
+            {},
+            conditional=mock_conditions
+        )
+
+        extension = ExtensionClient(mgmt_client, 'as3', version='3.9.0')
+
+        assert extension.package.uninstall() == {
+            'component': 'as3',
+            'version': '3.10.0'
+        }
+        _, kwargs = mock_request.call_args_list[2]
+        assert json.loads(kwargs['data'])['packageName'] == 'f5-appsvcs-3.10.0-0.noarch'
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
@@ -230,13 +285,18 @@ class TestExtensionPackage(object):
         mock_conditions = [
             {
                 'type': 'url',
-                'value': '/mgmt/shared/file-transfer/uploads',
-                'response': {'body': {'id': 'xxxx'}}
-            },
-            {
-                'type': 'url',
                 'value': '/mgmt/shared/iapp/package-management-tasks',
-                'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
+                'response': {
+                    'body': {
+                        'id': 'xxxx',
+                        'status': 'FINISHED',
+                        'queryResponse': [
+                            {
+                                'packageName': 'f5-appsvcs-3.9.0-3.noarch'
+                            }
+                        ]
+                    }
+                }
             }
         ]
         mocker.patch(REQ).side_effect = mock_utils.create_response(
@@ -244,7 +304,7 @@ class TestExtensionPackage(object):
         mock_logger = Mock()
         mocker.patch('f5sdk.logger.Logger.get_logger').return_value = mock_logger
 
-        extension = ExtensionClient(mgmt_client, 'as3', version='3.10.0')
+        extension = ExtensionClient(mgmt_client, 'as3')
         extension.package.uninstall()
 
         assert mock_logger.warning.call_count == 1
