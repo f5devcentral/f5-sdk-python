@@ -5,7 +5,7 @@ from retry import retry
 import f5sdk.constants as constants
 from f5sdk.logger import Logger
 from f5sdk.utils import http_utils
-from f5sdk.exceptions import InputRequiredError, RetryInterruptedError, HTTPError
+from f5sdk.exceptions import InputRequiredError, InvalidAuthError, HTTPError
 
 API_ENDPOINT = constants.F5_CLOUD_SERVICES['API_ENDPOINT']
 AUTH_TOKEN_HEADER = constants.F5_CLOUD_SERVICES['AUTH_TOKEN_HEADER']
@@ -101,7 +101,9 @@ class ManagementClient(object):
         except HTTPError as error:
             if constants.HTTP_STATUS_CODE['BAD_REQUEST_BODY'] in str(error) or \
                     constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
-                raise RetryInterruptedError(error)
+                _exception = InvalidAuthError(error)
+                _exception.__cause__ = None
+                raise _exception
         return {'accessToken': response['access_token'], 'expirationIn': response['expires_at']}
 
     def _login_using_credentials(self):
