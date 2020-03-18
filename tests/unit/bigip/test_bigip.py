@@ -63,10 +63,10 @@ class TestBigIp(object):
 
         Assertions
         ----------
-        - Mgmt client throws RetryInterruptedException
+        - Mgmt client throws exception InvalidAuthError
         """
         mocker.patch(REQ).side_effect = exceptions.HTTPError(constants.FAILED_AUTHENTICATION)
-        with pytest.raises(exceptions.RetryInterruptedError):
+        with pytest.raises(exceptions.InvalidAuthError):
             BigIpUtils.get_mgmt_client(user=USER, pwd=USER_PWD)
 
     @staticmethod

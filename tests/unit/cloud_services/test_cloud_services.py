@@ -2,7 +2,7 @@
 
 from f5sdk.cloud_services import ManagementClient
 from f5sdk import constants as project_constants
-from f5sdk.exceptions import RetryInterruptedError, HTTPError
+from f5sdk.exceptions import InvalidAuthError, HTTPError
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants
@@ -40,10 +40,10 @@ class TestCloudServices(object):
 
         Assertions
         ----------
-        - Mgmt client throws RetryInterruptedException
+        - Mgmt client throws exception InvalidAuthError
         """
         mocker.patch(REQ).side_effect = HTTPError(constants.BAD_REQUEST_BODY)
-        with pytest.raises(RetryInterruptedError):
+        with pytest.raises(InvalidAuthError):
             ManagementClient(user=USER, password=USER_PWD)
 
     @staticmethod

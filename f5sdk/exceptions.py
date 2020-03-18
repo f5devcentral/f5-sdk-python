@@ -43,3 +43,7 @@ class InvalidComponentMethodError(Exception):
 
 class RetryInterruptedError(Exception):
     """ Error raised if method retry is intentionally interrupted """
+
+
+class InvalidAuthError(Exception):
+    """ Error raised if authentication fails """
