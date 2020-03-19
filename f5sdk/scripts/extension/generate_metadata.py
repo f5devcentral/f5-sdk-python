@@ -23,15 +23,15 @@ Example output:
 """
 
 import os
+import re
 import json
-import requests
 
-import f5sdk.constants as constants
 from f5sdk.exceptions import FileLoadError
+from f5sdk.utils import http_utils
 
 EXTENSION_INFO = 'extension_info.json'
-GITHUB_ENDPOINT = 'https://github.com'
-GITHUB_API_ENDPOINT = 'https://api.github.com'
+GITHUB_API_ENDPOINT = 'api.github.com'
+VERSION_REGEX = '[0-9]+.[0-9]+.[0-9]+'
 
 
 def log(message):
@@ -91,44 +91,26 @@ class ExtensionScraperClient():
 
         return tag
 
-    def _get_download_url(self, assets, tag_name):
-        """Get download URL out of api response
-
-        Should look similar to the following:
-        - f5-declarative-onboarding-1.1.0-1.noarch.rpm
-
-        Note: Some assets may have multiple RPM versions
-        associated with a release, filter which RPM to use
-        based on matching tag name
+    @staticmethod
+    def _get_download_url(asset):
+        """Get download URL from asset
 
         Parameters
         ----------
-        items : array
-            release assets or repository contents
+        asset : dict
+            release asset or repository contents
 
         Returns
         -------
         str
-            the resolved download URL
+            artifact download URL
         """
 
-        tag_name = self._normalize_tag_name(tag_name)
-
-        rpms = [i for i in assets if i['name'].find(".rpm") != -1
-                and i['name'].find(".sha") == -1
-                and i['name'].find(tag_name) != -1]
-
-        # check for length > 1, if this fails the logic needs to be reviewed
-        if len(rpms) > 1:
-            raise Exception('RPM count is more than expected: {}'.format(rpms))
-        if len(rpms) == 1:
-            rpm_info = rpms[0]
-            if 'download_url' in rpm_info:
-                return rpm_info['download_url']
-            if 'browser_download_url' in rpm_info:
-                return rpm_info['browser_download_url']
-
-        return None
+        if 'download_url' in asset:
+            return asset['download_url']
+        if 'browser_download_url' in asset:
+            return asset['browser_download_url']
+        return ''
 
     @staticmethod
     def _get_repo_contents(repository, tag):
@@ -147,68 +129,92 @@ class ExtensionScraperClient():
             the repository contents
         """
 
-        response = requests.get(
-            '{}/repos/{}/contents/{}?ref={}'.format(
-                GITHUB_API_ENDPOINT,
-                repository,
-                'dist',
-                tag
-            )
+        return http_utils.make_request(
+            GITHUB_API_ENDPOINT,
+            '/repos/{}/contents/{}?ref={}'.format(repository, 'dist', tag)
         )
-        # check if status code is not '200'
-        if response.status_code == constants.HTTP_STATUS_CODE['OK']:
-            return response.json()
-        return None
 
-    def _resolve_artifact_info(self, release, repo_info):
-        """Resolve artifact information, such as download URL and package name
+    def _parse_artifacts(self, assets, tag_name):
+        """Parse artifacts
+
+        Note: Some assets may have multiple RPM versions
+        associated with a release, add an artifact for each asset
+        and set an 'is_primary' flag based on tag name
+
+        Parameters
+        ----------
+        assets : array
+            release assets or repository contents
+
+        Returns
+        -------
+        list
+            artifacts information:
+            [
+                {
+                    'url': '',
+                    'is_primary': True
+                }
+            ]
+        """
+
+        tag_name = self._normalize_tag_name(tag_name)
+        rpms = [i for i in assets if i['name'].find(".rpm") != -1
+                and i['name'].find(".sha") == -1]
+
+        artifacts = []
+        for rpm in rpms:
+            url = self._get_download_url(rpm)
+            artifacts.append({
+                'url': url,
+                'is_primary': url.split('/')[:1][0].find(tag_name) != -1
+            })
+        return artifacts
+
+    def _resolve_artifacts_info(self, tag_name, assets, repo_info):
+        """Resolve information about artifacts, such as download URL and package name
 
         Attempt to resolve in the following order:
-        - Github releases artifact
+        - Github releases artifacts
         - Inside source code 'dist' folder
 
         Parameters
         ----------
-        release : dict
-            release information
-        repo_info : dict
-            repository information
+        tag_name : str
+            tag name of the release
+        assets : list
+            assets in the release
 
         Returns
         -------
-        dict
-            the resolved artifact information
-            {
+        list
+            the resolved artifacts information
+            [{
                 'download_url': '',
-                'package_name': '',
-                'latest': True
-            }
+                'package_name': ''
+            }]
         """
 
-        ret = {
-            'download_url': None,
-            'package_name': None,
-            'latest': False
-        }
-
-        # search for the download URL information in the following order
+        # search for the artifacts information in the following order
         # - release assets
         # - 'dist' folder
-        assets_url = self._get_download_url(release['assets'], release['tag_name'])
-        if assets_url is not None:
-            ret['download_url'] = assets_url
-        else:
-            contents_url = self._get_download_url(
-                self._get_repo_contents(repo_info['repository'], release['tag_name']),
-                release['tag_name']
+        artifacts_info = self._parse_artifacts(assets, tag_name)
+        if not artifacts_info: # not in release assets, try 'dist' folder
+            artifacts_info = self._parse_artifacts(
+                self._get_repo_contents(repo_info['repository'], tag_name),
+                tag_name
             )
-            if contents_url is not None:
-                ret['download_url'] = contents_url
 
-        # resolve package name from download url
-        if ret['download_url'] is not None:
-            ret['package_name'] = ret['download_url'].split('/')[-1].split('.rpm')[0]
+        if not artifacts_info:
+            raise Exception('Unable to resolve artifacts info: {}'.format(artifacts_info))
 
+        ret = []
+        for artifact in artifacts_info:
+            ret.append({
+                'download_url': artifact['url'],
+                'package_name': artifact['url'].split('/')[-1].split('.rpm')[0],
+                'is_primary': artifact['is_primary']
+            })
         return ret
 
     def _get_component_versions(self, component_info):
@@ -231,25 +237,35 @@ class ExtensionScraperClient():
             }
         """
 
-        ret = {}
-
-        response = requests.get(
-            '{}/repos/{}/releases'.format(GITHUB_API_ENDPOINT, component_info['repository'])
+        releases = http_utils.make_request(
+            GITHUB_API_ENDPOINT,
+            '/repos/{}/releases'.format(component_info['repository'])
         )
-        response.raise_for_status()  # check for errors, such as API rate limits
+        latest_release_tag_name = http_utils.make_request(
+            GITHUB_API_ENDPOINT,
+            '/repos/{}/releases/latest'.format(component_info['repository'])
+        )['tag_name']
 
-        latest_release_tag_name = requests.get(
-            '{}/repos/{}/releases/latest'.format(GITHUB_API_ENDPOINT, component_info['repository'])
-        ).json()['tag_name']
+        ret = {}
+        for release in releases:
+            release_artifacts = self._resolve_artifacts_info(
+                release['tag_name'],
+                release['assets'],
+                component_info
+            )
+            for artifact in release_artifacts:
+                # - "if primary" use the release version as the key
+                # - "if not primary" parse the version from the artifact package name
+                if artifact['is_primary']:
+                    release_version = self._normalize_tag_name(release['tag_name'])
+                else:
+                    release_version = re.search(VERSION_REGEX, artifact['package_name']).group(0)
 
-        for release in response.json():
-            release_info = self._resolve_artifact_info(release, component_info)
-            ret[self._normalize_tag_name(release['tag_name'])] = {
-                'downloadUrl': release_info['download_url'],
-                'packageName': release_info['package_name'],
-                'latest': latest_release_tag_name == release['tag_name']
-            }
-
+                ret[release_version] = {
+                    'downloadUrl': artifact['download_url'],
+                    'packageName': artifact['package_name'],
+                    'latest': latest_release_tag_name == release['tag_name']
+                }
         return ret
 
     def generate_metadata(self, **kwargs):
