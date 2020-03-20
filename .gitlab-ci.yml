@@ -246,6 +246,7 @@ publish_egg_to_artifactory:
     stage: publish
     only:
         - tags
+        - develop
     tags:
         - docker-executor
     script:
