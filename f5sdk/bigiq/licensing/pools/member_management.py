@@ -43,17 +43,46 @@ class MemberManagementClient(BaseFeatureClient):
             uri='/mgmt/cm/device/tasks/licensing/pool/member-management'
         )
 
-    def show(self, **kwargs):
-        """ Method not allowed (action:skip_documentation) """
+    def list(self, **kwargs):
+        """List operation
 
-        raise self._exceptions['MethodNotAllowed']
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
 
-    def update(self, **kwargs):
-        """ Method not allowed (action:skip_documentation) """
+        Keyword Arguments
+        -----------------
+        query_parameters : dict
+            Query parameters for the request
 
-        raise self._exceptions['MethodNotAllowed']
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
 
-    def delete(self, **kwargs):
-        """ Method not allowed (action:skip_documentation) """
+        return self._list(**kwargs)
 
-        raise self._exceptions['MethodNotAllowed']
+    def create(self, **kwargs):
+        """Create operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._create(**kwargs)

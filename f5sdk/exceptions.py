@@ -33,10 +33,6 @@ class DeviceReadyError(Exception):
     """ Error raised if device ready check fails """
 
 
-class MethodNotAllowed(Exception):
-    """ Error raised if method is not allowed """
-
-
 class InvalidComponentMethodError(Exception):
     """ Error raised if invalid component method is invoked """
 
