@@ -1,7 +1,6 @@
 """ Test BIG-IQ licensing pool member management """
 
 from f5sdk.bigiq.licensing.pools import MemberManagementClient
-from f5sdk.exceptions import MethodNotAllowed
 
 from ....global_test_imports import pytest, Mock, PropertyMock
 from ....shared import constants
@@ -31,24 +30,6 @@ class TestPoolMemberManagementClient(object):
             methods=['list', 'create']
         )
 
-    @staticmethod
-    @pytest.mark.usefixtures("mgmt_client")
-    def test_invalid_crud_operations(mgmt_client, mocker):
-        """Test: Invalid CRUD operation functions
-
-        Assertions
-        ----------
-        - Exception should be raised for each invalid CRUD operation
-        """
-
-        client = MemberManagementClient(mgmt_client)
-
-        utils.invalidate_crud_operations(
-            client,
-            mocker=mocker,
-            exception=MethodNotAllowed,
-            methods=['show', 'update', 'delete']
-        )
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")

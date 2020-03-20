@@ -53,6 +53,124 @@ class RegKeyClient(BaseFeatureClient):
             uri=BASE_URI
         )
 
+    def list(self, **kwargs):
+        """List operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        query_parameters : dict
+            Query parameters for the request
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._list(**kwargs)
+
+    def create(self, **kwargs):
+        """Create operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._create(**kwargs)
+
+    def show(self, **kwargs):
+        """Show operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._show(**kwargs)
+
+    def update(self, **kwargs):
+        """Update operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._update(**kwargs)
+
+    def delete(self, **kwargs):
+        """Delete operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._delete(**kwargs)
 
 class RegKeyOfferingsClient(BaseFeatureClient):
     """BIG-IQ license pool reg key offerings client
@@ -103,6 +221,124 @@ class RegKeyOfferingsClient(BaseFeatureClient):
             uri='%s/%s/offerings' % (BASE_URI, self._pool_name)
         )
 
+    def list(self, **kwargs):
+        """List operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        query_parameters : dict
+            Query parameters for the request
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._list(**kwargs)
+
+    def create(self, **kwargs):
+        """Create operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._create(**kwargs)
+
+    def show(self, **kwargs):
+        """Show operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._show(**kwargs)
+
+    def update(self, **kwargs):
+        """Update operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._update(**kwargs)
+
+    def delete(self, **kwargs):
+        """Delete operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._delete(**kwargs)
 
 class RegKeyOfferingMembersClient(BaseFeatureClient):
     """BIG-IQ license pool reg key offering members client
@@ -155,3 +391,122 @@ class RegKeyOfferingMembersClient(BaseFeatureClient):
             logger_name=__name__,
             uri='%s/%s/offerings/%s/members' % (BASE_URI, self._pool_name, self._offering_name)
         )
+
+    def list(self, **kwargs):
+        """List operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        query_parameters : dict
+            Query parameters for the request
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._list(**kwargs)
+
+    def create(self, **kwargs):
+        """Create operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._create(**kwargs)
+
+    def show(self, **kwargs):
+        """Show operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._show(**kwargs)
+
+    def update(self, **kwargs):
+        """Update operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._update(**kwargs)
+
+    def delete(self, **kwargs):
+        """Delete operation
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        name : str
+            name (id) of the object to operate against
+        config : dict
+            object containing configuration
+        config_file : str
+            reference to a local file containing configuration
+
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
+
+        return self._delete(**kwargs)

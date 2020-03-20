@@ -3,18 +3,13 @@
 
 import json
 
-from f5sdk.cloud_services import ManagementClient
 from f5sdk.cloud_services.subscriptions import SubscriptionClient
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants
 from .. import utils
 
-REQ = constants.MOCK['requests']
-
-USER = constants.USER
-USER_PWD = constants.USER_PWD
-LOGIN_RESPONSE = constants.F5_CLOUD_SERVICES['LOGIN_RESPONSE']
+REQUESTS = constants.MOCK['requests']
 
 
 class TestSubscription(object):
@@ -30,10 +25,8 @@ class TestSubscription(object):
         - response should match mocked return value
         """
 
-        client = SubscriptionClient(mgmt_client)
-
         utils.validate_crud_operations(
-            client,
+            SubscriptionClient(mgmt_client),
             mocker=mocker,
             methods=['list', 'create', 'show', 'update', 'delete']
         )
@@ -48,13 +41,23 @@ class TestSubscription(object):
         - Subscription client update() return value should be mocked response
         """
 
-        update_response = {
-            'configuration': {}
-        }
-        mocker.patch(REQ).return_value.json = Mock(side_effect=[LOGIN_RESPONSE, update_response])
         mocker.patch('f5sdk.utils.file_utils.open', mocker.mock_open(read_data=json.dumps({})))
+        mocker.patch(REQUESTS).return_value.json = Mock(return_value={})
 
-        mgmt_client = ManagementClient(user=USER, password=USER_PWD)
-        sub_client = SubscriptionClient(mgmt_client)
+        subscription_client = SubscriptionClient(mgmt_client)
+        assert subscription_client.update(name='foo', config_file='/foo.json') == {}
 
-        assert sub_client.update(name='foo', config_file='/foo.json') == update_response
+    @staticmethod
+    @pytest.mark.usefixtures("mgmt_client")
+    def test_subscription_client_list_query_parameters(mgmt_client, mocker):
+        """Test: list() method with query parameters
+
+        Assertions
+        ----------
+        - Return value should be mock API response
+        """
+
+        mocker.patch(REQUESTS).return_value.json = Mock(return_value={})
+
+        subscription_client = SubscriptionClient(mgmt_client)
+        assert subscription_client.list(query_parameters={'account_id': ''}) == {}

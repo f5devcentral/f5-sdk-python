@@ -1,7 +1,6 @@
 """ Test BIG-IQ licensing assignment """
 
 from f5sdk.bigiq.licensing import AssignmentClient
-from f5sdk.exceptions import MethodNotAllowed
 
 from ....global_test_imports import pytest
 from ....shared import constants
@@ -29,23 +28,4 @@ class TestAssignmentClient(object):
             client,
             mocker=mocker,
             methods=['list']
-        )
-
-    @staticmethod
-    @pytest.mark.usefixtures("mgmt_client")
-    def test_invalid_crud_operations(mgmt_client, mocker):
-        """Test: Invalid CRUD operation functions
-
-        Assertions
-        ----------
-        - Exception should be raised for each invalid CRUD operation
-        """
-
-        client = AssignmentClient(mgmt_client)
-
-        utils.invalidate_crud_operations(
-            client,
-            mocker=mocker,
-            exception=MethodNotAllowed,
-            methods=['create', 'show', 'update', 'delete']
         )

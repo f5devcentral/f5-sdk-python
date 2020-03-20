@@ -1,17 +1,17 @@
-"""Module for BIG-IQ license assignment"""
+"""Account Client"""
 
 from f5sdk.base_clients import BaseFeatureClient
 
 
-class AssignmentClient(BaseFeatureClient):
-    """BIG-IQ license assignment client
+class AccountClient(BaseFeatureClient):
+    """Cloud Services accounts client
 
     Attributes
     ----------
 
     Methods
     -------
-    list()
+    show_user()
         Refer to method documentation
     """
 
@@ -32,31 +32,32 @@ class AssignmentClient(BaseFeatureClient):
         Returns
         -------
         None
+
         """
 
-        super(AssignmentClient, self).__init__(
+        super(AccountClient, self).__init__(
             client,
             logger_name=__name__,
-            uri='/mgmt/cm/device/licensing/assignments'
+            uri='/v1/svc-account'
         )
 
-    def list(self, **kwargs):
-        """List operation
+    def show_user(self):
+        """Show information for the currently authenticated user
 
         Parameters
         ----------
-        **kwargs :
-            optional keyword arguments
+        None
 
         Keyword Arguments
         -----------------
-        query_parameters : dict
-            Query parameters for the request
+        None
 
         Returns
         -------
-        dict
-            the serialized REST response
+        None
+
         """
 
-        return self._list(**kwargs)
+        return self._make_request(
+            uri='%s/%s' % (self._metadata['uri'], 'user')
+        )

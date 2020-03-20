@@ -62,8 +62,10 @@ def make_request(host, uri, **kwargs):
         the port to use
     method : str
         the HTTP method to use
+    query_parameters : dict
+        the HTTP query parameters to use
     headers : str
-        the HTTP headers to use
+        the HTTP headers to use (may override defaults)
     body : str
         the HTTP body to use
     body_content_type : str
@@ -81,11 +83,14 @@ def make_request(host, uri, **kwargs):
         a dictionary containing the JSON response
     """
 
+    headers = {
+        'User-Agent': constants.USER_AGENT
+    }
+
     port = kwargs.pop('port', 443)
     method = kwargs.pop('method', 'GET').lower()
-    headers = {'User-Agent': constants.USER_AGENT}
-    # add any supplied headers, allow the caller to override default headers
     headers.update(kwargs.pop('headers', {}))
+    query_parameters = kwargs.pop('query_parameters', {})
 
     # check for body, normalize
     body = kwargs.pop('body', None)
@@ -112,6 +117,7 @@ def make_request(host, uri, **kwargs):
         response = requests.request(method,
                                     url,
                                     headers=headers,
+                                    params=query_parameters,
                                     data=body,
                                     auth=auth,
                                     timeout=constants.HTTP_TIMEOUT['DFL'],

@@ -151,7 +151,15 @@ class ManagementClient(object):
             a dictionary containing the JSON response
         """
 
-        # need to add authentication token to headers
-        headers = {AUTH_TOKEN_HEADER: 'Bearer %s' % self.access_token}
-        headers.update(kwargs.pop('headers', {}))
-        return http_utils.make_request(self._api_endpoint, uri, headers=headers, **kwargs)
+        # merge default authentication headers with any user supplied ones
+        dfl_headers = {
+            AUTH_TOKEN_HEADER: 'Bearer %s' % self.access_token
+        }
+        dfl_headers.update(kwargs.pop('headers', {}))
+
+        return http_utils.make_request(
+            self._api_endpoint,
+            uri,
+            headers=dfl_headers,
+            **kwargs
+        )
