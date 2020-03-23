@@ -36,7 +36,7 @@ This script uses the SDK to get F5 Cloud Services configuration.
 
     python example.py
 
-.. literalinclude:: ../../examples/cloud_services.py
+.. literalinclude:: ../../examples/cs.py
    :language: python
 
 Revoke License from BIG-IQ

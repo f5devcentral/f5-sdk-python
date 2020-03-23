@@ -3,7 +3,7 @@
 
 import json
 
-from f5sdk.cloud_services.subscriptions import SubscriptionClient
+from f5sdk.cs.subscriptions import SubscriptionClient
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants
@@ -13,7 +13,7 @@ REQUESTS = constants.MOCK['requests']
 
 
 class TestSubscription(object):
-    """Test Class: cloud_services.subscriptions module """
+    """Test Class: cs.subscriptions module """
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")

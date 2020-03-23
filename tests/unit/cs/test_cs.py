@@ -1,6 +1,6 @@
 """ Test module """
 
-from f5sdk.cloud_services import ManagementClient
+from f5sdk.cs import ManagementClient
 from f5sdk import constants as project_constants
 from f5sdk.exceptions import InvalidAuthError, HTTPError
 
@@ -14,13 +14,13 @@ USER_PWD = constants.USER_PWD
 TOKEN = constants.TOKEN
 CUSTOM_API_ENDPOINT = constants.CUSTOM_API_ENDPOINT
 
-LOGIN_RESPONSE = constants.F5_CLOUD_SERVICES['LOGIN_RESPONSE']
+LOGIN_RESPONSE = constants.F5_CS['LOGIN_RESPONSE']
 
-AUTH_TOKEN_HEADER = project_constants.F5_CLOUD_SERVICES['AUTH_TOKEN_HEADER']
+AUTH_TOKEN_HEADER = project_constants.F5_CS['AUTH_TOKEN_HEADER']
 
 
 class TestCloudServices(object):
-    """Test Class: cloud_services module """
+    """Test Class: cs module """
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")
@@ -74,7 +74,7 @@ class TestCloudServices(object):
         """
         # pylint: disable=protected-access
 
-        assert mgmt_client._api_endpoint == project_constants.F5_CLOUD_SERVICES['API_ENDPOINT']
+        assert mgmt_client._api_endpoint == project_constants.F5_CS['API_ENDPOINT']
 
     @staticmethod
     def test_api_endpoint_no_api_endpoint_value(mocker):
@@ -91,7 +91,7 @@ class TestCloudServices(object):
 
         mgmt_client = ManagementClient(user=USER, password=USER_PWD, api_endpoint=None)
 
-        assert mgmt_client._api_endpoint == project_constants.F5_CLOUD_SERVICES['API_ENDPOINT']
+        assert mgmt_client._api_endpoint == project_constants.F5_CS['API_ENDPOINT']
 
     @staticmethod
     def test_custom_api_endpoint(mocker):

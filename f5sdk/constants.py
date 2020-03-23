@@ -37,7 +37,7 @@ BIGIP_CMDS = {
     'AUTH_MODIFY': '%s modify auth user %s password %s'
 }
 
-F5_CLOUD_SERVICES = {
+F5_CS = {
     'API_ENDPOINT': 'api.cloudservices.f5.com',
     'AUTH_TOKEN_HEADER': 'Authorization'
 }

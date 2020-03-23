@@ -1,6 +1,6 @@
 """ Test fixtures """
 
-from f5sdk.cloud_services import ManagementClient
+from f5sdk.cs import ManagementClient
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants
@@ -11,7 +11,7 @@ HOST = constants.HOST
 USER = constants.USER
 USER_PWD = constants.USER_PWD
 
-LOGIN_RESPONSE = constants.F5_CLOUD_SERVICES['LOGIN_RESPONSE']
+LOGIN_RESPONSE = constants.F5_CS['LOGIN_RESPONSE']
 
 
 @pytest.fixture

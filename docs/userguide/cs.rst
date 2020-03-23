@@ -1,7 +1,7 @@
-:mod:`f5sdk.cloud_services`
+:mod:`f5sdk.cs`
 ================================
 
-.. automodule:: f5sdk.cloud_services
+.. automodule:: f5sdk.cs
 
 |
 

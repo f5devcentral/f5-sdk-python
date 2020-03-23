@@ -2,7 +2,7 @@
 
     Example - Show Current User::
 
-        from f5sdk.cloud_services.accounts import AccountClient
+        from f5sdk.cs.accounts import AccountClient
 
         account_client = SubscriptionClient(mgmt_client)
 
