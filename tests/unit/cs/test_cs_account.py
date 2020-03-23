@@ -1,6 +1,6 @@
 """ Test module """
 
-from f5sdk.cloud_services.accounts import AccountClient
+from f5sdk.cs.accounts import AccountClient
 
 from ...global_test_imports import pytest, Mock
 from ...shared import constants
@@ -9,7 +9,7 @@ REQUESTS = constants.MOCK['requests']
 
 
 class TestAccounts(object):
-    """Test Class: cloud_services.accounts module """
+    """Test Class: cs.accounts module """
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")

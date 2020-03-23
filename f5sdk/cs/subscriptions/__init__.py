@@ -2,7 +2,7 @@
 
     Example - Update Subscription::
 
-        from f5sdk.cloud_services.subscriptions import SubscriptionClient
+        from f5sdk.cs.subscriptions import SubscriptionClient
 
         subscription_client = SubscriptionClient(mgmt_client)
 
@@ -14,7 +14,7 @@
 
     Example - List Subscriptions::
 
-        from f5sdk.cloud_services.subscriptions import SubscriptionClient
+        from f5sdk.cs.subscriptions import SubscriptionClient
 
         subscription_client = SubscriptionClient(mgmt_client)
 

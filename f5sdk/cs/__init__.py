@@ -2,9 +2,9 @@
 
     Example - Basic::
 
-        from f5sdk.cloud_services import ManagementClient
-        from f5sdk.cloud_services.accounts import AccountClient
-        from f5sdk.cloud_services.subscriptions import SubscriptionClient
+        from f5sdk.cs import ManagementClient
+        from f5sdk.cs.accounts import AccountClient
+        from f5sdk.cs.subscriptions import SubscriptionClient
 
         mgmt_client = ManagementClient(user='admin', password='admin')
         account_client = AccountClient(mgmt_client)

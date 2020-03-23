@@ -7,8 +7,8 @@ from f5sdk.logger import Logger
 from f5sdk.utils import http_utils
 from f5sdk.exceptions import InputRequiredError, InvalidAuthError, HTTPError
 
-API_ENDPOINT = constants.F5_CLOUD_SERVICES['API_ENDPOINT']
-AUTH_TOKEN_HEADER = constants.F5_CLOUD_SERVICES['AUTH_TOKEN_HEADER']
+API_ENDPOINT = constants.F5_CS['API_ENDPOINT']
+AUTH_TOKEN_HEADER = constants.F5_CS['AUTH_TOKEN_HEADER']
 
 
 class ManagementClient(object):
