@@ -26,7 +26,10 @@
         extension_client = AS3Client(device, version='3.9.0')
 """
 
-from .extension import AS3Client, DOClient, TSClient, CFClient
+from .extension_as3 import AS3Client
+from .extension_do import DOClient
+from .extension_ts import TSClient
+from .extension_cf import CFClient
 
 __all__ = [
     'AS3Client',
