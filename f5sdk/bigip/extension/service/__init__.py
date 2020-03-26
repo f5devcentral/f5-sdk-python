@@ -3,34 +3,34 @@
     Example - Basic::
 
         from f5sdk.bigip import ManagementClient
-        from f5sdk.bigip.extension import ExtensionClient
+        from f5sdk.bigip.extension import AS3Client
 
-        device = ManagementClient('192.0.2.10', user='admin', password='admin')
-        as3 = ExtensionClient(device, 'as3')
+        mgmt_client = ManagementClient('192.0.2.10', user='admin', password='admin')
+        extension_client = AS3Client(mgmt_client)
 
         # configure AS3
-        as3.service.create(config_file='./decl.json')
+        extension_client.service.create(config_file='./decl.json')
 
     Example - Show::
 
-        as3.service.show()
+        extension_client.service.show()
 
     Example - Delete::
 
-        as3.service.delete()
+        extension_client.service.delete()
 
     Example - Is Available::
 
-        as3.service.is_available()
+        extension_client.service.is_available()
 
     Example - Show Info::
 
-        as3.service.show_info()
+        extension_client.service.show_info()
 
-    Example - Show Inspect (specific to DO component)::
+    Example - Show Inspect (DO)::
 
-        do_client = ExtensionClient(device, 'do')
-        do_client.service.show_inspect()
+        extension_client = DOClient(device)
+        extension_client.service.show_inspect()
 
 """
 

@@ -1,31 +1,36 @@
-"""Module for BIG-IP extension component configuration, including AS3, DO and TS
+"""Module for BIG-IP extension component configuration, including AS3, DO, TS and CF
 
     Example - Basic::
 
         from f5sdk.bigip import ManagementClient
-        from f5sdk.bigip.extension import ExtensionClient
-        device = ManagementClient('192.0.2.10', user='admin', password='admin')
+        from f5sdk.bigip.extension import AS3Client, DOClient, TSClient, CFClient
 
-        as3 = ExtensionClient(device, 'as3')
+        mgmt_client = ManagementClient('192.0.2.10', user='admin', password='admin')
+        extension_client = AS3Client(mgmt_client)
+
         # install AS3 package
-        as3.package.install()
+        extension_client.package.install()
         # check service is available
-        as3.service.is_available()
+        extension_client.service.is_available()
         # configure AS3
-        as3.service.create(config_file='./decl.json')
+        extension_client.service.create(config_file='./decl.json')
 
-    Example - Specify Component Type::
+    Example - Specify Component::
 
-        do = ExtensionClient(device, 'do')
-        ts = ExtensionClient(device, 'ts')
+        do_client = DOClient(mgmt_client)
+        ts_client = TSClient(mgmt_client)
+        cf_client = CFClient(mgmt_client)
 
     Example - Specify Component Version::
 
-        as3 = ExtensionClient(device, 'as3', version='3.9.0')
+        extension_client = AS3Client(device, version='3.9.0')
 """
 
-from .extension import ExtensionClient
+from .extension import AS3Client, DOClient, TSClient, CFClient
 
 __all__ = [
-    'ExtensionClient'
+    'AS3Client',
+    'DOClient',
+    'TSClient',
+    'CFClient'
 ]

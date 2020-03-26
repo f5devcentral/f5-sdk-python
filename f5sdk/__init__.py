@@ -3,14 +3,15 @@
     Example -- Basic::
 
         from f5sdk.bigip import ManagementClient
-        from f5sdk.bigip.extension import ExtensionClient
+        from f5sdk.bigip.extension import AS3Client
 
-        device = ManagementClient('192.0.2.10', user='admin', password='admin')
-        as3 = ExtensionClient(device, 'as3')
+        mgmt_client = ManagementClient('192.0.2.10', user='admin', password='admin')
+        extension_client = AS3Client(mgmt_client, 'as3')
+
         # install AS3 package
-        as3.package.install()
+        extension_client.package.install()
         # check service is available
-        as3.service.is_available()
+        extension_client.service.is_available()
         # configure AS3
-        as3.service.create(config_file='./decl.json')
+        extension_client.service.create(config_file='./decl.json')
 """

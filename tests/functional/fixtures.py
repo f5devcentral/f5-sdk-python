@@ -3,7 +3,7 @@
 import json
 from test_imports import fixture # pylint: disable=import-error
 from f5sdk.bigip import ManagementClient
-from f5sdk.bigip.extension import ExtensionClient
+from f5sdk.bigip.extension import AS3Client, DOClient, TSClient, CFClient
 
 DEPLOYMENT_FILE = "./deployment_info.json"
 
@@ -31,4 +31,17 @@ def bigip_extension_client(context, **kwargs):
     """Return BIG-IP extension client"""
 
     component = kwargs.pop('component', None)
-    context.extension_client = ExtensionClient(context.mgmt_client, component)
+
+    # extension client factory
+    if component == 'as3':
+        context.extension_client = AS3Client(context.mgmt_client)
+    elif component == 'do':
+        context.extension_client = DOClient(context.mgmt_client)
+    elif component == 'ts':
+        context.extension_client = TSClient(context.mgmt_client)
+    elif component == 'cf':
+        context.extension_client = CFClient(context.mgmt_client)
+    else:
+        raise Exception('Unknown component: {}'.format(component))
+
+    return context.extension_client
