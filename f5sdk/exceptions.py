@@ -33,10 +33,6 @@ class DeviceReadyError(Exception):
     """ Error raised if device ready check fails """
 
 
-class InvalidComponentMethodError(Exception):
-    """ Error raised if invalid component method is invoked """
-
-
 class RetryInterruptedError(Exception):
     """ Error raised if method retry is intentionally interrupted """
 
