@@ -245,11 +245,12 @@ class MetadataClient(object):
         Returns
         -------
         str
-            a string containing the component's package name. Example: 'telemetry'
+            a string containing the component's package name, i.e. 'f5-telemetry'
         """
 
-        return re.split('-[0-9]',
-                        re.split('f5-?', self._get_version_metadata()['packageName'])[1])[0]
+        match = re.search('.+?(?=-[0-9])', self._get_version_metadata()['packageName'])
+
+        return match.group(0)
 
     def get_component_dependencies(self):
         """Gets the component dependencies

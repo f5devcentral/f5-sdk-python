@@ -321,11 +321,13 @@ class OperationClient(object):
         response = self._check_rpm_task_status(response['id'])
         # check response for matching package_name
         matching_packages = [i for i in response['queryResponse']
-                             if component_package_name in i['packageName']]
+                             if component_package_name == i['name']]
         # get matching package name
         package_name = ''
         if len(matching_packages) == 1:
             package_name = matching_packages[0]['packageName']
+        elif len(matching_packages) > 1:
+            self.logger.warning('Multiple matching packages exist!')
 
         return {
             'exists': package_name != '',
