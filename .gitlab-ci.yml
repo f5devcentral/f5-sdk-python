@@ -38,8 +38,6 @@ test_unit:
         - pip install .
         # run unit tests
         - make test
-        # run linter
-        - make lint
     tags:
         - cm-official-docker-executor
 
@@ -53,6 +51,18 @@ test_unit_python_2_x:
         - pip install .
         # run unit tests
         - make test
+    tags:
+        - cm-official-docker-executor
+
+# run linter
+test_lint:
+    stage: test
+    script:
+        # install packages
+        - pip install -r requirements.txt
+        - pip install .
+        # run linter
+        - make lint
     tags:
         - cm-official-docker-executor
 

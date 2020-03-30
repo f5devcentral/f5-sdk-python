@@ -40,27 +40,32 @@ EXAMPLE_EXTENSION_METADATA = {
 FIXED_INFO = {
     'as3': {
         'version': '3.10.0',
+        'name': 'f5-appsvcs',
         'package_name': 'f5-appsvcs-3.10.0-5.noarch',
         'previous_version': '3.9.0',
     },
     'do': {
         'version': '1.10.0',
+        'name': 'f5-declarative-onboarding',
         'package_name': 'f5-declarative-onboarding-1.10.0-2.noarch',
         'previous_version': '1.9.0',
     },
     'ts': {
         'version': '1.10.0',
+        'name': 'f5-telemetry',
         'package_name': 'f5-telemetry-1.10.0-2.noarch',
         'previous_version': '1.9.0',
     },
     'cf': {
         'version': '1.1.0',
+        'name': 'f5-cloud-failover',
         'package_name': 'f5-cloud-failover-1.1.0-0.noarch',
         'previous_version': '1.0.0',
     }
 }
 
 
+# pylint: disable=too-many-public-methods
 @pytest.mark.parametrize("component", ["as3", "do", "ts", "cf"])
 class TestExtensionClients(object):
     """Test Extension Clients - Iterates through each parametrized component
@@ -239,6 +244,7 @@ class TestExtensionClients(object):
                         'status': 'FINISHED',
                         'queryResponse': [
                             {
+                                'name': FIXED_INFO[component]['name'],
                                 'packageName': FIXED_INFO[component]['package_name']
                             }
                         ]
@@ -290,6 +296,7 @@ class TestExtensionClients(object):
                         'status': 'FINISHED',
                         'queryResponse': [
                             {
+                                'name': FIXED_INFO[component]['name'],
                                 'packageName': FIXED_INFO[component]['package_name']
                             }
                         ]
@@ -330,6 +337,7 @@ class TestExtensionClients(object):
                 'status': 'FINISHED',
                 'queryResponse': [
                     {
+                        'name': FIXED_INFO[component]['name'],
                         'packageName': FIXED_INFO[component]['package_name']
                     }
                 ]
@@ -340,6 +348,42 @@ class TestExtensionClients(object):
         assert is_installed['installed']
         assert is_installed['installed_version'] == FIXED_INFO[component]['version']
         assert is_installed['latest_version'] != ''
+
+    @staticmethod
+    @pytest.mark.usefixtures("create_extension_client")
+    def test_is_installed_similar_package(component, create_extension_client, mocker):
+        """Test: is_installed with second package containing component name in it
+
+        Assertions
+        ----------
+        - is_installed() response should have installed=true and correct version
+        """
+
+        extension_client = create_extension_client(
+            component=component,
+            version=FIXED_INFO[component]['version']
+        )
+
+        mocker.patch(REQUESTS).return_value.json = Mock(
+            return_value={
+                'id': 'xxxx',
+                'status': 'FINISHED',
+                'queryResponse': [
+                    {
+                        'name': FIXED_INFO[component]['name'],
+                        'packageName': FIXED_INFO[component]['package_name']
+                    },
+                    {
+                        'name': '{}-foo'.format(FIXED_INFO[component]['name']),
+                        'packageName': '{}-foo-x.x.x.noarch'.format(FIXED_INFO[component]['name'])
+                    }
+                ]
+            }
+        )
+
+        is_installed = extension_client.package.is_installed()
+        assert is_installed['installed']
+        assert is_installed['installed_version'] == FIXED_INFO[component]['version']
 
     @staticmethod
     @pytest.mark.usefixtures("create_extension_client")
@@ -382,6 +426,7 @@ class TestExtensionClients(object):
                 'status': 'FINISHED',
                 'queryResponse': [
                     {
+                        'name': FIXED_INFO[component]['name'],
                         'packageName': FIXED_INFO[component]['package_name']
                     }
                 ]
@@ -409,6 +454,7 @@ class TestExtensionClients(object):
                 'status': 'FINISHED',
                 'queryResponse': [
                     {
+                        'name': '',
                         'packageName': ''
                     }
                 ]
@@ -574,6 +620,7 @@ class TestAS3Client(object):
                         'status': 'FINISHED',
                         'queryResponse': [
                             {
+                                'name': FIXED_INFO[self.component]['name'],
                                 'packageName': 'f5-appsvcs-3.9.0-3.noarch'
                             }
                         ]
