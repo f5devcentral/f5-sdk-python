@@ -84,7 +84,7 @@ class BaseFeatureClient(object):
         # check for async task pattern success/failure
         if status_code != constants.HTTP_STATUS_CODE['OK']:
             raise Exception('Successful status code not returned: %s' % status_code)
-        if 'status' in response and response['status'] not in ['FINISHED']:
+        if 'status' in response and response['status'].upper() not in ['FINISHED', 'COMPLETED']:
             raise Exception('Successful status message not returned: %s' % response['status'])
 
         return response
@@ -126,9 +126,13 @@ class BaseFeatureClient(object):
             advanced_return=True
         )
 
-        # account for async task pattern
+        # Account for any async task pattern
+        # Note: F5CS does not return an "accepted" status code
+        # so we will directly check for "taskReference" property (for now)
         if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
             return self._wait_for_task(response['selfLink'])
+        if status_code == constants.HTTP_STATUS_CODE['OK'] and response.get('taskReference'):
+            return self._wait_for_task(response['taskReference'])
 
         # default - simply return response
         return response
