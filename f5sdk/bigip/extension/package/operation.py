@@ -4,6 +4,8 @@ import os
 import re
 import time
 
+from f5sdk.exceptions import InputRequiredError
+
 from f5sdk import constants
 from f5sdk.utils import http_utils, misc_utils
 
@@ -173,12 +175,18 @@ class OperationClient(object):
         # now check for task status completion
         self._check_rpm_task_status(response['id'])
 
-    def install(self):
+    def install(self, package_url=None):
         """Installs extension package component on a remote device
 
         Parameters
         ----------
-        None
+        package_url : str
+            optional keyword argument. Default is set to None.
+
+        Keyword Arguments
+        -----------------
+        package_url : str
+            optional package url to specify and install a rpm. Support local file and http/s url
 
         Returns
         -------
@@ -190,16 +198,36 @@ class OperationClient(object):
             }
         """
 
-        # download package (rpm) locally, upload to BIG-IP, install on BIG-IP
-        download_url = self._metadata_client.get_download_url()
-        download_pkg = download_url.split('/')[-1]
-        tmp_file = '%s/%s' % (constants.TMP_DIR, download_pkg)
-        # download
-        http_utils.download_to_file(download_url, tmp_file)
-        # upload
-        self._upload_rpm(tmp_file)
-        # install
-        tmp_file_bigip_path = '/var/config/rest/downloads/%s' % (download_pkg)
+        # if a url_package is provided, check to ensure it contains HTTP/S
+        # or file protocol, and has a rpm file extension suffix
+        url_pattern = "^(https?|file)://\\S+.rpm"
+        if package_url and not re.match(url_pattern, package_url):
+            raise InputRequiredError("Package URL format is not supported. "
+                                     "Must contain HTTP/S or file protocol and rpm file extension.")
+        download_url, package_name, package_file = None, None, None
+        delete_file = True
+        if package_url is None:
+            # download package (rpm) locally
+            download_url = self._metadata_client.get_download_url()
+            package_name = download_url.split('/')[-1]
+        else:
+            package_name = package_url.split('/')[-1]
+            protocol = package_url.split(":")[0]
+            if "http" in protocol:
+                download_url = package_url
+            elif "file" in protocol:
+                package_file = package_url.split('file://')[1]
+                delete_file = False
+
+        if download_url:
+            # download rpm
+            package_file = '%s/%s' % (constants.TMP_DIR, package_name)
+            http_utils.download_to_file(download_url, package_file)
+
+        # upload to BIG-IP
+        self._upload_rpm(package_file, delete_file=delete_file)
+        # install on BIG-IP
+        tmp_file_bigip_path = '/var/config/rest/downloads/%s' % package_name
         self._install_rpm(tmp_file_bigip_path)
         return {'component': self.component, 'version': self.version}
 
