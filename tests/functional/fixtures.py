@@ -1,11 +1,15 @@
 """ Behave fixtures """
 
+import os
 import json
-from test_imports import fixture # pylint: disable=import-error
+from test_imports import fixture  # pylint: disable=import-error
 from f5sdk.bigip import ManagementClient
 from f5sdk.bigip.extension import AS3Client, DOClient, TSClient, CFClient
+from f5sdk.cs import ManagementClient as CSManagementClient
+from f5sdk.cs.beacon.insights import InsightsClient
 
 DEPLOYMENT_FILE = "./deployment_info.json"
+
 
 @fixture
 def bigip_management_client(context):
@@ -20,11 +24,12 @@ def bigip_management_client(context):
         context.mgmt_client = ManagementClient(instance_info['mgmt_address'],
                                                user=instance_info['admin_username'],
                                                password=instance_info['admin_password']
-                                              )
+                                               )
 
         context.deployment_info = deployment_info
 
     return context.mgmt_client
+
 
 @fixture
 def bigip_extension_client(context, **kwargs):
@@ -45,3 +50,20 @@ def bigip_extension_client(context, **kwargs):
         raise Exception('Unknown component: {}'.format(component))
 
     return context.extension_client
+
+
+@fixture
+def cs_management_client(context):
+    """Return Cloud Services mgmt client"""
+    context.cs_mgmt_client = CSManagementClient(user=os.environ['F5_CS_USER'],
+                                                password=os.environ['F5_CS_PWD'])
+
+    return context.cs_mgmt_client
+
+
+@fixture
+def cs_beacon_insights_client(context):
+    """Return Cloud Services Beacon Insights client"""
+    context.beacon_insights_client = InsightsClient(context.cs_mgmt_client)
+
+    return context.beacon_insights_client
