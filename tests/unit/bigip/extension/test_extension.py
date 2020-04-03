@@ -217,6 +217,83 @@ class TestExtensionClients(object):
 
     @staticmethod
     @pytest.mark.usefixtures("create_extension_client")
+    def test_install_with_package_url(component, create_extension_client, mocker, tmpdir):
+        """Test: install with package_url
+
+        Assertions
+        ----------
+        - install() response should equal:
+            {
+                'component': '<component>',
+                'version': '<component version>'
+            }
+        """
+
+        extension_client = create_extension_client(
+            component=component,
+            version=FIXED_INFO[component]['version']
+        )
+
+        mock_conditions = [
+            {
+                'type': 'url',
+                'value': 'github.com',
+                'response': {'body': 'foo'.encode()}
+            },
+            {
+                'type': 'url',
+                'value': '/mgmt/shared/file-transfer/uploads',
+                'response': {'body': {'id': 'xxxx'}}
+            },
+            {
+                'type': 'url',
+                'value': '/mgmt/shared/iapp/package-management-tasks',
+                'response': {'body': {'id': 'xxxx', 'status': 'FINISHED'}}
+            }
+        ]
+        mocker.patch(REQUESTS).side_effect = mock_utils.create_response(
+            {},
+            conditional=mock_conditions
+        )
+
+        mocker.patch("f5sdk.utils.http_utils.download_to_file").side_effect = Mock()
+        mocker.patch("f5sdk.constants.TMP_DIR", tmpdir)
+        url_remote_file = "https://path/extension.rpm"
+        package_name = url_remote_file.split('/')[-1]
+
+        # create dummy file in pytest fixture tmpdir
+        tmpdir.join(package_name).write("url_remote_file test")
+        assert extension_client.package.install(package_url=url_remote_file) == {
+            'component': component,
+            'version': FIXED_INFO[component]['version']
+            }
+
+        url_local_file = 'file://%s/%s' % (tmpdir, package_name)
+        tmpdir.join(package_name).write("url_local_file test")
+        assert extension_client.package.install(package_url=url_local_file) == {
+            'component': component,
+            'version': FIXED_INFO[component]['version']
+        }
+
+    @staticmethod
+    @pytest.mark.usefixtures("create_extension_client")
+    def test_install_package_url_invalid(component, create_extension_client):
+        """Test: invalid package_url
+
+        Assertions
+        ----------
+        - InputRequiredError exception should be raised
+        """
+        extension_client = create_extension_client(
+            component=component,
+            version=FIXED_INFO[component]['version']
+        )
+        pytest.raises(exceptions.InputRequiredError,
+                      extension_client.package.install, package_url="invalidUrl")
+
+
+    @staticmethod
+    @pytest.mark.usefixtures("create_extension_client")
     def test_uninstall(component, create_extension_client, mocker):
         """Test: uninstall
 
