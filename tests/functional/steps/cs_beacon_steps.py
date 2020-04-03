@@ -50,6 +50,13 @@ def step_impl(context, **_kwargs):
     context.list_insights = context.beacon_insights_client.list()
 
 
+@when('we create an application with a declaration')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    use_fixture(fixtures.cs_beacon_declare_client, context)
+    context.response = context.beacon_declare_client.create(config=json.loads(context.text))
+
+
 @then('an insight with {description} exists')
 def step_impl(context, description):
     """ step impl """
@@ -58,7 +65,7 @@ def step_impl(context, description):
     assert context.result.get('description') == description
 
 
-@then('the insight with title:foo with be deleted')
+@then('the insight with title:foo will be deleted')
 def step_impl(context):
     """ step impl """
     for insight in context.list_insights.get('insights'):
@@ -70,3 +77,16 @@ def step_impl(context):
     """ step impl """
     assert context.response.get('insights')[0].get('title') == 'F5 Assets and Inventory'
     assert context.response.get('insights')[1].get('title') == 'F5 App Protection'
+
+
+@then('an application named "{text}" will exist')
+def step_impl(context, text):
+    """ step impl """
+    all_applications = context.beacon_declare_client.create(
+        config={'action': 'get'}
+    )['declaration']
+    matching_applications = [
+        i for i in all_applications
+        if i['application']['name'] == text
+    ]
+    assert len(matching_applications) >= 1

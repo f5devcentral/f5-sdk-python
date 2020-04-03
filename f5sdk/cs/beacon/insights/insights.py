@@ -76,7 +76,6 @@ class InsightsClient(BaseFeatureClient):
         Note: Beacon insights REST API uses the just one method for create and update operation.
               Therefore here the update method calls the create method from the base client
 
-
         Parameters
         ----------
         **kwargs :
