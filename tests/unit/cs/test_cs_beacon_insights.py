@@ -13,7 +13,7 @@ REQUESTS = constants.MOCK['requests']
 
 
 class TestBeaconInsights(object):
-    """Test Class: cs.subscriptions module """
+    """Test Class: cs.beacon.insights module """
 
     @staticmethod
     @pytest.mark.usefixtures("mgmt_client")

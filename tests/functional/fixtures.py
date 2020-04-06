@@ -10,6 +10,7 @@ from f5sdk.bigip.extension import AS3Client, DOClient, TSClient, CFClient
 from f5sdk.cs import ManagementClient as CSManagementClient
 from f5sdk.cs.beacon.insights import InsightsClient
 from f5sdk.cs.beacon.declare import DeclareClient
+from f5sdk.cs.beacon.token import TokenClient
 
 DEPLOYMENT_FILE = "./deployment_info.json"
 
@@ -78,3 +79,11 @@ def cs_beacon_declare_client(context):
     context.beacon_declare_client = DeclareClient(context.cs_mgmt_client)
 
     return context.beacon_declare_client
+
+
+@fixture
+def cs_beacon_token_client(context):
+    """Return Cloud Services Beacon Insights client"""
+    context.beacon_token_client = TokenClient(context.cs_mgmt_client)
+
+    return context.beacon_token_client

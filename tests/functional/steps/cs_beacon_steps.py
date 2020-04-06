@@ -57,6 +57,30 @@ def step_impl(context, **_kwargs):
     context.response = context.beacon_declare_client.create(config=json.loads(context.text))
 
 
+@when('we create a token with a declaration')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    use_fixture(fixtures.cs_beacon_token_client, context)
+    config = json.loads(context.text)
+    context.response = context.beacon_token_client.create(config=config)
+    context.result = context.beacon_token_client.show(name=config.get('name'))
+
+
+@when('we list tokens')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    use_fixture(fixtures.cs_beacon_token_client, context)
+    context.response = context.beacon_token_client.list()
+
+
+@when('we delete a token with name BIGIP1Token')
+def step_impl(context, **_kwargs):
+    """ step impl """
+    use_fixture(fixtures.cs_beacon_token_client, context)
+    context.response = context.beacon_token_client.delete(name='BIGIP1Token', config={})
+    context.list_tokens = context.beacon_token_client.list()
+
+
 @then('an insight with {description} exists')
 def step_impl(context, description):
     """ step impl """
@@ -90,3 +114,23 @@ def step_impl(context, text):
         if i['application']['name'] == text
     ]
     assert len(matching_applications) >= 1
+
+
+@then('a token named BIGIP1Token is created')
+def step_impl(context):
+    """ step impl """
+    assert context.result.get('name') == 'BIGIP1Token'
+    assert context.result.get('description') == 'Token for BIG-IP1'
+
+
+@then('tokens will be listed')
+def step_impl(context):
+    """ step impl """
+    assert context.response.get('tokens')
+
+
+@then('the token with name BIGIP1Token will be deleted')
+def step_impl(context):
+    """ step impl """
+    for token in context.list_tokens.get('tokens'):
+        assert token.get('name') != 'BIGIP1Token'
