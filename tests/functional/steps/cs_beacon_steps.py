@@ -111,7 +111,7 @@ def step_impl(context, text):
     )['declaration']
     matching_applications = [
         i for i in all_applications
-        if i['application']['name'] == text
+        if i['application'] and i['application']['name'] == text
     ]
     assert len(matching_applications) >= 1
 
