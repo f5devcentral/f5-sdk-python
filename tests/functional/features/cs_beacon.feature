@@ -22,7 +22,7 @@ Feature: Cloud Services Beacon Client
       | description      |
       | My description   |
 
-  Scenario Outline: Creating a Beacon insight
+  Scenario Outline: Updating a Beacon insight
     Given we have a Cloud services account with beacon subscription
     When we update an insight with a declaration
       """
@@ -71,3 +71,25 @@ Feature: Cloud Services Beacon Client
       }
       """
     Then an application named "test_application" will exist
+
+  Scenario: Creating a Beacon token
+    Given we have a Cloud services account with beacon subscription
+    When we create a token with a declaration
+      """
+       {
+          "name": "BIGIP1Token",
+          "description": "Token for BIG-IP1"
+        }
+      """
+    Then a token named "BIGIP1Token" is created
+
+  Scenario: Listing Beacon tokens
+    Given we have a Cloud services account with beacon subscription
+    When we list tokens
+    Then tokens will be listed
+
+  Scenario: Deleting an Beacon token
+    Given we have a Cloud services account with beacon subscription
+    When we delete a token with name "BIGIP1Token"
+    Then the token with name "BIGIP1Token" will be deleted
+
