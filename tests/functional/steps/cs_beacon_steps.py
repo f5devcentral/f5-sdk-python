@@ -73,7 +73,7 @@ def step_impl(context, **_kwargs):
     context.response = context.beacon_token_client.list()
 
 
-@when('we delete a token with name BIGIP1Token')
+@when('we delete a token with name "BIGIP1Token"')
 def step_impl(context, **_kwargs):
     """ step impl """
     use_fixture(fixtures.cs_beacon_token_client, context)
@@ -116,7 +116,7 @@ def step_impl(context, text):
     assert len(matching_applications) >= 1
 
 
-@then('a token named BIGIP1Token is created')
+@then('a token named "BIGIP1Token" is created')
 def step_impl(context):
     """ step impl """
     assert context.result.get('name') == 'BIGIP1Token'
