@@ -129,7 +129,7 @@ def step_impl(context):
     assert context.response.get('tokens')
 
 
-@then('the token with name BIGIP1Token will be deleted')
+@then('the token with name "BIGIP1Token" will be deleted')
 def step_impl(context):
     """ step impl """
     for token in context.list_tokens.get('tokens'):
