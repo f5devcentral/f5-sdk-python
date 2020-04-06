@@ -27,16 +27,28 @@ This script uses the SDK to update BIG-IP L4-L7 configuration using AS3, provide
 .. literalinclude:: ../../examples/extension_as3.py
    :language: python
 
-Get F5 Cloud Services Configuration
------------------------------------
+Show F5 Cloud Services Subscription Configuration
+-------------------------------------------------
 
-This script uses the SDK to get F5 Cloud Services configuration.
+This script uses the SDK to show the F5 Cloud Services configuration.
 
 ::
 
     python example.py
 
-.. literalinclude:: ../../examples/cs.py
+.. literalinclude:: ../../examples/cs_subscription.py
+   :language: python
+
+Show F5 Cloud Services Beacon Declaration
+-----------------------------------------
+
+This script uses the SDK to show the F5 Cloud Services Beacon declaration.
+
+::
+
+    python example.py
+
+.. literalinclude:: ../../examples/cs_beacon.py
    :language: python
 
 Revoke License from BIG-IQ

@@ -10,7 +10,7 @@ Set local environment variables first
 # export F5_SDK_PWD='admin'
 # export F5_SDK_ADDRESS_TO_REVOKE='192.0.2.100'
 # export F5_SDK_LICENSE_POOL='my_pool'
-# export F5_SDK_LOG_LEVEL='DEBUG'
+# export F5_SDK_LOG_LEVEL='INFO'
 
 import os
 
@@ -22,7 +22,7 @@ from f5sdk.logger import Logger
 LOGGER = Logger(__name__).get_logger()
 
 
-def revoke_license(address, pool):
+def run_example(address, pool):
     """ Revoke license"""
 
     # create management client
@@ -58,7 +58,7 @@ def revoke_license(address, pool):
 
 
 if __name__ == '__main__':
-    RESPONSE = revoke_license(
+    RESPONSE = run_example(
         os.environ['F5_SDK_ADDRESS_TO_REVOKE'],
         os.environ['F5_SDK_LICENSE_POOL']
     )
