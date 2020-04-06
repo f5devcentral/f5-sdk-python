@@ -9,7 +9,7 @@ Set local environment variables first
 # export F5_SDK_USERNAME='admin'
 # export F5_SDK_PWD='admin'
 # export F5_SDK_AS3_DECL='./my_declaration.json'
-# export F5_SDK_LOG_LEVEL='DEBUG'
+# export F5_SDK_LOG_LEVEL='INFO'
 
 import os
 
@@ -20,7 +20,7 @@ from f5sdk.logger import Logger
 LOGGER = Logger(__name__).get_logger()
 
 
-def update_as3_config():
+def run_example():
     """ Update AS3 configuration
 
     Notes
@@ -55,4 +55,4 @@ def update_as3_config():
 
 
 if __name__ == '__main__':
-    LOGGER.info(update_as3_config())
+    LOGGER.info(run_example())

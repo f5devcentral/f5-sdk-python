@@ -73,11 +73,11 @@ def step_impl(context, **_kwargs):
     context.response = context.beacon_token_client.list()
 
 
-@when('we delete a token with name "BIGIP1Token"')
-def step_impl(context, **_kwargs):
+@when('we delete a token with name "{text}"')
+def step_impl(context, text, **_kwargs):
     """ step impl """
     use_fixture(fixtures.cs_beacon_token_client, context)
-    context.response = context.beacon_token_client.delete(name='BIGIP1Token', config={})
+    context.response = context.beacon_token_client.delete(name=text, config={})
     context.list_tokens = context.beacon_token_client.list()
 
 
@@ -116,10 +116,10 @@ def step_impl(context, text):
     assert len(matching_applications) >= 1
 
 
-@then('a token named "BIGIP1Token" is created')
-def step_impl(context):
+@then('a token named "{text}" is created')
+def step_impl(context, text):
     """ step impl """
-    assert context.result.get('name') == 'BIGIP1Token'
+    assert context.result.get('name') == text
     assert context.result.get('description') == 'Token for BIG-IP1'
 
 
@@ -129,8 +129,8 @@ def step_impl(context):
     assert context.response.get('tokens')
 
 
-@then('the token with name "BIGIP1Token" will be deleted')
-def step_impl(context):
+@then('the token with name "{text}" will be deleted')
+def step_impl(context, text):
     """ step impl """
     for token in context.list_tokens.get('tokens'):
-        assert token.get('name') != 'BIGIP1Token'
+        assert token.get('name') != text

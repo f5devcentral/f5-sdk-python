@@ -1,14 +1,14 @@
-""" Functional Test Cloud Services Example File """
+""" Functional Test: Cloud Services Example Files """
 
-import os
+from examples.cs_subscription import run_example as run_subscription_example
+from examples.cs_beacon import run_example as run_beacon_example
 
-from f5sdk.exceptions import FileLoadError
-from examples.cs import get_cs_config
+def test_cs_subscription_example():
+    """ Test F5CS Subscription Example """
 
-def test_cs_example():
-    """ Test get_cs_config() method """
-    if not os.path.exists(os.path.join(os.getcwd(), './examples/cs.py')):
-        raise FileLoadError('Example file cs.py not exists')
+    assert run_subscription_example().get('status').upper() == 'ACTIVE'
 
-    # Run example
-    assert get_cs_config().get('status') == 'ACTIVE'
+def test_cs_beacon_example():
+    """ Test F5CS Beacon Example """
+
+    assert run_beacon_example().get('action').upper() == 'GET'
