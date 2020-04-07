@@ -570,6 +570,20 @@ class TestExtensionClients(object):
 
     @staticmethod
     @pytest.mark.usefixtures("create_extension_client")
+    def test_list_versions(component, create_extension_client):
+        """Test: list extension versions
+
+        Assertions
+        ----------
+        - list_versions() response should be a list
+        """
+
+        extension_client = create_extension_client(component=component)
+        version_list = extension_client.package.list_versions()
+        assert FIXED_INFO[component]['version'] in version_list
+
+    @staticmethod
+    @pytest.mark.usefixtures("create_extension_client")
     def test_show(component, create_extension_client, mocker):
         """Test: show
 
