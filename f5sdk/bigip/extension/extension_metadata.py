@@ -205,6 +205,21 @@ class MetadataClient(object):
         latest = {k: v for (k, v) in c_v_metadata.items() if v['latest']}
         return list(latest.keys())[0]  # we should only have one
 
+    def get_versions_list(self):
+        """Lists all the component versions from the extension metadata
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        list
+            a list containing all versions
+        """
+
+        return list(self.extension_metadata['components'][self.component]['versions'].keys())
+
     def get_download_url(self):
         """Gets the component versions download url from extension metadata
 

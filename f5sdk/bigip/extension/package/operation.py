@@ -428,3 +428,21 @@ class OperationClient(object):
             'installed_version': install_info['installed_version'],
             'latest_version': self._metadata_client.get_latest_version()
         }
+
+    def list_versions(self):
+        """Lists all the extension component package versions available
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        list
+            a list containing versions
+            [
+              '1.1.1',
+              '2.0.0
+            ]
+        """
+        return self._metadata_client.get_versions_list()
