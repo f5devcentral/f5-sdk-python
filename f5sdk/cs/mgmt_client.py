@@ -87,24 +87,28 @@ class ManagementClient(object):
             {'accessToken': 'token', 'expirationIn': 3600}
         """
 
-        body = {
-            'username': self._user,
-            'password': self._password
-        }
+
         try:
             response = http_utils.make_request(
                 self._api_endpoint,
                 '/v1/svc-auth/login',
                 method='POST',
-                body=body
+                body={
+                    'username': self._user,
+                    'password': self._password
+                }
             )
         except HTTPError as error:
             if constants.HTTP_STATUS_CODE['BAD_REQUEST_BODY'] in str(error) or \
-                    constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
+                constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
                 _exception = InvalidAuthError(error)
                 _exception.__cause__ = None
                 raise _exception
-        return {'accessToken': response['access_token'], 'expirationIn': response['expires_at']}
+            raise error
+        return {
+            'accessToken': response['access_token'],
+            'expirationIn': response['expires_at']
+        }
 
     def _login_using_credentials(self):
         """Logs in to service using user + password
