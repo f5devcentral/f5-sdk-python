@@ -209,6 +209,18 @@ class TestExtensionClients(object):
             {},
             conditional=mock_conditions
         )
+        mocker.patch(REQUESTS).return_value.json = Mock(
+            return_value={
+                'id': 'xxxx',
+                'status': 'FINISHED',
+                'queryResponse': [
+                    {
+                        'name': FIXED_INFO[component]['name'],
+                        'packageName': FIXED_INFO[component]['package_name']
+                    }
+                ]
+            }
+        )
 
         assert extension_client.package.install() == {
             'component': component,
@@ -255,6 +267,18 @@ class TestExtensionClients(object):
             {},
             conditional=mock_conditions
         )
+        mocker.patch(REQUESTS).return_value.json = Mock(
+            return_value={
+                'id': 'xxxx',
+                'status': 'FINISHED',
+                'queryResponse': [
+                    {
+                        'name': FIXED_INFO[component]['name'],
+                        'packageName': FIXED_INFO[component]['package_name']
+                    }
+                ]
+            }
+        )
 
         mocker.patch("f5sdk.utils.http_utils.download_to_file").side_effect = Mock()
         mocker.patch("f5sdk.constants.TMP_DIR", tmpdir)
@@ -263,6 +287,7 @@ class TestExtensionClients(object):
 
         # create dummy file in pytest fixture tmpdir
         tmpdir.join(package_name).write("url_remote_file test")
+
         assert extension_client.package.install(package_url=url_remote_file) == {
             'component': component,
             'version': FIXED_INFO[component]['version']

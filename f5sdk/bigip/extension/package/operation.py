@@ -229,7 +229,12 @@ class OperationClient(object):
         # install on BIG-IP
         tmp_file_bigip_path = '/var/config/rest/downloads/%s' % package_name
         self._install_rpm(tmp_file_bigip_path)
-        return {'component': self.component, 'version': self.version}
+        # get installed rpm info
+        installed_info = self._get_installed_rpm_info()
+        return {
+            'component': self.component,
+            'version': installed_info['installed_version']
+        }
 
     def _uninstall_rpm(self, package_name):
         """Uninstalls RPM (LX extension) on a remote device
