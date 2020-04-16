@@ -10,7 +10,7 @@ import paramiko
 import f5sdk.constants as constants
 from f5sdk.logger import Logger
 from f5sdk.utils import http_utils
-from f5sdk.exceptions import SSHCommandStdError, DeviceReadyError, RetryInterruptedError, HTTPError
+from f5sdk.exceptions import SSHCommandStdError, DeviceReadyError, InvalidAuthError, HTTPError
 from f5sdk.decorators import check_auth, add_auth_header
 
 DFL_PORT = 443
@@ -311,7 +311,9 @@ class ManagementClient(object):
             )
         except HTTPError as error:
             if constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
-                raise RetryInterruptedError(error)
+                _exception = InvalidAuthError(error)
+                _exception.__cause__ = None
+                raise _exception
             raise error
 
         token = response['token']['token']

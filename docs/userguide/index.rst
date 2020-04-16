@@ -5,7 +5,7 @@ User Guide
    :maxdepth: 4
 
    bigip.rst
-   cloud_services.rst
+   cs.rst
    bigiq.rst
 
 

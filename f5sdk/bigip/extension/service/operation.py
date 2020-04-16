@@ -8,7 +8,6 @@ from retry import retry
 
 from f5sdk import constants
 from f5sdk.utils import misc_utils
-from f5sdk.exceptions import InvalidComponentMethodError
 
 class OperationClient(object):
     """A class used as a extension service operation client for BIG-IP
@@ -22,23 +21,13 @@ class OperationClient(object):
 
     Methods
     -------
-    create()
-        Refer to method documentation
-    show()
-        Refer to method documentation
-    delete()
-        Refer to method documentation
-    reset()
-        Refer to method documentation
-    trigger()
-        Refer to method documentation
     is_available()
         Refer to method documentation
     show_info()
         Refer to method documentation
-    show_inspect()
+    create()
         Refer to method documentation
-    show_trigger()
+    show()
         Refer to method documentation
     """
 
@@ -117,11 +106,8 @@ class OperationClient(object):
         dict
             the inspect endpoint details
         """
-        try:
-            return self._metadata_client.get_endpoints()['inspect']
-        except:
-            raise InvalidComponentMethodError('inspect endpoint is not available '
-                                              'in extension component')
+
+        return self._metadata_client.get_endpoints()['inspect']
 
     def _get_trigger_endpoint(self):
         """Get trigger endpoint
@@ -136,11 +122,7 @@ class OperationClient(object):
             the trigger endpoint details
         """
 
-        try:
-            return self._metadata_client.get_endpoints()['trigger']
-        except:
-            raise InvalidComponentMethodError('trigger endpoint is not available '
-                                              'in extension component')
+        return self._metadata_client.get_endpoints()['trigger']
 
     def _get_reset_endpoint(self):
         """Get reset endpoint
@@ -155,11 +137,7 @@ class OperationClient(object):
             the reset endpoint details
         """
 
-        try:
-            return self._metadata_client.get_endpoints()['reset']
-        except:
-            raise InvalidComponentMethodError('reset endpoint is not available '
-                                              'in extension component')
+        return self._metadata_client.get_endpoints()['reset']
 
     @retry(tries=constants.RETRIES['LONG'], delay=constants.RETRIES['DELAY_IN_SECS'])
     def _wait_for_task(self, task_url):
@@ -183,11 +161,13 @@ class OperationClient(object):
             the response to a service create (from task ID endpoint)
         """
 
-        uri = requests.utils.urlparse(task_url).path
-        response, status_code = self._client.make_request(uri, advanced_return=True)
+        response, status_code = self._client.make_request(
+            requests.utils.urlparse(task_url).path,
+            advanced_return=True
+        )
 
         if status_code != constants.HTTP_STATUS_CODE['OK']:
-            raise Exception('_wait_for_task timed out with status code: %s' % status_code)
+            raise Exception('Wait for async task timed out with status code: %s' % status_code)
 
         return response
 
@@ -221,6 +201,21 @@ class OperationClient(object):
 
         return ret
 
+    def show_info(self):
+        """Show component extension info
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the API response to a service info get
+        """
+
+        return self._client.make_request(self._get_info_endpoint()['uri'])
+
     def create(self, **kwargs):
         """Creates (or updates) extension component service
 
@@ -245,11 +240,12 @@ class OperationClient(object):
         config = kwargs.pop('config', None)
         config_file = kwargs.pop('config_file', None)
 
-        config = misc_utils.resolve_config(config, config_file)
-
-        uri = self._get_configure_endpoint()['uri']
         response, status_code = self._client.make_request(
-            uri, method='POST', body=config, advanced_return=True)
+            self._get_configure_endpoint()['uri'],
+            method='POST',
+            body=misc_utils.resolve_config(config, config_file),
+            advanced_return=True
+        )
 
         # check for async task pattern response
         if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
@@ -270,11 +266,10 @@ class OperationClient(object):
             the response to a service get
         """
 
-        uri = self._get_configure_endpoint()['uri']
-        return self._client.make_request(uri)
+        return self._client.make_request(self._get_configure_endpoint()['uri'])
 
-    def delete(self):
-        """Deletes extension component service
+    def _delete(self):
+        """Performs a delete against the component configuration endpoint
 
         Parameters
         ----------
@@ -283,19 +278,60 @@ class OperationClient(object):
         Returns
         -------
         dict
-            the response to a service deletion
+            the API response
         """
 
-        methods = self._get_configure_endpoint()['methods']
+        return self._client.make_request(
+            self._get_configure_endpoint()['uri'],
+            method='DELETE'
+        )
 
-        if 'DELETE' not in methods:
-            raise Exception('Delete is not supported for this extension component')
+    def _show_inspect(self, **kwargs):
+        """Performs a GET against the component inspect endpoint
 
-        uri = self._get_configure_endpoint()['uri']
-        return self._client.make_request(uri, method='DELETE')
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
 
-    def reset(self, **kwargs):
-        """Reset the state file states in CF extension component.
+        Keyword Arguments
+        -----------------
+        query_parameters : dict
+            optional query parameters to include
+
+        Returns
+        -------
+        dict
+            the API response
+        """
+
+        query_parameters = kwargs.pop('query_parameters', None)
+
+        url = ''
+        if query_parameters:
+            for key in query_parameters:
+                url += ''.join(key + '=' + str(query_parameters[key]) + '&')
+            url = '?' + url[:-1]
+
+        return self._client.make_request(self._get_inspect_endpoint()['uri'] + url)
+
+    def _show_trigger(self):
+        """Performs a GET against the component trigger endpoint
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the API response
+        """
+
+        return self._client.make_request(self._get_trigger_endpoint()['uri'])
+
+    def _trigger(self, **kwargs):
+        """Performs a POST against the component trigger endpoint
 
         Parameters
         ----------
@@ -312,47 +348,7 @@ class OperationClient(object):
         Returns
         -------
         dict
-            the API response to a service reset
-        """
-
-        config = kwargs.pop('config', None)
-        config_file = kwargs.pop('config_file', None)
-
-        # set default if no declaration is provided
-        if config is None and config_file is None:
-            config = self._get_reset_endpoint()["defaultPostBody"]
-        else:
-            config = misc_utils.resolve_config(config, config_file)
-
-        uri = self._get_reset_endpoint()['uri']
-        response, status_code = self._client.make_request(
-            uri, method='POST', body=config, advanced_return=True)
-
-        # check for async task pattern response
-        if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
-            return self._wait_for_task(response['selfLink'])
-        # return response data
-        return response
-
-    def trigger(self, **kwargs):
-        """Trigger a failover for CF component extension
-
-        Parameters
-        ----------
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
-        config : dict
-            a dictionary containing configuration
-        config_file : str
-            a local file containing configuration to load
-
-        Returns
-        -------
-        dict
-            the API response to a service trigger
+            the API response
         """
 
         config = kwargs.pop('config', None)
@@ -364,9 +360,12 @@ class OperationClient(object):
         else:
             config = misc_utils.resolve_config(config, config_file)
 
-        uri = self._get_trigger_endpoint()['uri']
         response, status_code = self._client.make_request(
-            uri, method='POST', body=config, advanced_return=True)
+            self._get_trigger_endpoint()['uri'],
+            method='POST',
+            body=config,
+            advanced_return=True
+        )
 
         # check for async task pattern response
         if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
@@ -374,61 +373,45 @@ class OperationClient(object):
         # return response data
         return response
 
-    def show_info(self):
-        """Show component extension info
+    def _reset(self, **kwargs):
+        """Performs a POST against the component reset endpoint
 
         Parameters
         ----------
-        None
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        config : dict
+            a dictionary containing configuration
+        config_file : str
+            a local file containing configuration to load
 
         Returns
         -------
         dict
-            the API response to a service info get
+            the API response
         """
 
-        return self._client.make_request(self._get_info_endpoint()['uri'])
+        config = kwargs.pop('config', None)
+        config_file = kwargs.pop('config_file', None)
 
-    def show_inspect(self, **kwargs):
-        """Show component extension inspect
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        dict
-            the API response to a service inspect get
-        """
-
-        query_parameters = kwargs.pop('query_parameters', None)
-
-        endpoints = self._metadata_client.get_endpoints()
-        if 'inspect' not in endpoints and 'do' not in self.component:
-            raise InvalidComponentMethodError('Inspect endpoint is not supported for this '
-                                              'extension %s' % self.component)
-        url = ''
-        if query_parameters:
-            for key in query_parameters:
-                url += ''.join(key + '=' + str(query_parameters[key]) + '&')
-            uri = self._get_inspect_endpoint()['uri'] + '?' + url[:-1]
+        # set default if no declaration is provided
+        if config is None and config_file is None:
+            config = self._get_reset_endpoint()["defaultPostBody"]
         else:
-            uri = self._get_inspect_endpoint()['uri']
+            config = misc_utils.resolve_config(config, config_file)
 
-        return self._client.make_request(uri)
+        response, status_code = self._client.make_request(
+            self._get_reset_endpoint()['uri'],
+            method='POST',
+            body=config,
+            advanced_return=True
+        )
 
-    def show_trigger(self):
-        """Show CF component extension trigger failover status
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        dict
-            the API response to a service trigger get
-        """
-
-        return self._client.make_request(self._get_trigger_endpoint()['uri'])
+        # check for async task pattern response
+        if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
+            return self._wait_for_task(response['selfLink'])
+        # return response data
+        return response

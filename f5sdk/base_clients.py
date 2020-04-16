@@ -1,5 +1,7 @@
 """Base client"""
 
+# pylint: disable=too-few-public-methods
+
 from retry import retry
 
 from f5sdk.logger import Logger
@@ -7,7 +9,7 @@ from f5sdk import constants
 from f5sdk.utils import misc_utils
 from f5sdk.utils import http_utils
 
-from f5sdk.exceptions import MethodNotAllowed, InputRequiredError
+from f5sdk.exceptions import InputRequiredError
 
 
 class BaseFeatureClient(object):
@@ -48,7 +50,6 @@ class BaseFeatureClient(object):
         }
 
         self._exceptions = {
-            'MethodNotAllowed': MethodNotAllowed,
             'InputRequiredError': InputRequiredError
         }
 
@@ -83,13 +84,29 @@ class BaseFeatureClient(object):
         # check for async task pattern success/failure
         if status_code != constants.HTTP_STATUS_CODE['OK']:
             raise Exception('Successful status code not returned: %s' % status_code)
-        if 'status' in response and response['status'] not in ['FINISHED']:
+        if 'status' in response and response['status'].upper() not in ['FINISHED', 'COMPLETED']:
             raise Exception('Successful status message not returned: %s' % response['status'])
 
         return response
 
     def _make_request(self, **kwargs):
-        """Make request
+        """Make request (HTTP)
+
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        uri : str
+            request URI
+        method : str
+            request method
+        config : dict, list
+            request body
+        query_parameters : dict
+            request query parameters
 
         Notes
         -----
@@ -99,17 +116,23 @@ class BaseFeatureClient(object):
         uri = kwargs.pop('uri', self._metadata['uri'])
         method = kwargs.pop('method', 'GET')
         config = kwargs.pop('config', None)
+        query_parameters = kwargs.pop('query_parameters', {})
 
         response, status_code = self._client.make_request(
             uri,
             method=method,
             body=config,
+            query_parameters=query_parameters,
             advanced_return=True
         )
 
-        # account for async task pattern
+        # Account for any async task pattern
+        # Note: F5CS does not return an "accepted" status code
+        # so we will directly check for "taskReference" property (for now)
         if status_code == constants.HTTP_STATUS_CODE['ACCEPTED']:
             return self._wait_for_task(response['selfLink'])
+        if status_code == constants.HTTP_STATUS_CODE['OK'] and response.get('taskReference'):
+            return self._wait_for_task(response['taskReference'])
 
         # default - simply return response
         return response
@@ -179,121 +202,3 @@ class BaseFeatureClient(object):
             method='DELETE',
             config=config
         )
-
-    def list(self, **kwargs):
-        """List operation
-
-        Parameters
-        ----------
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
-        None
-
-        Returns
-        -------
-        dict
-            the serialized REST response
-        """
-
-        return self._list(**kwargs)
-
-    def create(self, **kwargs):
-        """Create operation
-
-        Parameters
-        ----------
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
-        config : dict
-            object containing configuration
-        config_file : str
-            reference to a local file containing configuration
-
-        Returns
-        -------
-        dict
-            the serialized REST response
-        """
-
-        return self._create(**kwargs)
-
-    def show(self, **kwargs):
-        """Show operation
-
-        Parameters
-        ----------
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
-        name : str
-            name (id) of the object to operate against
-        config : dict
-            object containing configuration
-        config_file : str
-            reference to a local file containing configuration
-
-        Returns
-        -------
-        dict
-            the serialized REST response
-        """
-
-        return self._show(**kwargs)
-
-    def update(self, **kwargs):
-        """Update operation
-
-        Parameters
-        ----------
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
-        name : str
-            name (id) of the object to operate against
-        config : dict
-            object containing configuration
-        config_file : str
-            reference to a local file containing configuration
-
-        Returns
-        -------
-        dict
-            the serialized REST response
-        """
-
-        return self._update(**kwargs)
-
-    def delete(self, **kwargs):
-        """Delete operation
-
-        Parameters
-        ----------
-        **kwargs :
-            optional keyword arguments
-
-        Keyword Arguments
-        -----------------
-        name : str
-            name (id) of the object to operate against
-        config : dict
-            object containing configuration
-        config_file : str
-            reference to a local file containing configuration
-
-        Returns
-        -------
-        dict
-            the serialized REST response
-        """
-
-        return self._delete(**kwargs)

@@ -1,11 +1,19 @@
 """ Behave fixtures """
 
+import os
 import json
-from test_imports import fixture # pylint: disable=import-error
+from test_imports import fixture  # pylint: disable=import-error
+
 from f5sdk.bigip import ManagementClient
-from f5sdk.bigip.extension import ExtensionClient
+from f5sdk.bigip.extension import AS3Client, DOClient, TSClient, CFClient
+
+from f5sdk.cs import ManagementClient as CSManagementClient
+from f5sdk.cs.beacon.insights import InsightsClient
+from f5sdk.cs.beacon.declare import DeclareClient
+from f5sdk.cs.beacon.token import TokenClient
 
 DEPLOYMENT_FILE = "./deployment_info.json"
+
 
 @fixture
 def bigip_management_client(context):
@@ -20,15 +28,62 @@ def bigip_management_client(context):
         context.mgmt_client = ManagementClient(instance_info['mgmt_address'],
                                                user=instance_info['admin_username'],
                                                password=instance_info['admin_password']
-                                              )
+                                               )
 
         context.deployment_info = deployment_info
 
     return context.mgmt_client
+
 
 @fixture
 def bigip_extension_client(context, **kwargs):
     """Return BIG-IP extension client"""
 
     component = kwargs.pop('component', None)
-    context.extension_client = ExtensionClient(context.mgmt_client, component)
+
+    # extension client factory
+    if component == 'as3':
+        context.extension_client = AS3Client(context.mgmt_client)
+    elif component == 'do':
+        context.extension_client = DOClient(context.mgmt_client)
+    elif component == 'ts':
+        context.extension_client = TSClient(context.mgmt_client)
+    elif component == 'cf':
+        context.extension_client = CFClient(context.mgmt_client)
+    else:
+        raise Exception('Unknown component: {}'.format(component))
+
+    return context.extension_client
+
+
+@fixture
+def cs_management_client(context):
+    """Return Cloud Services mgmt client"""
+    context.cs_mgmt_client = CSManagementClient(user=os.environ['F5_CS_USER'],
+                                                password=os.environ['F5_CS_PWD'])
+
+    return context.cs_mgmt_client
+
+
+@fixture
+def cs_beacon_insights_client(context):
+    """Return Cloud Services Beacon Insights client"""
+    context.beacon_insights_client = InsightsClient(context.cs_mgmt_client)
+
+    return context.beacon_insights_client
+
+
+@fixture
+def cs_beacon_declare_client(context):
+    """Return Cloud Services Beacon Declare client"""
+    context.beacon_declare_client = DeclareClient(context.cs_mgmt_client)
+
+    return context.beacon_declare_client
+
+
+@fixture
+def cs_beacon_token_client(context):
+    """Return Cloud Services Beacon Insights client"""
+    context.beacon_token_client = TokenClient(context.cs_mgmt_client)
+
+    return context.beacon_token_client

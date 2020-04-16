@@ -4,7 +4,7 @@ import logging
 import tempfile
 import operator
 
-VERSION = '0.9.1'
+VERSION = '0.9.2'
 USER_AGENT = 'f5sdk/%s' % (VERSION)
 TMP_DIR = tempfile.gettempdir()
 DFL_LOG_LEVEL = logging.WARNING
@@ -37,7 +37,7 @@ BIGIP_CMDS = {
     'AUTH_MODIFY': '%s modify auth user %s password %s'
 }
 
-F5_CLOUD_SERVICES = {
+F5_CS = {
     'API_ENDPOINT': 'api.cloudservices.f5.com',
     'AUTH_TOKEN_HEADER': 'Authorization'
 }

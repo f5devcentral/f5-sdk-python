@@ -34,7 +34,7 @@ Set local environment variables first
 import os
 
 from f5sdk.bigip import ManagementClient
-from f5sdk.bigip.extension import ExtensionClient
+from f5sdk.bigip.extension import AS3Client
 from f5sdk.logger import Logger
 
 LOGGER = Logger(__name__).get_logger()
@@ -55,7 +55,7 @@ def update_as3_config():
         password=os.environ['F5_SDK_PWD'])
 
     # create extension client
-    as3_client = ExtensionClient(mgmt_client, 'as3')
+    as3_client = AS3Client(mgmt_client)
 
     # Get installed package version info
     version_info = as3_client.package.is_installed()

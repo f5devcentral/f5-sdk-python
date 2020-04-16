@@ -13,6 +13,8 @@ variables:
     ARTIFACTORY_SERVER: "$ARTIFACTORY_SERVER"
     DEPLOYMENT_PLAN: aws
     EXTENSION_METADATA_FILE: "metadata.json"
+    F5_CS_USER: "$CS_USERNAME"
+    F5_CS_PWD: "$CS_PASSWORD"
     GIT_SECRETS_VERSION: '1.3.0'
     GIT_SECRETS_PKG_URL: "https://github.com/awslabs/git-secrets/archive/${GIT_SECRETS_VERSION}.tar.gz"
     DOCS_BUILD_DIR: "code_docs/html"
@@ -36,8 +38,6 @@ test_unit:
         - pip install .
         # run unit tests
         - make test
-        # run linter
-        - make lint
     tags:
         - cm-official-docker-executor
 
@@ -51,6 +51,18 @@ test_unit_python_2_x:
         - pip install .
         # run unit tests
         - make test
+    tags:
+        - cm-official-docker-executor
+
+# run linter
+test_lint:
+    stage: test
+    script:
+        # install packages
+        - pip install -r requirements.txt
+        - pip install .
+        # run linter
+        - make lint
     tags:
         - cm-official-docker-executor
 
@@ -147,6 +159,8 @@ test_functional_execute:
         - cp -a env_metadata/${DEPLOYMENT_PLAN}/. .
         # run function tests
         - make functional-test
+        # run function tests examples
+        - make functional-test-examples
     tags:
         - cm-official-docker-executor
     only:
@@ -244,6 +258,7 @@ publish_egg_to_artifactory:
     stage: publish
     only:
         - tags
+        - develop
     tags:
         - docker-executor
     script:

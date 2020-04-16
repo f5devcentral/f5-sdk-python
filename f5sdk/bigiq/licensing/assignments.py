@@ -40,22 +40,23 @@ class AssignmentClient(BaseFeatureClient):
             uri='/mgmt/cm/device/licensing/assignments'
         )
 
-    def create(self, **kwargs):
-        """ Method not allowed (action:skip_documentation) """
+    def list(self, **kwargs):
+        """List operation
 
-        raise self._exceptions['MethodNotAllowed']
+        Parameters
+        ----------
+        **kwargs :
+            optional keyword arguments
 
-    def show(self, **kwargs):
-        """ Method not allowed (action:skip_documentation) """
+        Keyword Arguments
+        -----------------
+        query_parameters : dict
+            Query parameters for the request
 
-        raise self._exceptions['MethodNotAllowed']
+        Returns
+        -------
+        dict
+            the serialized REST response
+        """
 
-    def update(self, **kwargs):
-        """ Method not allowed (action:skip_documentation) """
-
-        raise self._exceptions['MethodNotAllowed']
-
-    def delete(self, **kwargs):
-        """ Method not allowed (action:skip_documentation) """
-
-        raise self._exceptions['MethodNotAllowed']
+        return self._list(**kwargs)

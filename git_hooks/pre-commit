@@ -9,4 +9,4 @@
 set -e
 
 make lint
-make unit_test
+make test

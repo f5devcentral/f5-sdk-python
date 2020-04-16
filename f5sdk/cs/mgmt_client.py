@@ -5,10 +5,10 @@ from retry import retry
 import f5sdk.constants as constants
 from f5sdk.logger import Logger
 from f5sdk.utils import http_utils
-from f5sdk.exceptions import InputRequiredError, RetryInterruptedError, HTTPError
+from f5sdk.exceptions import InputRequiredError, InvalidAuthError, HTTPError
 
-API_ENDPOINT = constants.F5_CLOUD_SERVICES['API_ENDPOINT']
-AUTH_TOKEN_HEADER = constants.F5_CLOUD_SERVICES['AUTH_TOKEN_HEADER']
+API_ENDPOINT = constants.F5_CS['API_ENDPOINT']
+AUTH_TOKEN_HEADER = constants.F5_CS['AUTH_TOKEN_HEADER']
 
 
 class ManagementClient(object):
@@ -87,22 +87,28 @@ class ManagementClient(object):
             {'accessToken': 'token', 'expirationIn': 3600}
         """
 
-        body = {
-            'username': self._user,
-            'password': self._password
-        }
+
         try:
             response = http_utils.make_request(
                 self._api_endpoint,
                 '/v1/svc-auth/login',
                 method='POST',
-                body=body
+                body={
+                    'username': self._user,
+                    'password': self._password
+                }
             )
         except HTTPError as error:
             if constants.HTTP_STATUS_CODE['BAD_REQUEST_BODY'] in str(error) or \
-                    constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
-                raise RetryInterruptedError(error)
-        return {'accessToken': response['access_token'], 'expirationIn': response['expires_at']}
+                constants.HTTP_STATUS_CODE['FAILED_AUTHENTICATION'] in str(error):
+                _exception = InvalidAuthError(error)
+                _exception.__cause__ = None
+                raise _exception
+            raise error
+        return {
+            'accessToken': response['access_token'],
+            'expirationIn': response['expires_at']
+        }
 
     def _login_using_credentials(self):
         """Logs in to service using user + password
@@ -149,7 +155,15 @@ class ManagementClient(object):
             a dictionary containing the JSON response
         """
 
-        # need to add authentication token to headers
-        headers = {AUTH_TOKEN_HEADER: 'Bearer %s' % self.access_token}
-        headers.update(kwargs.pop('headers', {}))
-        return http_utils.make_request(self._api_endpoint, uri, headers=headers, **kwargs)
+        # merge default authentication headers with any user supplied ones
+        dfl_headers = {
+            AUTH_TOKEN_HEADER: 'Bearer %s' % self.access_token
+        }
+        dfl_headers.update(kwargs.pop('headers', {}))
+
+        return http_utils.make_request(
+            self._api_endpoint,
+            uri,
+            headers=dfl_headers,
+            **kwargs
+        )

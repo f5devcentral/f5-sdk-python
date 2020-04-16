@@ -1,25 +1,17 @@
-"""Module for Cloud Services subscriptions subscription client"""
+"""Account Client"""
 
 from f5sdk.base_clients import BaseFeatureClient
 
 
-class SubscriptionClient(BaseFeatureClient):
-    """A class used as a subscription client for Cloud Services
+class AccountClient(BaseFeatureClient):
+    """Cloud Services accounts client
 
     Attributes
     ----------
 
     Methods
     -------
-    list()
-        Refer to method documentation
-    create()
-        Refer to method documentation
-    show()
-        Refer to method documentation
-    update()
-        Refer to method documentation
-    delete()
+    show_user()
         Refer to method documentation
     """
 
@@ -43,8 +35,29 @@ class SubscriptionClient(BaseFeatureClient):
 
         """
 
-        super(SubscriptionClient, self).__init__(
+        super(AccountClient, self).__init__(
             client,
             logger_name=__name__,
-            uri='/v1/svc-subscription/subscriptions'
+            uri='/v1/svc-account'
+        )
+
+    def show_user(self):
+        """Show information for the currently authenticated user
+
+        Parameters
+        ----------
+        None
+
+        Keyword Arguments
+        -----------------
+        None
+
+        Returns
+        -------
+        None
+
+        """
+
+        return self._make_request(
+            uri='%s/%s' % (self._metadata['uri'], 'user')
         )

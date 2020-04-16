@@ -14,7 +14,7 @@ MOCK = {
     'requests': 'requests.request'
 }
 
-F5_CLOUD_SERVICES = {
+F5_CS = {
     'LOGIN_RESPONSE': {
         'access_token': TOKEN,
         'expires_at': 3600

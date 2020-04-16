@@ -1,28 +1,4 @@
-"""Python module for BIG-IP extension component configuration, including AS3, DO and TS
-
-    Example - Basic::
-
-        from f5sdk.bigip import ManagementClient
-        from f5sdk.bigip.extension import ExtensionClient
-        device = ManagementClient('192.0.2.10', user='admin', password='admin')
-
-        as3 = ExtensionClient(device, 'as3')
-        # install AS3 package
-        as3.package.install()
-        # check service is available
-        as3.service.is_available()
-        # configure AS3
-        as3.service.create(config_file='./decl.json')
-
-    Example - Specify Component Type::
-
-        do = ExtensionClient(device, 'do')
-        ts = ExtensionClient(device, 'ts')
-
-    Example - Specify Component Version::
-
-        as3 = ExtensionClient(device, 'as3', version='3.9.0')
-"""
+"""Python module containing AS3 Extension Client"""
 
 from f5sdk.logger import Logger
 
@@ -31,8 +7,8 @@ from .package import OperationClient as PackageClient
 from .service import OperationClient as ServiceClient
 
 
-class ExtensionClient(object):
-    """A class used as a extension client for BIG-IP
+class AS3Client(object):
+    """AS3 client
 
     Attributes
     ----------
@@ -42,15 +18,13 @@ class ExtensionClient(object):
         the extension component version
     """
 
-    def __init__(self, client, component, **kwargs):
+    def __init__(self, client, **kwargs):
         """Class initialization
 
         Parameters
         ----------
         client : object
             the management client object
-        component : str
-            the extension component
         **kwargs :
             optional keyword arguments
 
@@ -70,7 +44,7 @@ class ExtensionClient(object):
 
         self._client = client
         self._metadata_client = MetadataClient(
-            component,
+            'as3',
             kwargs.pop('version', None),
             use_latest_metadata=kwargs.pop('use_latest_metadata', False)
         )
@@ -90,11 +64,66 @@ class ExtensionClient(object):
 
     @property
     def service(self):
-        """ Service (see ServiceClient for more details)  """
-        return ServiceClient(
+        """ Service (see AS3ServiceClient for more details)  """
+        return AS3ServiceClient(
             self._client,
             self.component,
             self.version,
             self._metadata_client,
             logger=self.logger
         )
+
+
+class AS3ServiceClient(ServiceClient):
+    """AS3 service client
+
+    Attributes
+    ----------
+    component : str
+        the extension component
+    version : str
+        the extension component version
+    """
+
+    def __init__(self, client, component, version, metadata_client, **kwargs):
+        """Class initialization
+
+        Parameters
+        ----------
+        client : object
+            the management client object
+        **kwargs :
+            optional keyword arguments
+
+        Keyword Arguments
+        -----------------
+        logger : instance
+            the logger instance to use
+
+        Returns
+        -------
+        None
+        """
+
+        super(AS3ServiceClient, self).__init__(
+            client,
+            component,
+            version,
+            metadata_client,
+            logger=kwargs.pop('logger', None)
+        )
+
+    def delete(self):
+        """Performs a delete operation
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            the response to a service deletion
+        """
+
+        return self._delete()

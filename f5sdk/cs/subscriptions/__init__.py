@@ -2,10 +2,7 @@
 
     Example - Update Subscription::
 
-        from f5sdk.cloud_services import ManagementClient
-        from f5sdk.cloud_services.subscriptions import SubscriptionClient
-
-        mgmt_client = ManagementClient(user='admin', password='admin')
+        from f5sdk.cs.subscriptions import SubscriptionClient
 
         subscription_client = SubscriptionClient(mgmt_client)
 
@@ -13,6 +10,19 @@
         subscription_client.update(
             name='subscription_id',
             config_file='./decl.json'
+        )
+
+    Example - List Subscriptions::
+
+        from f5sdk.cs.subscriptions import SubscriptionClient
+
+        subscription_client = SubscriptionClient(mgmt_client)
+
+        # configure subscription - DNS zones, records, etc.
+        subscription_client.list(
+            query_parameters={
+                'account_id': ''
+            }
         )
 """
 
