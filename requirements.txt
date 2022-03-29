@@ -1,7 +1,7 @@
 ## required production packages
 requests==2.22.0
 retry==0.9.2
-paramiko==2.6.0
+paramiko==2.10.1
 ## required dev packages
 pytest==4.3.1
 pytest-mock==1.10.4
