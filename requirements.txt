@@ -1,5 +1,5 @@
 ## required production packages
-requests==2.22.0
+requests==2.31.0
 retry==0.9.2
 paramiko==2.6.0
 ## required dev packages
