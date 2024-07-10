@@ -60,6 +60,7 @@ class ManagementClient(object):
 
         self._user = kwargs.pop('user', None)
         self._password = kwargs.pop('password', None)
+        self._auth_provider = kwargs.pop('auth_provider', None)
 
         # account for multiple authentication schemes
         if self._user and self._password:
@@ -96,11 +97,13 @@ class ManagementClient(object):
             method='POST',
             body={
                 'username': self._user,
-                'password': self._password
+                'password': self._password,
+                'loginProviderName': self._auth_provider
             },
             basic_auth={
                 'user': self._user,
-                'password': self._password
+                'password': self._password,
+                'loginProviderName': self._auth_provider
             }
         )
         token_details = response['token']
